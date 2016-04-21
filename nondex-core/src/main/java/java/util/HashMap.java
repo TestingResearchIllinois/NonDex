@@ -1455,7 +1455,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             List<Node<K, V>> oneOrder = new ArrayList<>();
             while(original_hasNext())
                 oneOrder.add(original_nextNode());
-            shuffling.ControlNondeterminism.shuffle(oneOrder, System.identityHashCode(HashMap.this), expectedModCount, HashMap.this.incrHashCode);
+            edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(oneOrder, System.identityHashCode(HashMap.this), expectedModCount, HashMap.this.incrHashCode);
 
             iter = oneOrder.iterator();
 

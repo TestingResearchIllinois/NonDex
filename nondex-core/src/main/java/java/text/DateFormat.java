@@ -613,7 +613,7 @@ public abstract class DateFormat extends Format {
     {
         LocaleServiceProviderPool pool =
             LocaleServiceProviderPool.getPool(DateFormatProvider.class);
-        return shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 45);
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 45);
     }
 
     /**

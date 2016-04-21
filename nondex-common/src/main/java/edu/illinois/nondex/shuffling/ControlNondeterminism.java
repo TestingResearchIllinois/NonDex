@@ -22,7 +22,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package shuffling;
+package edu.illinois.nondex.shuffling;
 
 import java.io.IOException;
 import java.nio.file.Files;

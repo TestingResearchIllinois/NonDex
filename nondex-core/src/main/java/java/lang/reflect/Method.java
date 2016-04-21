@@ -623,7 +623,7 @@ public final class Method extends Executable {
     public Annotation[][] getParameterAnnotations() {
 	Annotation[][] anns = sharedGetParameterAnnotations(parameterTypes, parameterAnnotations);
 	for (int i = 0;i<anns.length;i++) {
-	    anns[i] = shuffling.ControlNondeterminism.shuffle(anns[i], this.hashCode());
+	    anns[i] = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(anns[i], this.hashCode());
 	}
         return anns;
     }

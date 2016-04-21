@@ -3300,7 +3300,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
         Traverser(Node<K,V>[] tab, int size, int index, int limit) {
 	    if (tab != null)
-            this.tab = shuffling.ControlNondeterminism.shuffle(Arrays.copyOf(tab, tab.length), 0);
+            this.tab = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(Arrays.copyOf(tab, tab.length), 0);
 	    else
 		this.tab = tab;
             this.baseSize = size;

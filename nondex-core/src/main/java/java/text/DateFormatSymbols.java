@@ -298,7 +298,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
     public static Locale[] getAvailableLocales() {
         LocaleServiceProviderPool pool=
             LocaleServiceProviderPool.getPool(DateFormatSymbolsProvider.class);
-        return shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 33);
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 33);
     }
 
     /**
@@ -533,7 +533,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * @see #setZoneStrings(String[][])
      */
     public String[][] getZoneStrings() {
-        return shuffling.ControlNondeterminism.extendZoneStrings(getZoneStringsImpl(true));
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.extendZoneStrings(getZoneStringsImpl(true));
     }
 
     /**

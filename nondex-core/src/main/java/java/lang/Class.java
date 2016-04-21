@@ -1482,7 +1482,7 @@ public final class Class<T> implements java.io.Serializable,
         // out anything other than public members and (2) public member access
         // has already been ok'd by the SecurityManager.
 
-        return shuffling.ControlNondeterminism.shuffle(java.security.AccessController.doPrivileged(
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(java.security.AccessController.doPrivileged(
             new java.security.PrivilegedAction<Class<?>[]>() {
                 public Class<?>[] run() {
                     List<Class<?>> list = new ArrayList<>();
@@ -1541,7 +1541,7 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public Field[] getFields() throws SecurityException {
         checkMemberAccess(Member.PUBLIC, Reflection.getCallerClass(), true);
-        return shuffling.ControlNondeterminism.shuffle(copyFields(privateGetPublicFields(null)), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(copyFields(privateGetPublicFields(null)), this.hashCode());
     }
 
 
@@ -1599,7 +1599,7 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public Method[] getMethods() throws SecurityException {
         checkMemberAccess(Member.PUBLIC, Reflection.getCallerClass(), true);
-        return shuffling.ControlNondeterminism.shuffle(copyMethods(privateGetPublicMethods()), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(copyMethods(privateGetPublicMethods()), this.hashCode());
     }
 
 
@@ -1635,7 +1635,7 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public Constructor<?>[] getConstructors() throws SecurityException {
         checkMemberAccess(Member.PUBLIC, Reflection.getCallerClass(), true);
-        return shuffling.ControlNondeterminism.shuffle(copyConstructors(privateGetDeclaredConstructors(true)), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(copyConstructors(privateGetDeclaredConstructors(true)), this.hashCode());
     }
 
 
@@ -1851,7 +1851,7 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public Class<?>[] getDeclaredClasses() throws SecurityException {
         checkMemberAccess(Member.DECLARED, Reflection.getCallerClass(), false);
-        return shuffling.ControlNondeterminism.shuffle(getDeclaredClasses0(), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(getDeclaredClasses0(), this.hashCode());
     }
 
 
@@ -1901,7 +1901,7 @@ public final class Class<T> implements java.io.Serializable,
     public Field[] getDeclaredFields() throws SecurityException {
         checkMemberAccess(Member.DECLARED, Reflection.getCallerClass(), true);
 	Field[] fields = copyFields(privateGetDeclaredFields(false));
-	shuffling.ControlNondeterminism.shuffle(fields, this.hashCode());
+	edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fields, this.hashCode());
         return fields;
     }
 
@@ -1962,7 +1962,7 @@ public final class Class<T> implements java.io.Serializable,
     public Method[] getDeclaredMethods() throws SecurityException {
         checkMemberAccess(Member.DECLARED, Reflection.getCallerClass(), true);
 	Method[] meths = copyMethods(privateGetDeclaredMethods(false));
-	shuffling.ControlNondeterminism.shuffle(meths, this.hashCode());
+	edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(meths, this.hashCode());
         return meths;
     }
 
@@ -2009,7 +2009,7 @@ public final class Class<T> implements java.io.Serializable,
     public Constructor<?>[] getDeclaredConstructors() throws SecurityException {
         checkMemberAccess(Member.DECLARED, Reflection.getCallerClass(), true);
 	Constructor<?>[] consts = copyConstructors(privateGetDeclaredConstructors(false));
-	shuffling.ControlNondeterminism.shuffle(consts, this.hashCode());
+	edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(consts, this.hashCode());
         return consts;
     }
 
@@ -3338,7 +3338,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     public Annotation[] getAnnotations() {
-        return shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(annotationData().annotations), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(annotationData().annotations), this.hashCode());
     }
 
     /**
@@ -3369,7 +3369,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     public Annotation[] getDeclaredAnnotations()  {
-        return shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(annotationData().declaredAnnotations), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(annotationData().declaredAnnotations), this.hashCode());
     }
 
     // annotation data that might get invalidated when JVM TI RedefineClasses() is called

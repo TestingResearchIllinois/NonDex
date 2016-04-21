@@ -429,7 +429,7 @@ public abstract class Collator
     public static synchronized Locale[] getAvailableLocales() {
         LocaleServiceProviderPool pool =
             LocaleServiceProviderPool.getPool(CollatorProvider.class);
-        return shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 13);
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 13);
     }
 
     /**
