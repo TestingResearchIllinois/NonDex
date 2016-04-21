@@ -26,5 +26,10 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+### Eclipse ###
+.settings
+.classpath
+.project
+
 ### nondex specific ###
 .nondex/
