@@ -72,12 +72,5 @@
       <artifactId>nondex-common</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>jdk</groupId>
-      <artifactId>jdk</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/rt.jar</systemPath>
-    </dependency>
   </dependencies>
 </project>
