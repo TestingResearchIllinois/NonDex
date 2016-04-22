@@ -77,18 +77,25 @@ public class NonDexMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException {
         getLog().info("Running NonDex!");
-        
+        MojoExecutionException allExceptions = null;
         this.surefire = lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
 
         NonDexSurefireExecution execution = new NonDexSurefireExecution(mode, seed, filter, surefire, originalArgLine,
                 mavenProject, mavenSession, pluginManager);
-        execution.run();
+        try {
+            execution.run();
+        } catch (MojoExecutionException ex) {
+            allExceptions = ex;
+        }
         Collection<String> failedTests = execution.getFailedTests();
         for (String test : failedTests) {
             DebugTask debugging = new DebugTask(test, mode, seed, filter, surefire, originalArgLine,
                     mavenProject, mavenSession, pluginManager);
+        }
+        if (allExceptions != null) {
+            throw allExceptions;
         }
     }
 

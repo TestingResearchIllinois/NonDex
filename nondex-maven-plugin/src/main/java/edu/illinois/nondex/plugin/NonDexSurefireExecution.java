@@ -81,14 +81,16 @@ public class NonDexSurefireExecution {
         this.pluginManager = pluginManager;
     }
 
-    public void run() {
+    public void run() throws MojoExecutionException {
         addNondexToBootClassPath();
         try {
             executeMojo(surefire, goal("test"), createListenerConfiguration((Xpp3Dom) surefire.getConfiguration()),
                     executionEnvironment(mavenProject, mavenSession, pluginManager));
         } catch (MojoExecutionException mojoException) {
             Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.id);
+            throw mojoException;
         }
+        
     }
 
     public Collection<String> getFailedTests() {

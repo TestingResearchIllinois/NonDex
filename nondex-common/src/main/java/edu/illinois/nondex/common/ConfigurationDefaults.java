@@ -33,7 +33,7 @@ public class ConfigurationDefaults {
 
 
     public static final String PROPERTY_DEFAULT_MODE = "nondex.mode";
-    public static final String DEFAULT_MODE_STR = "ONE";
+    public static final String DEFAULT_MODE_STR = "FULL";
     public static final Mode DEFAULT_MODE = Mode.valueOf(DEFAULT_MODE_STR);
 
 
