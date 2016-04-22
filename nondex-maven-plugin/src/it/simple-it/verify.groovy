@@ -1,3 +1,3 @@
-File touchFile = new File( basedir, "target/touch.txt" );
+File nondexDirectory = new File( basedir, ".nondex" );
 
-assert touchFile.isFile()
+assert nondexDirectory.isDirectory();
