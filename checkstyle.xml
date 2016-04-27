@@ -162,9 +162,9 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="VariableDeclarationUsageDistance"/>
     <module name="CustomImportOrder">
-      <property name="specialImportsRegExp" value="com.google"/>
+      <property name="specialImportsRegExp" value="edu.illinois.nondex"/>
       <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <property name="customImportOrderRules" value="STATIC###SPECIAL_IMPORTS###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE"/>
+      <property name="customImportOrderRules" value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE"/>
     </module>
     <module name="MethodParamPad"/>
     <module name="OperatorWrap">
