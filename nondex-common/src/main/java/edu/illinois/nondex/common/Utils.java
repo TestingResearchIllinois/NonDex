@@ -28,6 +28,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Properties;
+import java.util.logging.Level;
+
 public class Utils {
     
     public static Throwable linkException(Throwable nestedThrowable, Throwable pastSupressedException) {
@@ -41,4 +48,14 @@ public class Utils {
         return pastSupressedException;
     }
 
+    public static Properties openPropertiesFrom(Path path) {
+        Properties props = new Properties();
+        try {
+            props.load(new FileInputStream(path.toFile()));
+        } catch (IOException ioe) {
+            Logger.getGlobal().log(Level.CONFIG, "Cannot opern properties file!", ioe);
+        }
+        return props;
+    }
+    
 }

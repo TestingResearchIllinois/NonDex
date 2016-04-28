@@ -163,7 +163,7 @@ public class ControlNondeterminism {
         public void run() {
             ConfigurationDefaults.createNondexDirIfNeeded();
             try {
-                Files.write(config.getConfigPath(), config.toArgLine().getBytes(), StandardOpenOption.CREATE,
+                Files.write(config.getConfigPath(), config.toString().getBytes(), StandardOpenOption.CREATE,
                         StandardOpenOption.APPEND);
                 Files.write(config.getInvocationsPath(), ("COUNT:" + ControlNondeterminism.count + "\n").getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);

@@ -54,7 +54,6 @@ public class TestStatusListener extends RunListener {
             Files.write(runConfig.getFailuresPath(), (testName + "\n").getBytes(), StandardOpenOption.CREATE,
                     StandardOpenOption.APPEND);
         } catch (IOException ioe) {
-            // TODO Auto-generated catch block
             ioe.printStackTrace();
         }
 

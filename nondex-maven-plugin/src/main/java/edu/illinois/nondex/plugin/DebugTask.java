@@ -31,6 +31,7 @@ package edu.illinois.nondex.plugin;
 import java.util.Set;
 import java.util.logging.Level;
 
+import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Logger;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,11 +49,11 @@ public class DebugTask {
     private MavenProject mavenProject;
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
-    private Set<NonDexSurefireExecution> failingConfigurations;
+    private Set<Configuration> failingConfigurations;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject, 
             MavenSession mavenSession, BuildPluginManager pluginManager, 
-            Set<NonDexSurefireExecution> failingConfigurations) {
+            Set<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
@@ -64,25 +65,25 @@ public class DebugTask {
     
     public Pair<Integer, Integer> debug() throws MojoExecutionException {
         Logger.getGlobal().log(Level.INFO, "Starting debugging for " + this.test);
-        for (NonDexSurefireExecution exec : failingConfigurations) {
-            return startDebug(exec);
+        for (Configuration config : failingConfigurations) {
+            return startDebug(config);
         }
         return null;
     }
     
-    public Pair<Integer, Integer> startDebug(NonDexSurefireExecution exec) {
+    public Pair<Integer, Integer> startDebug(Configuration config) {
         Logger.getGlobal().log(Level.INFO, "Starting debugging for " + this.test);
 
         int start = 0;
-        int end = exec.getInvocationCount();
+        int end = config.getInvocationCount();
         while (start < end) {
             Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
 
             int midPoint = (start + end) / 2;
-            if (startDebug(exec, start, midPoint)) {
+            if (startDebug(config, start, midPoint)) {
                 end = midPoint;
                 continue;
-            } else if (startDebug(exec, midPoint + 1, end)) {
+            } else if (startDebug(config, midPoint + 1, end)) {
                 start = midPoint + 1;
                 continue;
             } else {
@@ -92,9 +93,9 @@ public class DebugTask {
         return Pair.of(start, end);
     }
     
-    public boolean startDebug(NonDexSurefireExecution exec, int start, int end) {
+    public boolean startDebug(Configuration config, int start, int end) {
         try {
-            NonDexSurefireExecution execution = new NonDexSurefireExecution(exec.getConfiguration(), 
+            NonDexSurefireExecution execution = new NonDexSurefireExecution(config, 
                     start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
             execution.run();
         } catch (Throwable thr) {

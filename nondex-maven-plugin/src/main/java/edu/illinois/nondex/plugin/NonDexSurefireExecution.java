@@ -118,51 +118,6 @@ public class NonDexSurefireExecution {
         
     }
 
-    public Collection<String> getFailedTests() {
-        if (failedTests == null) {
-            this.failedTests = new HashSet<>();
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.FAILURES_FILE)
-                    .toFile();
-
-            try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    this.failedTests.add(line.trim());
-                }
-            } catch (FileNotFoundException fne) {
-                Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
-            } catch (IOException ioe) {
-                Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
-            }
-        }
-        return Collections.unmodifiableCollection(failedTests);
-    }
-    
-    public int getInvocationCount() {
-        if (this.invoCount == null) {
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.INVOCATIONS_FILE)
-                    .toFile();
-
-            try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (line.startsWith("SHUFFLES:")) {
-                        this.invoCount = new Integer(line.substring("SHUFFLES: ".length() - 1));
-                        Logger.getGlobal().log(Level.SEVERE, "Shuffles:  " + this.invoCount);
-                    }
-                }
-            } catch (FileNotFoundException fne) {
-                Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
-            } catch (IOException ioe) {
-                Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
-            } catch (Throwable thr) {
-                Logger.getGlobal().log(Level.SEVERE, "Some big error", thr);
-            }
-        }
-        return invoCount;
-    }
-
-
     private String getFreshExecutionId() {
         try {
             // TODO(gyori): Fix to check that the id was not used before in the

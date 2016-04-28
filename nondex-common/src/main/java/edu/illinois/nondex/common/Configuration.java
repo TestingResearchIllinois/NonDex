@@ -28,8 +28,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class Configuration {
@@ -43,6 +54,9 @@ public class Configuration {
     public final long end;
 
     public final String testName;
+    
+    private Integer invoCount = null;
+    private Set<String> failedTests = null;
 
     public Configuration(Mode mode, int seed, String filter, String executionId) {
         this(mode, seed, Pattern.compile(filter), 0, Long.MAX_VALUE, null, executionId);
@@ -67,7 +81,7 @@ public class Configuration {
                 + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + " -D"
                 + ConfigurationDefaults.PROPERTY_START + "=" + this.start + " -D"
                 + ConfigurationDefaults.PROPERTY_END + "=" + this.end + " -D"
-                + ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID + "=" + this.executionId
+                + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId
                 + (this.testName == null ? "" : "-Dtest=" + this.testName);
     }
 
@@ -76,24 +90,29 @@ public class Configuration {
                 + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode + "\n"
                 + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + "\n"
                 + ConfigurationDefaults.PROPERTY_START + "=" + this.start + "\n"
-                + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n" + "test="
-                + (this.testName == null ? "" : this.testName);
+                + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n"
+                + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId + "\n"
+                + "test=" + (this.testName == null ? "" : this.testName);
     }
 
     public static Configuration parseArgs() {
-        String executionId = System.getProperty(ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID,
+        return Configuration.parseArgs(System.getProperties());
+    }
+    
+    public static Configuration parseArgs(Properties props) {
+        String executionId = props.getProperty(ConfigurationDefaults.PROPERTY_EXECUTION_ID,
                 ConfigurationDefaults.NO_EXECUTION_ID);
-        int seed = Integer.parseInt(System.getProperty(ConfigurationDefaults.PROPERTY_SEED,
+        int seed = Integer.parseInt(props.getProperty(ConfigurationDefaults.PROPERTY_SEED,
                 ConfigurationDefaults.DEFAULT_SEED_STR));
-        Mode nonDetKind = Mode.valueOf(System.getProperty(ConfigurationDefaults.PROPERTY_MODE,
+        Mode nonDetKind = Mode.valueOf(props.getProperty(ConfigurationDefaults.PROPERTY_MODE,
                 ConfigurationDefaults.DEFAULT_MODE_STR));
-        Pattern filter = Pattern.compile(System.getProperty(ConfigurationDefaults.PROPERTY_FILTER,
+        Pattern filter = Pattern.compile(props.getProperty(ConfigurationDefaults.PROPERTY_FILTER,
                 ConfigurationDefaults.DEFAULT_FILTER));
-        long start = Long.parseLong(System.getProperty(ConfigurationDefaults.PROPERTY_START,
+        long start = Long.parseLong(props.getProperty(ConfigurationDefaults.PROPERTY_START,
                 ConfigurationDefaults.DEFAULT_START_STR));
         long end = Long.parseLong(
-                System.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
-        String testName = System.getProperty("test", null);
+                props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
+        String testName = props.getProperty("test", null);
 
         return new Configuration(nonDetKind, seed, filter, start, end, testName, executionId);
     }
@@ -119,6 +138,50 @@ public class Configuration {
     }
     
     public Path getLatestRunFilePath() {
-        return Paths.get(ConfigurationDefaults.NONDEX_DIR, ConfigurationDefaults.LATEST_RUN_ID + ".run");
+        return Paths.get(ConfigurationDefaults.NONDEX_DIR, ConfigurationDefaults.LATEST_RUN_ID);
+    }
+        
+    public int getInvocationCount() {
+        if (this.invoCount == null) {
+            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.INVOCATIONS_FILE)
+                    .toFile();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("SHUFFLES:")) {
+                        this.invoCount = new Integer(line.substring("SHUFFLES: ".length() - 1));
+                        Logger.getGlobal().log(Level.SEVERE, "Shuffles:  " + this.invoCount);
+                    }
+                }
+            } catch (FileNotFoundException fne) {
+                Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
+            } catch (Throwable thr) {
+                Logger.getGlobal().log(Level.SEVERE, "Some big error", thr);
+            }
+        }
+        return invoCount;
+    }
+    
+    public Collection<String> getFailedTests() {
+        if (failedTests == null) {
+            this.failedTests = new HashSet<>();
+            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.FAILURES_FILE)
+                    .toFile();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    this.failedTests.add(line.trim());
+                }
+            } catch (FileNotFoundException fne) {
+                Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
+            }
+        }
+        return Collections.unmodifiableCollection(failedTests);
     }
 }
