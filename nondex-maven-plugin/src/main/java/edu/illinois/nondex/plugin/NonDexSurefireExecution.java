@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.plugin;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
 
@@ -73,16 +74,36 @@ public class NonDexSurefireExecution {
     private String originalArgLine;
 
     private Set<String> failedTests;
-
-    public NonDexSurefireExecution(Mode mode, int seed, String filter, Plugin surefire, String originalArgLine,
+    private Integer invoCount = null;
+    
+    private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
             MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
         this.executionId = getFreshExecutionId();
-        this.configuration = new Configuration(mode, seed, filter, this.executionId);
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
+    } 
+    
+    public NonDexSurefireExecution(Mode mode, int seed, String filter, Plugin surefire, String originalArgLine,
+            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
+        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+        this.configuration = new Configuration(mode, seed, filter, this.executionId);
+        
+    }
+    
+    public NonDexSurefireExecution(Configuration config, int start, int end, String test, Plugin surefire, 
+            String originalArgLine, MavenProject mavenProject, MavenSession mavenSession, 
+            BuildPluginManager pluginManager) {
+        
+        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+        this.configuration = new Configuration(config.mode, config.seed, config.filter, start, 
+                end, test, this.executionId);
+    }
+    
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     public void run() throws MojoExecutionException {
@@ -91,7 +112,7 @@ public class NonDexSurefireExecution {
             executeMojo(surefire, goal("test"), createListenerConfiguration((Xpp3Dom) surefire.getConfiguration()),
                     executionEnvironment(mavenProject, mavenSession, pluginManager));
         } catch (MojoExecutionException mojoException) {
-            Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.id);
+            Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
             throw mojoException;
         }
         
@@ -116,6 +137,31 @@ public class NonDexSurefireExecution {
         }
         return Collections.unmodifiableCollection(failedTests);
     }
+    
+    public int getInvocationCount() {
+        if (this.invoCount == null) {
+            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.INVOCATIONS_FILE)
+                    .toFile();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("SHUFFLES:")) {
+                        this.invoCount = new Integer(line.substring("SHUFFLES: ".length() - 1));
+                        Logger.getGlobal().log(Level.SEVERE, "Shuffles:  " + this.invoCount);
+                    }
+                }
+            } catch (FileNotFoundException fne) {
+                Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
+            } catch (Throwable thr) {
+                Logger.getGlobal().log(Level.SEVERE, "Some big error", thr);
+            }
+        }
+        return invoCount;
+    }
+
 
     private String getFreshExecutionId() {
         try {
@@ -135,7 +181,7 @@ public class NonDexSurefireExecution {
 
         String localRepo = mavenSession.getSettings().getLocalRepository();
         String pathToNondex = getPathToNondexJar(localRepo);
-        System.out.println(configuration.toArgLine());
+        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
                 "" + "-Xbootclasspath/p:" + pathToNondex + " " + originalArgLine + " " + configuration.toArgLine());
 

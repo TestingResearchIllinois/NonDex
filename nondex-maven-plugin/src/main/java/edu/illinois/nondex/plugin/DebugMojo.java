@@ -26,19 +26,35 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package edu.illinois.nondex.common;
+package edu.illinois.nondex.plugin;
 
-public class Utils {
-    
-    public static Throwable linkException(Throwable nestedThrowable, Throwable pastSupressedException) {
-        if (pastSupressedException == null) {
-            return nestedThrowable;
+import java.util.logging.Level;
+
+import edu.illinois.nondex.common.Logger;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
+@Mojo(name = "debug", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
+public class DebugMojo extends AbstractNondexMojo {
+
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        
+        /*for (String test : failedTests.keys()) {
+            DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
+                    mavenProject, mavenSession, pluginManager, failedTests.get(test));
+            Pair<Integer, Integer> limits = debugging.debug();
+            Logger.getGlobal().log(Level.SEVERE, "Limits: " + limits.getLeft() + " : " + limits.getRight());
         }
-        if (nestedThrowable == null) {
-            return pastSupressedException;
-        }
-        pastSupressedException.addSuppressed(nestedThrowable);
-        return pastSupressedException;
+        if (allExceptions != null) {
+            throw allExceptions;
+        }*/
     }
 
+    
 }

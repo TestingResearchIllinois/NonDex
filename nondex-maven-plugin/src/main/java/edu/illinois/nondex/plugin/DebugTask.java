@@ -28,42 +28,78 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
-import edu.illinois.nondex.common.Mode;
+import java.util.Set;
+import java.util.logging.Level;
 
+import edu.illinois.nondex.common.Logger;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 public class DebugTask {
 
-    private Mode mode;
     private String test;
-    private int seed;
-    private String filter;
     private Plugin surefire;
     private String originalArgLine;
     private MavenProject mavenProject;
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
+    private Set<NonDexSurefireExecution> failingConfigurations;
 
-    public DebugTask(String test, Mode mode, int seed, String filter, Plugin surefire, String originalArgLine,
-                     MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
+    public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject, 
+            MavenSession mavenSession, BuildPluginManager pluginManager, 
+            Set<NonDexSurefireExecution> failingConfigurations) {
         this.test = test;
-        this.mode = mode;
-        this.seed = seed;
-        this.filter = filter;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
+        this.failingConfigurations = failingConfigurations;
     }
     
-    public void debug() {
-        NonDexSurefireExecution execution = new NonDexSurefireExecution(mode, seed, filter, surefire, originalArgLine,
-                                                                        mavenProject, mavenSession, pluginManager);
-        
+    public Pair<Integer, Integer> debug() throws MojoExecutionException {
+        Logger.getGlobal().log(Level.INFO, "Starting debugging for " + this.test);
+        for (NonDexSurefireExecution exec : failingConfigurations) {
+            return startDebug(exec);
+        }
+        return null;
     }
+    
+    public Pair<Integer, Integer> startDebug(NonDexSurefireExecution exec) {
+        Logger.getGlobal().log(Level.INFO, "Starting debugging for " + this.test);
 
+        int start = 0;
+        int end = exec.getInvocationCount();
+        while (start < end) {
+            Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
+
+            int midPoint = (start + end) / 2;
+            if (startDebug(exec, start, midPoint)) {
+                end = midPoint;
+                continue;
+            } else if (startDebug(exec, midPoint + 1, end)) {
+                start = midPoint + 1;
+                continue;
+            } else {
+                Logger.getGlobal().log(Level.FINE, "Splitting did not work. Does not fail on any half.");
+            }
+        }
+        return Pair.of(start, end);
+    }
+    
+    public boolean startDebug(NonDexSurefireExecution exec, int start, int end) {
+        try {
+            NonDexSurefireExecution execution = new NonDexSurefireExecution(exec.getConfiguration(), 
+                    start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+            execution.run();
+        } catch (Throwable thr) {
+            return true;
+        }
+        return false;
+    }
 }

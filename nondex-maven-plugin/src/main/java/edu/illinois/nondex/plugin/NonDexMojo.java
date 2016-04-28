@@ -28,91 +28,71 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Iterator;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+import java.util.logging.Level;
 
+import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
-import edu.illinois.nondex.common.Mode;
+import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Utils;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Execute;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
-@Execute(phase = LifecyclePhase.TEST_COMPILE)
-public class NonDexMojo extends AbstractMojo {
-    // NonDex Mojo specific properties
-    @Parameter(property = ConfigurationDefaults.PROPERTY_DEFAULT_SEED, defaultValue = ConfigurationDefaults.DEFAULT_SEED_STR)
-    private int seed;
-    @Parameter(property = ConfigurationDefaults.PROPERTY_DEFAULT_MODE, defaultValue = ConfigurationDefaults.DEFAULT_MODE_STR)
-    private Mode mode;
-    @Parameter(property = ConfigurationDefaults.PROPERTY_DEFAULT_FILTER, defaultValue = ConfigurationDefaults.DEFAULT_FILTER)
-    private String filter;
-    // Generic properties
-    @Parameter(property = "project")
-    protected MavenProject mavenProject;
-    @Parameter(defaultValue = "${project.build.directory}")
-    protected String projectBuildDir;
-    @Parameter(defaultValue = "${basedir}")
-    protected File basedir;
-    @Parameter(property = "goal", alias = "mojo")
-    private String goal;
-    @Component
-    private MavenSession mavenSession;
-    @Component
-    private BuildPluginManager pluginManager;
-
-    private Plugin surefire;
-    private String originalArgLine;
-
+public class NonDexMojo extends AbstractNondexMojo {
     
-
-    public void execute() throws MojoExecutionException {
-        getLog().info("Running NonDex!");
+    List<NonDexSurefireExecution> executions = new LinkedList<>();
+    
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        super.execute();
+        
         MojoExecutionException allExceptions = null;
-        this.surefire = lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
-        Properties localProperties = this.mavenProject.getProperties();
-        this.originalArgLine = localProperties.getProperty("argLine", "");
-
-        NonDexSurefireExecution execution = new NonDexSurefireExecution(mode, seed, filter, surefire, originalArgLine,
-                mavenProject, mavenSession, pluginManager);
+        for (int i = 0; i < this.numReruns; i++) {
+            NonDexSurefireExecution execution = 
+                    new NonDexSurefireExecution(mode, seed + i * ConfigurationDefaults.SEED_FACTOR, 
+                            filter, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+            executions.add(execution);
+            try {
+                execution.run();
+            } catch (MojoExecutionException ex) {
+                allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
+            }
+            
+            writeCurrentRunInfo(execution);
+        
+        }
+        Configuration config = this.executions.get(0).getConfiguration();
+        
         try {
-            execution.run();
-        } catch (MojoExecutionException ex) {
-            allExceptions = ex;
+            Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Could not copy current run info to latest", ex);
         }
-        Collection<String> failedTests = execution.getFailedTests();
-        for (String test : failedTests) {
-            DebugTask debugging = new DebugTask(test, mode, seed, filter, surefire, originalArgLine,
-                    mavenProject, mavenSession, pluginManager);
-        }
+        
+        this.getLog().info("[NonDex] The id of this run is: " + this.executions.get(0).getConfiguration().executionId);
         if (allExceptions != null) {
             throw allExceptions;
         }
+        
     }
 
-    private Plugin lookupPlugin(String paramString) {
-        List<Plugin> localList = this.mavenProject.getBuildPlugins();
-        Iterator<Plugin> localIterator = localList.iterator();
-        while (localIterator.hasNext()) {
-            Plugin localPlugin = localIterator.next();
-            if (paramString.equalsIgnoreCase(localPlugin.getKey())) {
-                return localPlugin;
-            }
+    private void writeCurrentRunInfo(NonDexSurefireExecution execution) {
+        try {
+            Files.write(this.executions.get(0).getConfiguration().getRunFilePath(), 
+                    (execution.getConfiguration().executionId + "\n").getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException ex) {
+            Logger.getGlobal().log(Level.SEVERE, "Cannot write execution id to current run file", ex);
         }
-        return null;
     }
 
 }
