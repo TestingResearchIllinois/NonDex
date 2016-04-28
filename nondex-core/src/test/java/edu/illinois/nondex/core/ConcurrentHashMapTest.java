@@ -33,6 +33,9 @@ public class ConcurrentHashMapTest {
         // this is the natural order; 2 should be removed by the iterator remove above
         assertNotEquals("You are likely running an unchanged JVM", "{0=0, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", map.toString());
 
+        String str = map.toString();
+        assertNotEquals("You are not running FULL nondex", str, map.toString());
+        
         //assertEquals("{2=2, 4=4, 0=0, 5=5, 1=1, 9=9, 6=6, 3=3, 8=8}", map.toString());
 
         for (int i = 0; i < 10; i++)
