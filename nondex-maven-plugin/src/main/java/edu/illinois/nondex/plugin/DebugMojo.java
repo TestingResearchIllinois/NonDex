@@ -69,7 +69,7 @@ public class DebugMojo extends AbstractNondexMojo {
         parseExecutions();
         parseTests();
         
-        for (String test : testsFailing.keys()) {
+        for (String test : testsFailing.keySet()) {
             DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
                     mavenProject, mavenSession, pluginManager, testsFailing.get(test));
             Pair<Integer, Integer> limits = debugging.debug();
