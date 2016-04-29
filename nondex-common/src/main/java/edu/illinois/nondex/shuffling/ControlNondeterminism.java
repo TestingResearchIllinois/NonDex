@@ -56,6 +56,10 @@ public class ControlNondeterminism {
         r = new Random(config.seed);
     }
 
+    public static Configuration getConfiguration() {
+        return config;
+    }
+    
     private static Random getRandomnessSource(int id, int modCount, int objHash, String source) {
         logger.log(Level.INFO, "getRandomnessSource for API: " + source);
         if (!config.filter.matcher(source).matches()) {
