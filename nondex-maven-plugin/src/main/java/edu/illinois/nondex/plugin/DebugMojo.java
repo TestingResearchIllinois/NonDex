@@ -72,9 +72,9 @@ public class DebugMojo extends AbstractNondexMojo {
             runSinleSurefireTest(test);
             DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
                     mavenProject, mavenSession, pluginManager, testsFailing.get(test));
-            Pair<Integer, Integer> limits = debugging.debug();
+            String repro = debugging.debug();
             
-            Logger.getGlobal().log(Level.SEVERE, "Limits: " + limits.getLeft() + " : " + limits.getRight());
+            Logger.getGlobal().log(Level.SEVERE, "REPRO: mvn nondex:nondex " + repro);
         }
     }
 

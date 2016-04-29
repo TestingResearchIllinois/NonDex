@@ -50,6 +50,7 @@ public class DebugTask {
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
     private Set<Configuration> failingConfigurations;
+    private Configuration lastConfig;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject, 
             MavenSession mavenSession, BuildPluginManager pluginManager, 
@@ -63,11 +64,13 @@ public class DebugTask {
         this.failingConfigurations = failingConfigurations;
     }
     
-    public Pair<Integer, Integer> debug() throws MojoExecutionException {
+    public String debug() throws MojoExecutionException {
         for (Configuration config : failingConfigurations) {
-            return startDebug(config);
+            Pair<Integer, Integer> limits = startDebug(config);
+            // TODO(gyori): Not enough. This does not check it succeeded.
+            return this.lastConfig.toArgLine();
         }
-        return null;
+        return "cannot reproduce. may be flaky due to other causes";
     }
     
     public Pair<Integer, Integer> startDebug(Configuration config) {
@@ -95,6 +98,7 @@ public class DebugTask {
             NonDexSurefireExecution execution = new NonDexSurefireExecution(config, 
                     start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
             execution.run();
+            this.lastConfig = execution.getConfiguration();
         } catch (Throwable thr) {
             return true;
         }
