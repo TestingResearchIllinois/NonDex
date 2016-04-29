@@ -30,10 +30,8 @@ package edu.illinois.nondex.plugin;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +44,6 @@ import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -55,6 +52,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 @Mojo(name = "debug", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class DebugMojo extends AbstractNondexMojo {
@@ -70,11 +68,31 @@ public class DebugMojo extends AbstractNondexMojo {
         parseTests();
         
         for (String test : testsFailing.keySet()) {
+            
+            runSinleSurefireTest(test);
             DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
                     mavenProject, mavenSession, pluginManager, testsFailing.get(test));
             Pair<Integer, Integer> limits = debugging.debug();
+            
             Logger.getGlobal().log(Level.SEVERE, "Limits: " + limits.getLeft() + " : " + limits.getRight());
         }
+    }
+
+    private void runSinleSurefireTest(String test) {
+        Xpp3Dom configElement = (Xpp3Dom)surefire.getConfiguration();
+        if (configElement == null) {
+            configElement = new Xpp3Dom("configuration");
+        }
+        Xpp3Dom testElem = configElement.getChild("test");
+        if (testElem == null) {
+            testElem = new Xpp3Dom("test");
+            testElem.setValue(test);
+            configElement.addChild(testElem);
+        } else {
+            testElem.setValue(test);
+        }
+        Logger.getGlobal().log(Level.SEVERE, configElement.toString());
+        this.surefire.setConfiguration(configElement);
     }
 
     private void parseTests() {

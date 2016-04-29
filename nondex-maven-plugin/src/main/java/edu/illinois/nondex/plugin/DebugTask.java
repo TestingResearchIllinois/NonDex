@@ -64,7 +64,6 @@ public class DebugTask {
     }
     
     public Pair<Integer, Integer> debug() throws MojoExecutionException {
-        Logger.getGlobal().log(Level.INFO, "Starting debugging for " + this.test);
         for (Configuration config : failingConfigurations) {
             return startDebug(config);
         }
@@ -72,8 +71,6 @@ public class DebugTask {
     }
     
     public Pair<Integer, Integer> startDebug(Configuration config) {
-        Logger.getGlobal().log(Level.INFO, "Starting debugging for " + this.test);
-
         int start = 0;
         int end = config.getInvocationCount();
         while (start < end) {

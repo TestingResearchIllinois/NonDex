@@ -32,8 +32,10 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import edu.illinois.nondex.common.ConfigurationDefaults;
+import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
 
 import org.apache.maven.execution.MavenSession;
@@ -72,6 +74,12 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
     protected String runId;
     
+    @Parameter(property = ConfigurationDefaults.LOGGING_LEVEL, 
+            defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_LOGGING_LEVEL)
+    protected String loggingLevel;
+    
+    
+    
     
     // Generic properties
     @Parameter(property = "project")
@@ -91,7 +99,9 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected String originalArgLine;
     
     public void execute() throws MojoExecutionException, MojoFailureException {
+        Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
         this.surefire = lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
+        
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
         

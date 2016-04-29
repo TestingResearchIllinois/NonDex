@@ -61,9 +61,9 @@ public class ControlNondeterminism {
     }
     
     private static Random getRandomnessSource(int id, int modCount, int objHash, String source) {
-        logger.log(Level.INFO, "getRandomnessSource for API: " + source);
+        logger.log(Level.FINEST, "getRandomnessSource for API: " + source);
         if (!config.filter.matcher(source).matches()) {
-            logger.log(Level.INFO, "Source does not apply " + source + "");
+            logger.log(Level.FINE, "Source does not apply " + source + "");
             return null; 
             // Use null to denote do not randomize, only if passed
             // in source option and stack trace does not contain
@@ -122,8 +122,8 @@ public class ControlNondeterminism {
             // of those bounds
             if (config.start >= 0 && config.end >= 0 && config.start == config.end && count == config.start) {
                 StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-                for (StackTraceElement trace : traces) {
-                    System.out.println("FOUND: " + trace.toString());
+                for (StackTraceElement traceElement : traces) {
+                    Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
                 }
             }
             count++;
@@ -139,7 +139,7 @@ public class ControlNondeterminism {
     }
 
     public static String[][] extendZoneStrings(String[][] strs) {
-        logger.log(Level.INFO, "extendZoneStrings");
+        logger.log(Level.FINEST, "extendZoneStrings");
 
         // passing 0 makes configs 1, 2, 3 the same thing.
         Random currentRandom = getRandomnessSource(0, 0, 0, getSource());

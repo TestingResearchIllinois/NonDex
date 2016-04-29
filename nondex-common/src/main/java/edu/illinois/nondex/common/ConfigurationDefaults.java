@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.io.File;
+import java.util.logging.Level;
 
 public class ConfigurationDefaults {
 
@@ -73,6 +74,9 @@ public class ConfigurationDefaults {
     public static final String CONFIGURATION_FILE = "config";
 
     public static final int SEED_FACTOR = 0xA1e4;
+
+    public static final String LOGGING_LEVEL = "nondex.logging";
+    public static final String PROPERTY_DEFAULT_LOGGING_LEVEL = "INFO";
 
     public static void createNondexDirIfNeeded() {
         new File(ConfigurationDefaults.NONDEX_DIR).mkdir();

@@ -61,7 +61,7 @@ public class TestStatusListener extends RunListener {
 
     @Override
     public void testFailure(Failure fail) {
-        log(fail.getDescription().getClassName() + "." + fail.getDescription().getMethodName());
+        log(fail.getDescription().getClassName() + "#" + fail.getDescription().getMethodName());
     }
 
 }

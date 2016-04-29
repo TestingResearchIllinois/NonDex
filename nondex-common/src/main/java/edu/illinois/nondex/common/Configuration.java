@@ -76,13 +76,15 @@ public class Configuration {
     }
 
     public String toArgLine() {
-        return "-D" + ConfigurationDefaults.PROPERTY_FILTER + "=" + "\'" + this.filter + "\'" + " -D"
+        String str =  "-D" + ConfigurationDefaults.PROPERTY_FILTER + "=" + "\'" + this.filter + "\'" + " -D"
                 + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode + " -D"
                 + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + " -D"
                 + ConfigurationDefaults.PROPERTY_START + "=" + this.start + " -D"
                 + ConfigurationDefaults.PROPERTY_END + "=" + this.end + " -D"
                 + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId
-                + (this.testName == null ? "" : "-Dtest=" + this.testName);
+                + (this.testName == null ? "" : " -Dtest=" + this.testName);
+        System.out.println(str);
+        return str;
     }
 
     public String toString() {
@@ -151,7 +153,6 @@ public class Configuration {
                 while ((line = br.readLine()) != null) {
                     if (line.startsWith("SHUFFLES:")) {
                         this.invoCount = new Integer(line.substring("SHUFFLES: ".length() - 1));
-                        Logger.getGlobal().log(Level.SEVERE, "Shuffles:  " + this.invoCount);
                     }
                 }
             } catch (FileNotFoundException fne) {

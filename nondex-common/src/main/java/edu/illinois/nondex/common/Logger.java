@@ -28,25 +28,37 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.logging.Level;
 
 public class Logger {
 
     private static final Logger INSTANCE = new Logger();
-
     private PrintStream out = System.out;
+    private Level level = Level.INFO;
+        
+    public void setLoggineLevel(Level level) {
+        this.level = level;
+    }
 
     public static Logger getGlobal() {
         return INSTANCE;
     }
 
     public void log(Level lev, String msg, Throwable thr) {
+        if (lev.intValue() < this.level.intValue()) {
+            return;
+        }
         out.println(lev.toString() + ": " + msg);
         out.println(thr);
     }
 
     public void log(Level lev, String msg) {
+        if (lev.intValue() < this.level.intValue()) {
+            return;
+        }
         out.println(lev.toString() + ": " + msg);
     }
 }
