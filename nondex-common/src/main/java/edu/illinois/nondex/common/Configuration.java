@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class Configuration {
+        
     public final Mode mode;
     public final int seed;
     public final Pattern filter;
@@ -58,8 +59,8 @@ public class Configuration {
     private Integer invoCount = null;
     private Set<String> failedTests = null;
 
-    public Configuration(Mode mode, int seed, String filter, String executionId) {
-        this(mode, seed, Pattern.compile(filter), 0, Long.MAX_VALUE, null, executionId);
+    public Configuration(Mode mode, int seed, Pattern filter, String executionId) {
+        this(mode, seed, filter, 0, Long.MAX_VALUE, null, executionId);
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String testName,
@@ -75,16 +76,16 @@ public class Configuration {
         this.createExecutionDirIfNeeded();
     }
 
-    public String toArgLine() {
-        String str =  "-D" + ConfigurationDefaults.PROPERTY_FILTER + "=" + "\'" + this.filter + "\'" + " -D"
-                + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode + " -D"
-                + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + " -D"
-                + ConfigurationDefaults.PROPERTY_START + "=" + this.start + " -D"
-                + ConfigurationDefaults.PROPERTY_END + "=" + this.end + " -D"
-                + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId
-                + (this.testName == null ? "" : " -Dtest=" + this.testName);
-        System.out.println(str);
-        return str;
+    public String toArgLine(String originalArgline) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_FILTER + "=" + "\'" + this.filter + "\'");
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
+        sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);        
+        return sb.toString();
     }
 
     public String toString() {
@@ -102,20 +103,30 @@ public class Configuration {
     }
     
     public static Configuration parseArgs(Properties props) {
-        String executionId = props.getProperty(ConfigurationDefaults.PROPERTY_EXECUTION_ID,
+        final String executionId = props.getProperty(ConfigurationDefaults.PROPERTY_EXECUTION_ID,
                 ConfigurationDefaults.NO_EXECUTION_ID);
-        int seed = Integer.parseInt(props.getProperty(ConfigurationDefaults.PROPERTY_SEED,
+        
+        final int seed = Integer.parseInt(props.getProperty(ConfigurationDefaults.PROPERTY_SEED,
                 ConfigurationDefaults.DEFAULT_SEED_STR));
-        Mode nonDetKind = Mode.valueOf(props.getProperty(ConfigurationDefaults.PROPERTY_MODE,
+        
+        final Mode nonDetKind = Mode.valueOf(props.getProperty(ConfigurationDefaults.PROPERTY_MODE,
                 ConfigurationDefaults.DEFAULT_MODE_STR));
-        Pattern filter = Pattern.compile(props.getProperty(ConfigurationDefaults.PROPERTY_FILTER,
+        
+        final Pattern filter = Pattern.compile(props.getProperty(ConfigurationDefaults.PROPERTY_FILTER,
                 ConfigurationDefaults.DEFAULT_FILTER));
-        long start = Long.parseLong(props.getProperty(ConfigurationDefaults.PROPERTY_START,
+        
+        final long start = Long.parseLong(props.getProperty(ConfigurationDefaults.PROPERTY_START,
                 ConfigurationDefaults.DEFAULT_START_STR));
-        long end = Long.parseLong(
+        
+        final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
-        String testName = props.getProperty("test", null);
-
+        
+        final Level level = Level.parse(
+                props.getProperty(ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
+        Logger.getGlobal().setLoggineLevel(level);
+        
+        final String testName = props.getProperty("test", null);
+        
         return new Configuration(nonDetKind, seed, filter, start, end, testName, executionId);
     }
 
