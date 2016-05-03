@@ -77,7 +77,7 @@ public class DebugTask {
         limits = debugWithConfigurations(limits, this.failingConfigurations);
 
         Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
-        
+
         if (this.lastFailingConfig != null) {
             return this.lastFailingConfig.toArgLine();
         }
