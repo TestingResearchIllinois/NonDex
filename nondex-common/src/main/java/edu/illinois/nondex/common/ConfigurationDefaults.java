@@ -47,12 +47,11 @@ public class ConfigurationDefaults {
 
     public static final String DEFAULT_RERUN_STR = "false";
     public static final String PROPERTY_RERUN = "nondex.rerun";
-    
-    
+
     public static final String PROPERTY_NUM_RUNS = "nondex.runs";
     public static final String DEFAULT_NUM_RUNS_STR = "3";
     public static final int DEFAULT_NUM_RUNS = new Integer(DEFAULT_NUM_RUNS_STR);
-    
+
     public static final String PROPERTY_FILTER = "nondex.filter";
     public static final String DEFAULT_FILTER = ".*";
 
@@ -67,7 +66,7 @@ public class ConfigurationDefaults {
     public static final String PROPERTY_EXECUTION_ID = "nondex.execid";
     public static final String NO_EXECUTION_ID = "NoId";
     public static final String PROPERTY_DEFAULT_EXECUTION_ID = NO_EXECUTION_ID;
-    
+
     public static final String PROPERTY_RUN_ID = "nondex.runId";
     public static final String LATEST_RUN_ID = "LATEST";
     public static final String PROPERTY_DEFAULT_RUN_ID = LATEST_RUN_ID;

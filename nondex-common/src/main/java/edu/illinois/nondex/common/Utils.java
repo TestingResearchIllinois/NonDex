@@ -36,7 +36,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 public class Utils {
-    
+
     public static Throwable linkException(Throwable nestedThrowable, Throwable pastSupressedException) {
         if (pastSupressedException == null) {
             return nestedThrowable;
@@ -57,5 +57,4 @@ public class Utils {
         }
         return props;
     }
-    
 }

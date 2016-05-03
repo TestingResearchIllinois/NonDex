@@ -52,8 +52,8 @@ public class DebugTask {
     private Set<Configuration> failingConfigurations;
     private Configuration lastConfig;
 
-    public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject, 
-            MavenSession mavenSession, BuildPluginManager pluginManager, 
+    public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
+            MavenSession mavenSession, BuildPluginManager pluginManager,
             Set<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
@@ -63,7 +63,7 @@ public class DebugTask {
         this.pluginManager = pluginManager;
         this.failingConfigurations = failingConfigurations;
     }
-    
+
     public String debug() throws MojoExecutionException {
         for (Configuration config : failingConfigurations) {
             Pair<Integer, Integer> limits = startDebugBinary(config);
@@ -72,7 +72,7 @@ public class DebugTask {
         }
         return "cannot reproduce. may be flaky due to other causes";
     }
-    
+
     public Pair<Integer, Integer> startDebugBinary(Configuration config) {
         int start = 0;
         int end = config.getInvocationCount();
@@ -93,7 +93,7 @@ public class DebugTask {
         }
         return Pair.of(start, end);
     }
-    
+
     public Pair<Integer, Integer> startDebugLinear(Configuration config, int start, int end) {
         while (start < end) {
             Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
@@ -111,9 +111,9 @@ public class DebugTask {
         }
         return Pair.of(start, end);
     }
-    
+
     public boolean startDebug(Configuration config, int start, int end) {
-        NonDexSurefireExecution execution = new NonDexSurefireExecution(config, 
+        NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
                     start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
         try {
             execution.run();

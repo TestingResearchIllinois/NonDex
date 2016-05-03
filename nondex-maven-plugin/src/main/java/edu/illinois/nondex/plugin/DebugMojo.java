@@ -58,7 +58,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 public class DebugMojo extends AbstractNondexMojo {
 
     private List<String> executions = new LinkedList<>();
-    
+
     private SetMultimap<String, Configuration> testsFailing = HashMultimap.create();
 
     @Override
@@ -66,14 +66,12 @@ public class DebugMojo extends AbstractNondexMojo {
         super.execute();
         parseExecutions();
         parseTests();
-        
+
         for (String test : testsFailing.keySet()) {
-            
             runSinleSurefireTest(test);
             DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
                     mavenProject, mavenSession, pluginManager, testsFailing.get(test));
             String repro = debugging.debug();
-            
             Logger.getGlobal().log(Level.SEVERE, "REPRO: mvn nondex:nondex " + repro);
         }
     }
@@ -120,5 +118,5 @@ public class DebugMojo extends AbstractNondexMojo {
         }
     }
 
-    
+
 }

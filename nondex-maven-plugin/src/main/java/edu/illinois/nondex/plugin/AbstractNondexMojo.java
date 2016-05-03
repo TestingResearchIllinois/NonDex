@@ -56,42 +56,39 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     // NonDex Mojo specific properties
     @Parameter(property = ConfigurationDefaults.PROPERTY_SEED, defaultValue = ConfigurationDefaults.DEFAULT_SEED_STR)
     protected int seed;
-    
+
     @Parameter(property = ConfigurationDefaults.PROPERTY_MODE, defaultValue = ConfigurationDefaults.DEFAULT_MODE_STR)
     protected Mode mode;
-    
+
     @Parameter(property = ConfigurationDefaults.PROPERTY_FILTER, defaultValue = ConfigurationDefaults.DEFAULT_FILTER)
     protected String filter;
-    
+
     @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_START_STR)
     protected long start;
-    
+
     @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
     protected long end;
-    
-    @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS, 
+
+    @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS,
             defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
     protected int numRuns;
-    
-    @Parameter(property = ConfigurationDefaults.PROPERTY_RERUN, 
+
+    @Parameter(property = ConfigurationDefaults.PROPERTY_RERUN,
             defaultValue = ConfigurationDefaults.DEFAULT_RERUN_STR)
     protected boolean rerun;
-    
-    @Parameter(property = ConfigurationDefaults.PROPERTY_EXECUTION_ID, 
+
+    @Parameter(property = ConfigurationDefaults.PROPERTY_EXECUTION_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID)
     protected String executionId;
-    
-    @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID, 
+
+    @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
     protected String runId;
-    
-    @Parameter(property = ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, 
+
+    @Parameter(property = ConfigurationDefaults.PROPERTY_LOGGING_LEVEL,
             defaultValue = ConfigurationDefaults.DEFAULT_LOGGING_LEVEL)
     protected String loggingLevel;
-    
-    
-    
-    
+
     // Generic properties
     @Parameter(property = "project")
     protected MavenProject mavenProject;
@@ -108,7 +105,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
 
     protected Plugin surefire;
     protected String originalArgLine;
-    
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
 
@@ -116,9 +113,8 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
 
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
-        
     }
-    
+
     private Plugin lookupPlugin(String paramString) {
         List<Plugin> localList = this.mavenProject.getBuildPlugins();
         Iterator<Plugin> localIterator = localList.iterator();

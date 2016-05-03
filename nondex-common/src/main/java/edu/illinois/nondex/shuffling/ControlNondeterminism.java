@@ -59,12 +59,12 @@ public class ControlNondeterminism {
     public static Configuration getConfiguration() {
         return config;
     }
-    
+
     private static Random getRandomnessSource(int id, int modCount, int objHash, String source) {
         logger.log(Level.FINEST, "getRandomnessSource for API: " + source);
         if (!config.filter.matcher(source).matches()) {
             logger.log(Level.FINE, "Source does not apply " + source + "");
-            return null; 
+            return null;
             // Use null to denote do not randomize, only if passed
             // in source option and stack trace does not contain
         }
@@ -106,7 +106,7 @@ public class ControlNondeterminism {
         return objs;
 
     }
-    
+
     private static <T> List<T> internalShuffle(List<T> objs, int id, int modCount, int hash, String source) {
         Random currentRandom = getRandomnessSource(id, modCount, hash, source);
         // If randomness was null, that means do not shuffle

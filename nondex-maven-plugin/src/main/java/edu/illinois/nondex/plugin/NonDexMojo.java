@@ -53,17 +53,16 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class NonDexMojo extends AbstractNondexMojo {
-    
+
     List<NonDexSurefireExecution> executions = new LinkedList<>();
-    
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
-        
         MojoExecutionException allExceptions = null;
         for (int i = 0; i < this.numRuns; i++) {
-            NonDexSurefireExecution execution = 
-                    new NonDexSurefireExecution(mode, computeIthSeed(i), 
-                            Pattern.compile(filter), this.start, this.end, surefire, originalArgLine, mavenProject, 
+            NonDexSurefireExecution execution =
+                    new NonDexSurefireExecution(mode, computeIthSeed(i),
+                            Pattern.compile(filter), this.start, this.end, surefire, originalArgLine, mavenProject,
                             mavenSession, pluginManager);
             executions.add(execution);
             try {
@@ -71,25 +70,23 @@ public class NonDexMojo extends AbstractNondexMojo {
             } catch (MojoExecutionException ex) {
                 allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
             }
-                        
             writeCurrentRunInfo(execution);
-
         }
         Configuration config = this.executions.get(0).getConfiguration();
-        
+
         printSummary();
-        
+
         try {
             Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Could not copy current run info to latest", ex);
         }
-        
+
         this.getLog().info("[NonDex] The id of this run is: " + this.executions.get(0).getConfiguration().executionId);
         if (allExceptions != null) {
             throw allExceptions;
         }
-        
+
     }
 
     private int computeIthSeed(int ithSeed) {
@@ -125,7 +122,7 @@ public class NonDexMojo extends AbstractNondexMojo {
 
     private void writeCurrentRunInfo(NonDexSurefireExecution execution) {
         try {
-            Files.write(this.executions.get(0).getConfiguration().getRunFilePath(), 
+            Files.write(this.executions.get(0).getConfiguration().getRunFilePath(),
                     (execution.getConfiguration().executionId + "\n").getBytes(),
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {

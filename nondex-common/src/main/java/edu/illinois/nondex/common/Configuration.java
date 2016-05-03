@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class Configuration {
-        
+
     public final Mode mode;
     public final int seed;
     public final Pattern filter;
@@ -55,7 +55,7 @@ public class Configuration {
     public final long end;
 
     public final String testName;
-    
+
     private Integer invoCount = null;
     private Set<String> failedTests = null;
 
@@ -84,7 +84,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
-        sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);        
+        sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);
         return sb.toString();
     }
 
@@ -101,32 +101,32 @@ public class Configuration {
     public static Configuration parseArgs() {
         return Configuration.parseArgs(System.getProperties());
     }
-    
+
     public static Configuration parseArgs(Properties props) {
         final String executionId = props.getProperty(ConfigurationDefaults.PROPERTY_EXECUTION_ID,
                 ConfigurationDefaults.NO_EXECUTION_ID);
-        
+
         final int seed = Integer.parseInt(props.getProperty(ConfigurationDefaults.PROPERTY_SEED,
                 ConfigurationDefaults.DEFAULT_SEED_STR));
-        
+
         final Mode nonDetKind = Mode.valueOf(props.getProperty(ConfigurationDefaults.PROPERTY_MODE,
                 ConfigurationDefaults.DEFAULT_MODE_STR));
-        
+
         final Pattern filter = Pattern.compile(props.getProperty(ConfigurationDefaults.PROPERTY_FILTER,
                 ConfigurationDefaults.DEFAULT_FILTER));
-        
+
         final long start = Long.parseLong(props.getProperty(ConfigurationDefaults.PROPERTY_START,
                 ConfigurationDefaults.DEFAULT_START_STR));
-        
+
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
-        
+
         final Level level = Level.parse(props.getProperty(
                 ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
         Logger.getGlobal().setLoggineLevel(level);
-        
+
         final String testName = props.getProperty("test", null);
-        
+
         return new Configuration(nonDetKind, seed, filter, start, end, testName, executionId);
     }
 
@@ -145,15 +145,15 @@ public class Configuration {
     public Path getConfigPath() {
         return Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.CONFIGURATION_FILE);
     }
-    
+
     public Path getRunFilePath() {
         return Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId + ".run");
     }
-    
+
     public Path getLatestRunFilePath() {
         return Paths.get(ConfigurationDefaults.NONDEX_DIR, ConfigurationDefaults.LATEST_RUN_ID);
     }
-        
+
     public int getInvocationCount() {
         if (this.invoCount == null) {
             File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.INVOCATIONS_FILE)
@@ -176,7 +176,7 @@ public class Configuration {
         }
         return invoCount;
     }
-    
+
     public Collection<String> getFailedTests() {
         if (failedTests == null) {
             this.failedTests = new HashSet<>();
