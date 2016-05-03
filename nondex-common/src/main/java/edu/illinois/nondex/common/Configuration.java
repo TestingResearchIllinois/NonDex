@@ -121,8 +121,8 @@ public class Configuration {
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
         
-        final Level level = Level.parse(
-                props.getProperty(ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
+        final Level level = Level.parse(props.getProperty(
+                ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
         Logger.getGlobal().setLoggineLevel(level);
         
         final String testName = props.getProperty("test", null);
