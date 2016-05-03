@@ -66,14 +66,14 @@ public class DebugTask {
     
     public String debug() throws MojoExecutionException {
         for (Configuration config : failingConfigurations) {
-            Pair<Integer, Integer> limits = startDebug(config);
+            Pair<Integer, Integer> limits = startDebugBinary(config);
             // TODO(gyori): Not enough. This does not check it succeeded.
-            return this.lastConfig.toArgLine();
+            return this.lastConfig.toArgLine(originalArgLine);
         }
         return "cannot reproduce. may be flaky due to other causes";
     }
     
-    public Pair<Integer, Integer> startDebug(Configuration config) {
+    public Pair<Integer, Integer> startDebugBinary(Configuration config) {
         int start = 0;
         int end = config.getInvocationCount();
         while (start < end) {
@@ -87,19 +87,38 @@ public class DebugTask {
                 start = midPoint + 1;
                 continue;
             } else {
-                Logger.getGlobal().log(Level.FINE, "Splitting did not work. Does not fail on any half.");
+                Logger.getGlobal().log(Level.FINE, "Binary splitting did not work. Going to linear");
+                return startDebugLinear(config, start, end);
+            }
+        }
+        return Pair.of(start, end);
+    }
+    
+    public Pair<Integer, Integer> startDebugLinear(Configuration config, int start, int end) {
+        while (start < end) {
+            Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
+
+            if (startDebug(config, start, end - 1)) {
+                end = end - 1;
+                continue;
+            } else if (startDebug(config, start + 1, end)) {
+                start = start + 1;
+                continue;
+            } else {
+                Logger.getGlobal().log(Level.FINE, "Splitting did not work. Does not fail with linear.");
+                break;
             }
         }
         return Pair.of(start, end);
     }
     
     public boolean startDebug(Configuration config, int start, int end) {
-        try {
-            NonDexSurefireExecution execution = new NonDexSurefireExecution(config, 
+        NonDexSurefireExecution execution = new NonDexSurefireExecution(config, 
                     start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+        try {
             execution.run();
-            this.lastConfig = execution.getConfiguration();
         } catch (Throwable thr) {
+            this.lastConfig = execution.getConfiguration();
             return true;
         }
         return false;
