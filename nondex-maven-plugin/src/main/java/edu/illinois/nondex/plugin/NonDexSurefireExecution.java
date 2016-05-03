@@ -54,6 +54,7 @@ import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
+import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -79,7 +80,7 @@ public class NonDexSurefireExecution {
 
     private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
             MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
-        this.executionId = getFreshExecutionId();
+        this.executionId = Utils.getFreshExecutionId();
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
         this.mavenProject = mavenProject;
@@ -120,19 +121,6 @@ public class NonDexSurefireExecution {
 
     }
 
-    private String getFreshExecutionId() {
-        try {
-            // TODO(gyori): Fix to check that the id was not used before in the
-            // .nondex (?)
-            String id = DatatypeConverter.printBase64Binary(
-                    MessageDigest.getInstance("SHA-256").digest(Long.toString(System.currentTimeMillis()).getBytes()));
-            id = id.replace("/", "");
-            id = id.replace("\\", "");
-            return id;
-        } catch (NoSuchAlgorithmException nsae) {
-            return "No_ID";
-        }
-    }
 
     private void addNondexToBootClassPath() {
 

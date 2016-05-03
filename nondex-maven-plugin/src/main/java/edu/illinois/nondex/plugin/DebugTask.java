@@ -28,11 +28,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
+import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.execution.MavenSession;
@@ -50,7 +53,7 @@ public class DebugTask {
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
     private Set<Configuration> failingConfigurations;
-    private Configuration lastConfig;
+    private Configuration lastFailingConfig;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
             MavenSession mavenSession, BuildPluginManager pluginManager,
@@ -65,12 +68,66 @@ public class DebugTask {
     }
 
     public String debug() throws MojoExecutionException {
-        for (Configuration config : failingConfigurations) {
-            Pair<Integer, Integer> limits = startDebugBinary(config);
-            // TODO(gyori): Not enough. This does not check it succeeded.
-            return this.lastConfig.toArgLine();
+        Pair<Integer, Integer> limits = Pair.of(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Configuration debConfig = null;
+
+        //The test must have failed if it's being debugged, ergo there should exist a failing configuration
+
+        assert (!failingConfigurations.isEmpty());
+
+        limits = debugWithConfigurations(limits, this.failingConfigurations);
+
+        if (this.lastFailingConfig != null) {
+            return this.lastFailingConfig.toArgLine();
         }
+
+        // The seeds that failed with the full test-suite no longer fail
+        // Searching for different seeds
+        Set<Configuration> retryWOtherSeeds = createNewSeedsToRetry();
+        limits = debugWithConfigurations(limits, retryWOtherSeeds);
+
+        if (this.lastFailingConfig != null) {
+            return this.lastFailingConfig.toArgLine();
+        }
+
         return "cannot reproduce. may be flaky due to other causes";
+    }
+
+    private Set<Configuration> createNewSeedsToRetry() {
+        Configuration someFailingConfig = failingConfigurations.iterator().next();
+        int newSeed = someFailingConfig.seed * ConfigurationDefaults.SEED_FACTOR;
+        Set<Configuration> retryWOtherSeeds = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            Configuration newConfig = new Configuration(someFailingConfig.mode,
+                    Utils.computeIthSeed(i, false, newSeed),
+                    someFailingConfig.filter, someFailingConfig.start, someFailingConfig.end,
+                    someFailingConfig.testName, someFailingConfig.executionId);
+            retryWOtherSeeds.add(newConfig);
+        }
+        return retryWOtherSeeds;
+    }
+
+    private Pair<Integer, Integer> debugWithConfigurations(Pair<Integer, Integer> limits,
+            Set<Configuration> failingConfigurations) {
+        Configuration debConfig = null;
+        for (Configuration config : failingConfigurations) {
+            if (failsOnDry(config)) {
+                Pair<Integer, Integer> newLimits = startDebugBinary(config);
+                if (newLimits.getRight() - newLimits.getLeft() < limits.getRight() - limits.getLeft()) {
+                    limits = newLimits;
+                    debConfig = this.lastFailingConfig;
+                    if (newLimits.getRight() - newLimits.getLeft() == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        this.lastFailingConfig = debConfig;
+        return limits;
+    }
+
+    private boolean failsOnDry(Configuration config) {
+        return true;
     }
 
     public Pair<Integer, Integer> startDebugBinary(Configuration config) {
@@ -118,7 +175,7 @@ public class DebugTask {
         try {
             execution.run();
         } catch (Throwable thr) {
-            this.lastConfig = execution.getConfiguration();
+            this.lastFailingConfig = execution.getConfiguration();
             return true;
         }
         return false;

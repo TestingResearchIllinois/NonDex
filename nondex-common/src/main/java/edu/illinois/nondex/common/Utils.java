@@ -32,8 +32,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 import java.util.logging.Level;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class Utils {
 
@@ -56,5 +60,27 @@ public class Utils {
             Logger.getGlobal().log(Level.CONFIG, "Cannot opern properties file!", ioe);
         }
         return props;
+    }
+
+    public static int computeIthSeed(int ithSeed, boolean rerun, int seed) {
+        if (rerun) {
+            return seed;
+        } else {
+            return seed + ithSeed * ConfigurationDefaults.SEED_FACTOR;
+        }
+    }
+
+    public static String getFreshExecutionId() {
+        try {
+            // TODO(gyori): Fix to check that the id was not used before in the
+            // .nondex (?)
+            String id = DatatypeConverter.printBase64Binary(
+                    MessageDigest.getInstance("SHA-256").digest(Long.toString(System.currentTimeMillis()).getBytes()));
+            id = id.replace("/", "");
+            id = id.replace("\\", "");
+            return id;
+        } catch (NoSuchAlgorithmException nsae) {
+            return "No_ID";
+        }
     }
 }

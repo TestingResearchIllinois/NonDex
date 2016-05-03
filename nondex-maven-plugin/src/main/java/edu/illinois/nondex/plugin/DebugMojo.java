@@ -33,8 +33,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -67,12 +69,21 @@ public class DebugMojo extends AbstractNondexMojo {
         parseExecutions();
         parseTests();
 
+        Map<String, String> testToRepro = new HashMap<>();
+
         for (String test : testsFailing.keySet()) {
             runSinleSurefireTest(test);
             DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
                     mavenProject, mavenSession, pluginManager, testsFailing.get(test));
             String repro = debugging.debug();
             Logger.getGlobal().log(Level.SEVERE, "REPRO: mvn nondex:nondex " + repro);
+
+            testToRepro.put(test, repro);
+        }
+
+        this.getLog().warn("*********");
+        for (String test : testToRepro.keySet()) {
+            this.getLog().warn("REPRO for " + test + ": mvn nondex:nondex " + testToRepro.get(test));
         }
     }
 

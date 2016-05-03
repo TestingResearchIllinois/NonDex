@@ -90,11 +90,7 @@ public class NonDexMojo extends AbstractNondexMojo {
     }
 
     private int computeIthSeed(int ithSeed) {
-        if (this.rerun) {
-            return seed;
-        } else {
-            return seed + ithSeed * ConfigurationDefaults.SEED_FACTOR;
-        }
+        return Utils.computeIthSeed(ithSeed, this.rerun, this.seed);
     }
 
     private void printSummary() {
