@@ -68,7 +68,7 @@ public class DebugTask {
         for (Configuration config : failingConfigurations) {
             Pair<Integer, Integer> limits = startDebugBinary(config);
             // TODO(gyori): Not enough. This does not check it succeeded.
-            return this.lastConfig.toArgLine(originalArgLine);
+            return this.lastConfig.toArgLine();
         }
         return "cannot reproduce. may be flaky due to other causes";
     }

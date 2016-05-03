@@ -105,7 +105,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         this.getLog().info("NonDex SUMMARY:");
         for (NonDexSurefireExecution exec : executions) {
             this.getLog().info("*********");
-            this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine(this.originalArgLine));
+            this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine());
             Collection<String> failedTests = exec.getConfiguration().getFailedTests();
             if (failedTests.isEmpty()) {
                 this.getLog().info("No Test Failed with this configuration.");

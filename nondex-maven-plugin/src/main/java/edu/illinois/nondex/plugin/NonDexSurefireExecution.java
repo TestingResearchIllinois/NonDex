@@ -139,10 +139,10 @@ public class NonDexSurefireExecution {
 
         String localRepo = mavenSession.getSettings().getLocalRepository();
         String pathToNondex = getPathToNondexJar(localRepo);
-        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + configuration.toArgLine(originalArgLine));
+        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
                 "" + "-Xbootclasspath/p:" + pathToNondex + " " + originalArgLine + " " 
-                + configuration.toArgLine(originalArgLine));
+                + configuration.toArgLine());
 
     }
 
