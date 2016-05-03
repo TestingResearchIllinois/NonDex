@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -84,12 +85,13 @@ public class NonDexSurefireExecution {
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
-    } 
+    }
     
-    public NonDexSurefireExecution(Mode mode, int seed, String filter, Plugin surefire, String originalArgLine,
-            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
+    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, Plugin surefire, 
+            String originalArgLine, MavenProject mavenProject, MavenSession mavenSession, 
+            BuildPluginManager pluginManager) {
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
-        this.configuration = new Configuration(mode, seed, filter, this.executionId);
+        this.configuration = new Configuration(mode, seed, filter, start, end, null, this.executionId);
         
     }
     
@@ -109,6 +111,7 @@ public class NonDexSurefireExecution {
     public void run() throws MojoExecutionException {
         addNondexToBootClassPath();
         try {
+            System.out.println(this.configuration.toString());
             executeMojo(surefire, goal("test"), createListenerConfiguration((Xpp3Dom) surefire.getConfiguration()),
                     executionEnvironment(mavenProject, mavenSession, pluginManager));
         } catch (MojoExecutionException mojoException) {
@@ -136,9 +139,10 @@ public class NonDexSurefireExecution {
 
         String localRepo = mavenSession.getSettings().getLocalRepository();
         String pathToNondex = getPathToNondexJar(localRepo);
-        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + configuration.toArgLine());
+        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + configuration.toArgLine(originalArgLine));
         this.mavenProject.getProperties().setProperty("argLine",
-                "" + "-Xbootclasspath/p:" + pathToNondex + " " + originalArgLine + " " + configuration.toArgLine());
+                "" + "-Xbootclasspath/p:" + pathToNondex + " " + originalArgLine + " " 
+                + configuration.toArgLine(originalArgLine));
 
     }
 
