@@ -128,7 +128,7 @@ public class DebugTask {
     }
 
     private boolean failsOnDry(Configuration config) {
-        return this.startDebug(config, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        return this.failsWithConfig(config, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     public Pair<Integer, Integer> startDebugBinary(Configuration config) {
@@ -138,10 +138,10 @@ public class DebugTask {
             Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
 
             int midPoint = (start + end) / 2;
-            if (startDebug(config, start, midPoint)) {
+            if (failsWithConfig(config, start, midPoint)) {
                 end = midPoint;
                 continue;
-            } else if (startDebug(config, midPoint + 1, end)) {
+            } else if (failsWithConfig(config, midPoint + 1, end)) {
                 start = midPoint + 1;
                 continue;
             } else {
@@ -156,10 +156,10 @@ public class DebugTask {
         while (start < end) {
             Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
 
-            if (startDebug(config, start, end - 1)) {
+            if (failsWithConfig(config, start, end - 1)) {
                 end = end - 1;
                 continue;
-            } else if (startDebug(config, start + 1, end)) {
+            } else if (failsWithConfig(config, start + 1, end)) {
                 start = start + 1;
                 continue;
             } else {
@@ -170,7 +170,7 @@ public class DebugTask {
         return Pair.of(start, end);
     }
 
-    public boolean startDebug(Configuration config, int start, int end) {
+    public boolean failsWithConfig(Configuration config, int start, int end) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
                     start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
         try {
