@@ -76,7 +76,7 @@ public class Configuration {
         this.createExecutionDirIfNeeded();
     }
 
-    public String toArgLine(String originalArgline) {
+    public String toArgLine() {
         StringBuilder sb = new StringBuilder();
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_FILTER + "=" + "\'" + this.filter + "\'");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode);
