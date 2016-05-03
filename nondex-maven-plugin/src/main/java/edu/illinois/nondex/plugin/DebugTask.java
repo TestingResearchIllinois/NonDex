@@ -69,7 +69,6 @@ public class DebugTask {
 
     public String debug() throws MojoExecutionException {
         Pair<Integer, Integer> limits = Pair.of(Integer.MIN_VALUE, Integer.MAX_VALUE);
-        Configuration debConfig = null;
 
         //The test must have failed if it's being debugged, ergo there should exist a failing configuration
 
@@ -77,6 +76,8 @@ public class DebugTask {
 
         limits = debugWithConfigurations(limits, this.failingConfigurations);
 
+        Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
+        
         if (this.lastFailingConfig != null) {
             return this.lastFailingConfig.toArgLine();
         }
@@ -127,7 +128,7 @@ public class DebugTask {
     }
 
     private boolean failsOnDry(Configuration config) {
-        return true;
+        return this.startDebug(config, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     public Pair<Integer, Integer> startDebugBinary(Configuration config) {
