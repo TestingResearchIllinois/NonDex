@@ -117,7 +117,7 @@ public class ControlNondeterminism {
         java.util.Collections.shuffle(ls, currentRandom);
 
         // Determine if should return ordered or non-ordered
-        if (count >= config.start && count <= config.end) {
+        if (shouldExploreForInstance()) {
             // If bounds are the same, then the one we want is when count is one
             // of those bounds
             if (config.start >= 0 && config.end >= 0 && config.start == config.end && count == config.start) {
@@ -138,6 +138,10 @@ public class ControlNondeterminism {
         }
     }
 
+    private static boolean shouldExploreForInstance() {
+        return count >= config.start && count <= config.end;
+    }
+
     public static String[][] extendZoneStrings(String[][] strs) {
         logger.log(Level.FINEST, "extendZoneStrings");
 
@@ -151,8 +155,10 @@ public class ControlNondeterminism {
         if (currentRandom.nextBoolean()) {
             return strs;
         }
-        for (int i = 0; i < strs.length; i++) {
-            strs[i] = java.util.Arrays.copyOf(strs[i], strs[i].length + 1);
+        if (shouldExploreForInstance()) {
+            for (int i = 0; i < strs.length; i++) {
+                strs[i] = java.util.Arrays.copyOf(strs[i], strs[i].length + 1);
+            }
         }
         return strs;
 
