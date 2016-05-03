@@ -32,9 +32,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
@@ -56,21 +60,24 @@ public class NonDexMojo extends AbstractNondexMojo {
         super.execute();
         
         MojoExecutionException allExceptions = null;
-        for (int i = 0; i < this.numReruns; i++) {
+        for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution = 
-                    new NonDexSurefireExecution(mode, seed + i * ConfigurationDefaults.SEED_FACTOR, 
-                            filter, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+                    new NonDexSurefireExecution(mode, computeIthSeed(i), 
+                            Pattern.compile(filter), this.start, this.end, surefire, originalArgLine, mavenProject, 
+                            mavenSession, pluginManager);
             executions.add(execution);
             try {
                 execution.run();
             } catch (MojoExecutionException ex) {
                 allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
             }
-            
+                        
             writeCurrentRunInfo(execution);
-        
+
         }
         Configuration config = this.executions.get(0).getConfiguration();
+        
+        printSummary();
         
         try {
             Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
@@ -83,6 +90,37 @@ public class NonDexMojo extends AbstractNondexMojo {
             throw allExceptions;
         }
         
+    }
+
+    private int computeIthSeed(int ithSeed) {
+        if (this.rerun) {
+            return seed;
+        } else {
+            return seed + ithSeed * ConfigurationDefaults.SEED_FACTOR;
+        }
+    }
+
+    private void printSummary() {
+        Set<String> allFailures = new HashSet<>();
+        this.getLog().info("NonDex SUMMARY:");
+        for (NonDexSurefireExecution exec : executions) {
+            this.getLog().info("*********");
+            this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine(this.originalArgLine));
+            Collection<String> failedTests = exec.getConfiguration().getFailedTests();
+            if (failedTests.isEmpty()) {
+                this.getLog().info("No Test Failed with this configuration.");
+            }
+            for (String test : failedTests) {
+                allFailures.add(test);
+                this.getLog().warn(test);
+            }
+            this.getLog().info("*********");
+        }
+
+        this.getLog().info("Across all seeds:");
+        for (String test : allFailures) {
+            this.getLog().info(test);
+        }
     }
 
     private void writeCurrentRunInfo(NonDexSurefireExecution execution) {
