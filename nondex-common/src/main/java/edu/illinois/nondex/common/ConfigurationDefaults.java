@@ -45,9 +45,13 @@ public class ConfigurationDefaults {
     public static final String DEFAULT_SEED_STR = "43258";
     public static final int DEFAULT_SEED = new Integer(DEFAULT_SEED_STR);
 
-    public static final String PROPERTY_NUM_RERUNS = "nondex.reruns";
-    public static final String DEFAULT_NUM_RERUNS_STR = "3";
-    public static final int DEFAULT_NUM_RERUNS = new Integer(DEFAULT_NUM_RERUNS_STR);
+    public static final String DEFAULT_RERUN_STR = "false";
+    public static final String PROPERTY_RERUN = "nondex.rerun";
+    
+    
+    public static final String PROPERTY_NUM_RUNS = "nondex.runs";
+    public static final String DEFAULT_NUM_RUNS_STR = "3";
+    public static final int DEFAULT_NUM_RUNS = new Integer(DEFAULT_NUM_RUNS_STR);
     
     public static final String PROPERTY_FILTER = "nondex.filter";
     public static final String DEFAULT_FILTER = ".*";
@@ -57,7 +61,7 @@ public class ConfigurationDefaults {
     public static final long DEFAULT_START = new Long(DEFAULT_START_STR);
 
     public static final String PROPERTY_END = "nondex.end";
-    public static final String DEFAULT_END_STR = Long.toString(Long.MAX_VALUE);
+    public static final String DEFAULT_END_STR = "9223372036854775807";
     public static final long DEFAULT_END = new Long(DEFAULT_END_STR);
 
     public static final String PROPERTY_EXECUTION_ID = "nondex.execid";
@@ -75,8 +79,8 @@ public class ConfigurationDefaults {
 
     public static final int SEED_FACTOR = 0xA1e4;
 
-    public static final String LOGGING_LEVEL = "nondex.logging";
-    public static final String PROPERTY_DEFAULT_LOGGING_LEVEL = "INFO";
+    public static final String PROPERTY_LOGGING_LEVEL = "nondex.logging";
+    public static final String DEFAULT_LOGGING_LEVEL = "CONFIG";
 
     public static void createNondexDirIfNeeded() {
         new File(ConfigurationDefaults.NONDEX_DIR).mkdir();
