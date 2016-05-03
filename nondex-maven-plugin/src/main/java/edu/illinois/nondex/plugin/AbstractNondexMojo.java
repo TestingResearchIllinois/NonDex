@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
@@ -62,9 +63,19 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Parameter(property = ConfigurationDefaults.PROPERTY_FILTER, defaultValue = ConfigurationDefaults.DEFAULT_FILTER)
     protected String filter;
     
-    @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RERUNS, 
-            defaultValue = ConfigurationDefaults.DEFAULT_NUM_RERUNS_STR)
-    protected int numReruns;
+    @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_START_STR)
+    protected long start;
+    
+    @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
+    protected long end;
+    
+    @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS, 
+            defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
+    protected int numRuns;
+    
+    @Parameter(property = ConfigurationDefaults.PROPERTY_RERUN, 
+            defaultValue = ConfigurationDefaults.DEFAULT_RERUN_STR)
+    protected boolean rerun;
     
     @Parameter(property = ConfigurationDefaults.PROPERTY_EXECUTION_ID, 
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID)
@@ -74,8 +85,8 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
     protected String runId;
     
-    @Parameter(property = ConfigurationDefaults.LOGGING_LEVEL, 
-            defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_LOGGING_LEVEL)
+    @Parameter(property = ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, 
+            defaultValue = ConfigurationDefaults.DEFAULT_LOGGING_LEVEL)
     protected String loggingLevel;
     
     
@@ -100,8 +111,9 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
+
         this.surefire = lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
-        
+
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
         
