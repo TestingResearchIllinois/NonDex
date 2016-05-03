@@ -41,14 +41,14 @@ import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 
 public class ControlNondeterminism {
-    private static final Logger logger = Logger.getGlobal();
-    private static Random r;
-
-    private static Configuration config = Configuration.parseArgs();
 
     public static int count = 0;
     public static int shuffleCount = 0;
+
+    private static final Logger logger = Logger.getGlobal();
+    private static Random r;
     private static JVMShutdownHook jvmShutdownHook = new JVMShutdownHook();
+    private static Configuration config = Configuration.parseArgs();
 
     static {
         // Add shutdown hook

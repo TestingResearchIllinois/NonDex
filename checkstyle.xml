@@ -33,6 +33,13 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
 
   
   <module name="TreeWalker">
+    <module name="DeclarationOrder"/>
+    <module name="ThrowsCount">
+      <property name="max" value="2"/>
+    </module>
+    <module name="AvoidNestedBlocks"/>
+    <module name="MissingOverride"/>
+    
     <module name="Regexp">
       <property name="format" value="System\.out\.println"/>
       <property name="illegalPattern" value="true"/>
@@ -64,8 +71,8 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap"/>
     <module name="EmptyBlock">
-      <property name="option" value="TEXT"/>
-      <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+      <property name="option" value="stmt"/>
+      <property name="tokens" value="LITERAL_WHILE, LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_DO, LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, INSTANCE_INIT, STATIC_INIT, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_CASE, LITERAL_DEFAULT, ARRAY_INIT"/>
     </module>
     <module name="NeedBraces"/>
     <module name="LeftCurly">
