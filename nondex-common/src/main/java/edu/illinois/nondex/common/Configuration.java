@@ -72,7 +72,6 @@ public class Configuration {
         this.end = end;
         this.testName = testName;
         this.executionId = executionId;
-
         this.createExecutionDirIfNeeded();
     }
 
@@ -195,5 +194,17 @@ public class Configuration {
             }
         }
         return Collections.unmodifiableCollection(failedTests);
+    }
+
+    private long numChoices() {
+        assert (this.end >= this.start);
+        return this.end - this.start;
+    }
+
+    public boolean hasLessChoicePoints(Configuration debConfig) {
+        if (this.numChoices() < debConfig.numChoices()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -53,7 +53,6 @@ public class DebugTask {
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
     private Set<Configuration> failingConfigurations;
-    private Configuration lastFailingConfig;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
             MavenSession mavenSession, BuildPluginManager pluginManager,
@@ -68,27 +67,27 @@ public class DebugTask {
     }
 
     public String debug() throws MojoExecutionException {
-        Pair<Integer, Integer> limits = Pair.of(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Pair<Long, Long> limits = Pair.of(Long.MIN_VALUE, Long.MAX_VALUE);
 
         //The test must have failed if it's being debugged, ergo there should exist a failing configuration
 
         assert (!failingConfigurations.isEmpty());
 
-        limits = debugWithConfigurations(limits, this.failingConfigurations);
+        Configuration failingOne = debugWithConfigurations(limits, this.failingConfigurations);
 
         Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
 
-        if (this.lastFailingConfig != null) {
-            return this.lastFailingConfig.toArgLine();
+        if (failingOne != null) {
+            return failingOne.toArgLine();
         }
 
         // The seeds that failed with the full test-suite no longer fail
         // Searching for different seeds
         Set<Configuration> retryWOtherSeeds = createNewSeedsToRetry();
-        limits = debugWithConfigurations(limits, retryWOtherSeeds);
+        failingOne = debugWithConfigurations(limits, retryWOtherSeeds);
 
-        if (this.lastFailingConfig != null) {
-            return this.lastFailingConfig.toArgLine();
+        if (failingOne != null) {
+            return failingOne.toArgLine();
         }
 
         return "cannot reproduce. may be flaky due to other causes";
@@ -108,40 +107,40 @@ public class DebugTask {
         return retryWOtherSeeds;
     }
 
-    private Pair<Integer, Integer> debugWithConfigurations(Pair<Integer, Integer> limits,
+    private Configuration debugWithConfigurations(Pair<Long, Long> limits,
             Set<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
             if (failsOnDry(config)) {
-                Pair<Integer, Integer> newLimits = startDebugBinary(config);
-                if (newLimits.getRight() - newLimits.getLeft() < limits.getRight() - limits.getLeft()) {
-                    limits = newLimits;
-                    debConfig = this.lastFailingConfig;
-                    if (newLimits.getRight() - newLimits.getLeft() == 0) {
-                        break;
-                    }
+                Configuration failingConfig = startDebugBinary(config);
+
+                if (failingConfig.hasLessChoicePoints(debConfig)) {
+                    debConfig = failingConfig;
                 }
             }
         }
-        this.lastFailingConfig = debConfig;
-        return limits;
+
+        return debConfig;
     }
 
     private boolean failsOnDry(Configuration config) {
         return this.failsWithConfig(config, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
-    public Pair<Integer, Integer> startDebugBinary(Configuration config) {
+    public Configuration startDebugBinary(Configuration config) {
         int start = 0;
         int end = config.getInvocationCount();
+        Configuration failingConfiguration = null;
         while (start < end) {
-            Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
+            Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
 
             int midPoint = (start + end) / 2;
             if (failsWithConfig(config, start, midPoint)) {
+                failingConfiguration = config;
                 end = midPoint;
                 continue;
             } else if (failsWithConfig(config, midPoint + 1, end)) {
+                failingConfiguration = config;
                 start = midPoint + 1;
                 continue;
             } else {
@@ -149,25 +148,28 @@ public class DebugTask {
                 return startDebugLinear(config, start, end);
             }
         }
-        return Pair.of(start, end);
+        return failingConfiguration;
     }
 
-    public Pair<Integer, Integer> startDebugLinear(Configuration config, int start, int end) {
+    public Configuration startDebugLinear(Configuration config, int start, int end) {
+        Configuration failingConfiguration = null;
         while (start < end) {
-            Logger.getGlobal().log(Level.INFO, "Debugging for " + this.test + " " + start + " : " + end);
+            Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + start + " : " + end);
 
             if (failsWithConfig(config, start, end - 1)) {
+                failingConfiguration = config;
                 end = end - 1;
                 continue;
             } else if (failsWithConfig(config, start + 1, end)) {
+                failingConfiguration = config;
                 start = start + 1;
                 continue;
             } else {
-                Logger.getGlobal().log(Level.FINE, "Splitting did not work. Does not fail with linear.");
+                Logger.getGlobal().log(Level.FINE, "Refining did not work. Does not fail with linear.");
                 break;
             }
         }
-        return Pair.of(start, end);
+        return failingConfiguration;
     }
 
     public boolean failsWithConfig(Configuration config, int start, int end) {
@@ -176,7 +178,6 @@ public class DebugTask {
         try {
             execution.run();
         } catch (Throwable thr) {
-            this.lastFailingConfig = execution.getConfiguration();
             return true;
         }
         return false;
