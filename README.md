@@ -10,6 +10,10 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.0-b70, mixed mode)
 
 Build:
 ======
+mvn package
+
+or
+
 mvn install
 
 
