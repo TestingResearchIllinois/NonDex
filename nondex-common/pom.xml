@@ -11,14 +11,6 @@
   <artifactId>nondex-common</artifactId>
   <packaging>jar</packaging>
   <name>nondex-common</name>
-
-  <dependencies>
-	<dependency>
-	  <groupId>org.ow2.asm</groupId>
-	  <artifactId>asm-all</artifactId>
-	  <version>5.0.3</version>
-	</dependency>
-  </dependencies>
   
   <build>
     <plugins>
