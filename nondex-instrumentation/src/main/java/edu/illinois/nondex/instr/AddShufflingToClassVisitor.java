@@ -80,7 +80,7 @@ public class AddShufflingToClassVisitor extends ClassVisitor {
 
         String methodId = this.cn + "." + name;
 
-        if ("java/lang/Class.getDeclaredMethods".equals(methodId)) {
+        if (apisReturningShufflableArrays.contains(methodId)) {
 
             return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
 

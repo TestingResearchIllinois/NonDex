@@ -28,14 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
@@ -43,6 +36,8 @@ import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -54,15 +49,28 @@ import org.objectweb.asm.util.CheckClassAdapter;
 public class Main {
     public static final boolean DEBUG = false;
 
+    private static final HashSet<String> classesToShuffle = new HashSet<>();
+
+
+    static {
+        classesToShuffle.add("java/lang/Class.class");
+        classesToShuffle.add("java/lang/reflect/Field.class");
+        classesToShuffle.add("java/lang/io/File.class");
+    }
 
     public static void main(String...args) throws Exception {
-        ClassReader cr = new ClassReader(new FileInputStream(new File("./java/lang/Class.class")));
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        CheckClassAdapter ca = new CheckClassAdapter(cw);
-        ClassVisitor cv = new AddShufflingToClassVisitor(ca);
-        SerialVersionUIDAdder uidadder = new SerialVersionUIDAdder(cv);
-        cr.accept(uidadder, 0);
-        byte[] arr = cw.toByteArray();
-        new DataOutputStream(new FileOutputStream(new File("Class.class"))).write(arr);
+        ZipFile rt = new ZipFile(args[0]);
+        for (String cl : classesToShuffle) {
+            InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
+            ClassReader cr = new ClassReader(clInputStream);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            CheckClassAdapter ca = new CheckClassAdapter(cw);
+            ClassVisitor cv = new AddShufflingToClassVisitor(ca);
+            SerialVersionUIDAdder uidadder = new SerialVersionUIDAdder(cv);
+            cr.accept(uidadder, 0);
+            byte[] arr = cw.toByteArray();
+            String[] temp = cl.split("/");
+            new DataOutputStream(new FileOutputStream(new File(temp[temp.length - 1]))).write(arr);
+        }
     }
 }
