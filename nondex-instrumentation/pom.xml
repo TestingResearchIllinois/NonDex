@@ -8,9 +8,9 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nondex-common</artifactId>
+  <artifactId>nondex-instrumentation</artifactId>
   <packaging>jar</packaging>
-  <name>nondex-common</name>
+  <name>nondex-instrumentation</name>
 
   <dependencies>
 	<dependency>
@@ -22,6 +22,38 @@
   
   <build>
     <plugins>
+	  <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-jar-plugin</artifactId>
+		<version>2.3.1</version>
+		<configuration>
+		  <archive>
+			<manifestFile>resources/META-INF/MANIFEST.MF</manifestFile>
+		  </archive>
+		</configuration>
+	  </plugin>
+      	  <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-shade-plugin</artifactId>
+		<version>2.3</version>
+		<executions>
+		  <execution>
+			<phase>package</phase>
+			<goals>
+			  <goal>shade</goal>
+			</goals>
+			<configuration>
+			  <relocations>
+				<relocation>
+				  <pattern>org.objectweb.asm</pattern>
+				  <shadedPattern>edu.illinois.nondex.instr.org.objectweb.asm</shadedPattern>
+				</relocation>
+			  </relocations>
+			  <minimizeJar>false</minimizeJar>
+			</configuration>
+		  </execution>
+		</executions>
+	  </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
