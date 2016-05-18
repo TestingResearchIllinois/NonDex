@@ -33,3 +33,8 @@ buildNumber.properties
 
 ### nondex specific ###
 .nondex/
+
+### Idea ###
+.idea
+.idea/*
+*.iml
