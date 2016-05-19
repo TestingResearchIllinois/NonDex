@@ -28,16 +28,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.io.*;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
-import java.lang.instrument.Instrumentation;
-import java.security.ProtectionDomain;
-import java.util.Collections;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -55,22 +55,47 @@ public class Main {
     static {
         classesToShuffle.add("java/lang/Class.class");
         classesToShuffle.add("java/lang/reflect/Field.class");
-        classesToShuffle.add("java/lang/io/File.class");
+        classesToShuffle.add("java/io/File.class");
     }
 
     public static void main(String...args) throws Exception {
         ZipFile rt = new ZipFile(args[0]);
+        ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream("out.jar"));
+
         for (String cl : classesToShuffle) {
             InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
+
+//            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+//            int byteread;
+//            byte[] data = new byte[1024];
+//            while ((byteread = clInputStream.read(data, 0, data.length)) != -1) {
+//                buffer.write(data, 0, byteread);
+//            }
+//
+//            buffer.flush();
+//
+//            Files.write(Paths.get("Class.class"), buffer.toByteArray(), StandardOpenOption.CREATE);
+
+
             ClassReader cr = new ClassReader(clInputStream);
-            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            CheckClassAdapter ca = new CheckClassAdapter(cw);
-            ClassVisitor cv = new AddShufflingToClassVisitor(ca);
-            SerialVersionUIDAdder uidadder = new SerialVersionUIDAdder(cv);
-            cr.accept(uidadder, 0);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+//            CheckClassAdapter ca = new CheckClassAdapter(cw);
+            ClassVisitor cv = new AddShufflingToClassVisitor(cw);
+
+
+//            SerialVersionUIDAdder uidadder = new SerialVersionUIDAdder(cv);
+            cr.accept(cv, 0);
+
             byte[] arr = cw.toByteArray();
-            String[] temp = cl.split("/");
-            new DataOutputStream(new FileOutputStream(new File(temp[temp.length - 1]))).write(arr);
+            //            String[] temp = cl.split("/");
+            //            new DataOutputStream(new FileOutputStream(new File(temp[temp.length - 1]))).write(arr);
+
+            ZipEntry entry = new ZipEntry(cl);
+            outZip.putNextEntry(entry);
+            outZip.write(arr, 0, arr.length);
+            outZip.closeEntry();
         }
+        outZip.close();
     }
 }
