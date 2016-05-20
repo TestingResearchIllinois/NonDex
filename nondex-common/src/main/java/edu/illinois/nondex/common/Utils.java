@@ -28,10 +28,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
@@ -82,5 +83,21 @@ public class Utils {
         } catch (NoSuchAlgorithmException nsae) {
             return "No_ID";
         }
+    }
+
+    public static Path getRtJarLocation(String javaHome) {
+        Path pathToRt = Paths.get(javaHome, "jre", "lib", "rt.jar");
+        Logger.getGlobal().log(Level.FINE, pathToRt.toString());
+        if (Files.exists(pathToRt)) {
+            return pathToRt;
+        }
+
+        pathToRt = Paths.get(javaHome, "lib", "rt.jar");
+        Logger.getGlobal().log(Level.FINE, pathToRt.toString());
+        if (Files.exists(pathToRt)) {
+            return pathToRt;
+        }
+
+        return null;
     }
 }

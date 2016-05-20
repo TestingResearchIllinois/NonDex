@@ -29,15 +29,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.plugin;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
+import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -106,10 +107,25 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected Plugin surefire;
     protected String originalArgLine;
 
+
+    private Path rtJarPath;
+
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
+        String javaHome = System.getenv().get("JAVA_HOME");
+        if (javaHome == null) {
+            Logger.getGlobal().log(Level.SEVERE, "JAVA_HOME is not set!");
+            throw new MojoExecutionException("JAVA_HOME is not set!");
+        }
 
-        this.surefire = lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
+        this.rtJarPath = Utils.getRtJarLocation(javaHome);
+        if (this.rtJarPath == null) {
+            Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
+            throw new MojoExecutionException("Cannot find the rt.jar!");
+        }
+
+        this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
 
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
