@@ -28,12 +28,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -42,7 +40,6 @@ import java.util.zip.ZipOutputStream;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.commons.SerialVersionUIDAdder;
 import org.objectweb.asm.util.CheckClassAdapter;
 
 
@@ -65,37 +62,35 @@ public class Main {
         for (String cl : classesToShuffle) {
             InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
 
-//            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-//            int byteread;
-//            byte[] data = new byte[1024];
-//            while ((byteread = clInputStream.read(data, 0, data.length)) != -1) {
-//                buffer.write(data, 0, byteread);
-//            }
-//
-//            buffer.flush();
-//
-//            Files.write(Paths.get("Class.class"), buffer.toByteArray(), StandardOpenOption.CREATE);
-
-
             ClassReader cr = new ClassReader(clInputStream);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-//            CheckClassAdapter ca = new CheckClassAdapter(cw);
             ClassVisitor cv = new AddShufflingToClassVisitor(cw);
 
-
-//            SerialVersionUIDAdder uidadder = new SerialVersionUIDAdder(cv);
             cr.accept(cv, 0);
 
             byte[] arr = cw.toByteArray();
-            //            String[] temp = cl.split("/");
-            //            new DataOutputStream(new FileOutputStream(new File(temp[temp.length - 1]))).write(arr);
 
             ZipEntry entry = new ZipEntry(cl);
             outZip.putNextEntry(entry);
             outZip.write(arr, 0, arr.length);
             outZip.closeEntry();
         }
+
+        InputStream hashmapStream = rt.getInputStream(rt.getEntry("java/util/HashMap$HashIterator.class"));
+        ClassReader cr = new ClassReader(hashmapStream);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        CheckClassAdapter ca = new CheckClassAdapter(cw);
+        ClassVisitor cv = new AddShufflingToHashMap(ca);
+
+        cr.accept(cv, 0);
+        byte[] arr = cw.toByteArray();
+
+        ZipEntry entry = new ZipEntry("java/util/HashMap$HashIterator.class");
+        outZip.putNextEntry(entry);
+        outZip.write(arr, 0, arr.length);
+        outZip.closeEntry();
+
         outZip.close();
     }
 }

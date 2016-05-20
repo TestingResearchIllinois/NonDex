@@ -139,7 +139,6 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     private static final long serialVersionUID = 362498820763181265L;
 
-
     /*
      * Implementation notes.
      *
@@ -608,26 +607,6 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    int incrHashCode = 0;
-
-    public static int hashCodeFor(Object o) {
-        if (o == null)
-            return 0;
-        try {
-            return o.hashCode();
-        } catch (NullPointerException e) {
-            // Hack for filtering out case of Maven problem with hash code
-            StackTraceElement[] trace = e.getStackTrace();
-            if (trace[0].toString().contains("org.apache.maven.project.MavenProject.getGroupId(MavenProject.java:814)") ||
-                trace[0].toString().contains("org.sonatype.aether.util.graph.transformer.JavaEffectiveScopeCalculator$ConflictGroup")) {
-                // TODO(August): Find the condition that filters out the maven exception.
-                //e.printStackTrace();
-                return 0;
-            }
-            throw e;
-        }
-    }
-
     public V put(K key, V value) {
         return putVal(hash(key), key, value, false, true);
     }
@@ -672,19 +651,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
             if (e != null) { // existing mapping for key
                 V oldValue = e.value;
-                if (!onlyIfAbsent || oldValue == null) {
+                if (!onlyIfAbsent || oldValue == null)
                     e.value = value;
-                    //this.incrHashCode += hashCodeFor(key) - hashCodeFor(oldValue);
-                    this.incrHashCode += hashCodeFor(key);
-                }
                 afterNodeAccess(e);
                 return oldValue;
             }
         }
-
-        //this.incrHashCode += hashCodeFor(key) + hashCodeFor(value);
-        this.incrHashCode += hashCodeFor(key);
-
         ++modCount;
         if (++size > threshold)
             resize();
@@ -869,10 +841,6 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     tab[index] = node.next;
                 else
                     p.next = node.next;
-
-                //this.incrHashCode -= hashCodeFor(key) + hashCodeFor(this.get(key));
-                this.incrHashCode -= hashCodeFor(key);
-
                 ++modCount;
                 --size;
                 afterNodeRemoval(node);
@@ -1434,14 +1402,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     /* ------------------------------------------------------------ */
     // iterators
 
-
     abstract class HashIterator {
         Node<K,V> next;        // next entry to return
         Node<K,V> current;     // current entry
         int expectedModCount;  // for fast-fail
         int index;             // current slot
 
-        Iterator<Node<K, V>> iter;
+        HashIteratorShuffler shuffler;
 
         HashIterator() {
             expectedModCount = modCount;
@@ -1452,24 +1419,15 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 do {} while (index < t.length && (next = t[index++]) == null);
             }
 
-            List<Node<K, V>> oneOrder = new ArrayList<>();
-            while(original_hasNext())
-                oneOrder.add(original_nextNode());
-            edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(oneOrder, System.identityHashCode(HashMap.this), expectedModCount, HashMap.this.incrHashCode);
-
-            iter = oneOrder.iterator();
-
+            shuffler = new HashIteratorShuffler(this);
         }
 
         public final boolean hasNext() {
-            return this.iter.hasNext();
+            return shuffler.hasNext();
         }
 
         public Node<K, V> nextNode() {
-            if (modCount != expectedModCount)
-                throw new ConcurrentModificationException();
-            current = this.iter.next();
-            return current;
+            return shuffler.nextNode(modCount);
         }
 
         public final boolean original_hasNext() {
@@ -1501,8 +1459,6 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             expectedModCount = modCount;
         }
     }
-
-
 
     final class KeyIterator extends HashIterator
         implements Iterator<K> {
@@ -2023,7 +1979,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     dir = -1;
                 else if (ph < h)
                     dir = 1;
-                else if ((pk = p.key) == k || (k != null && k.equals(pk)))
+                else if ((pk = p.key) == k || (pk != null && k.equals(pk)))
                     return p;
                 else if ((kc == null &&
                           (kc = comparableClassFor(k)) == null) ||
