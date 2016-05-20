@@ -28,27 +28,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
-
-import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-
-import javax.xml.bind.DatatypeConverter;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
@@ -62,6 +45,7 @@ import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 public class NonDexSurefireExecution {
 
@@ -105,15 +89,16 @@ public class NonDexSurefireExecution {
     }
 
     public Configuration getConfiguration() {
-        return configuration;
+        return this.configuration;
     }
 
     public void run() throws MojoExecutionException {
-        addNondexToBootClassPath();
+        this.addNondexToBootClassPath();
         try {
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
-            executeMojo(surefire, goal("test"), createListenerConfiguration((Xpp3Dom) surefire.getConfiguration()),
-                    executionEnvironment(mavenProject, mavenSession, pluginManager));
+            MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
+                    this.createListenerConfiguration((Xpp3Dom) this.surefire.getConfiguration()),
+                    MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
         } catch (MojoExecutionException mojoException) {
             Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
             throw mojoException;
@@ -124,12 +109,12 @@ public class NonDexSurefireExecution {
 
     private void addNondexToBootClassPath() {
 
-        String localRepo = mavenSession.getSettings().getLocalRepository();
-        String pathToNondex = getPathToNondexJar(localRepo);
-        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + configuration.toArgLine());
+        String localRepo = this.mavenSession.getSettings().getLocalRepository();
+        String pathToNondex = this.getPathToNondexJar(localRepo);
+        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
-                "" + "-Xbootclasspath/p:" + pathToNondex + " " + originalArgLine + " "
-                + configuration.toArgLine());
+                "" + "-Xbootclasspath/p:" + pathToNondex + " " + this.originalArgLine + " "
+                + this.configuration.toArgLine());
 
     }
 
@@ -143,7 +128,7 @@ public class NonDexSurefireExecution {
         if (configuration == null) {
             configuration = new Xpp3Dom("configuration");
         }
-        Xpp3Dom properties = createChildIfNotExists(configuration, "properties");
+        Xpp3Dom properties = this.createChildIfNotExists(configuration, "properties");
 
         if (properties.getChild("property") != null) {
             for (Xpp3Dom property : properties.getChildren()) {
@@ -156,7 +141,7 @@ public class NonDexSurefireExecution {
             }
         }
 
-        properties.addChild(makeListenerNode());
+        properties.addChild(this.makeListenerNode());
         return configuration;
     }
 
