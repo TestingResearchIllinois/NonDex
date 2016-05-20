@@ -77,6 +77,13 @@ public class Main {
             outZip.closeEntry();
         }
 
+        HashIteratorShufflerASMDump hashIterShuffDump = new HashIteratorShufflerASMDump();
+        ZipEntry hashIterShuffEntry = new ZipEntry("java/util/HashIteratorShuffler.class");
+        outZip.putNextEntry(hashIterShuffEntry);
+        byte[] hashIterShuffBytes = hashIterShuffDump.dump();
+        outZip.write(hashIterShuffBytes, 0, hashIterShuffBytes.length);
+        outZip.closeEntry();
+
         InputStream hashmapStream = rt.getInputStream(rt.getEntry("java/util/HashMap$HashIterator.class"));
         ClassReader cr = new ClassReader(hashmapStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -86,8 +93,8 @@ public class Main {
         cr.accept(cv, 0);
         byte[] arr = cw.toByteArray();
 
-        ZipEntry entry = new ZipEntry("java/util/HashMap$HashIterator.class");
-        outZip.putNextEntry(entry);
+        ZipEntry hashMapEntry = new ZipEntry("java/util/HashMap$HashIterator.class");
+        outZip.putNextEntry(hashMapEntry);
         outZip.write(arr, 0, arr.length);
         outZip.closeEntry();
 

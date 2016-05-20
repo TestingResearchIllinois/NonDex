@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>edu.illinois</groupId>
     <artifactId>nondex</artifactId>
@@ -19,7 +19,7 @@
 	  <version>5.0.3</version>
 	</dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
 	  <plugin>
@@ -66,6 +66,7 @@
           <failOnViolation>true</failOnViolation>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <linkXRef>false</linkXRef>
+            <excludes>**/*ASMDump.java</excludes>
         </configuration>
         <dependencies>
         <dependency>
@@ -86,5 +87,5 @@
       </plugin>
     </plugins>
   </build>
-  
+
 </project>

@@ -31,7 +31,7 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     <property name="fileExtensions" value="java"/>
   </module>
 
-  
+
   <module name="TreeWalker">
     <module name="DeclarationOrder"/>
     <module name="ThrowsCount">
@@ -39,7 +39,7 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     </module>
     <module name="AvoidNestedBlocks"/>
     <module name="MissingOverride"/>
-    
+
     <module name="Regexp">
       <property name="format" value="System\.out\.println"/>
       <property name="illegalPattern" value="true"/>
@@ -180,7 +180,6 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
       <property name="ignoreFinal" value="false"/>
     </module>
     <module name="OverloadMethodsDeclarationOrder"/>
-    <module name="VariableDeclarationUsageDistance"/>
     <module name="CustomImportOrder">
       <property name="specialImportsRegExp" value="edu.illinois.nondex"/>
       <property name="sortImportsInGroupAlphabetically" value="true"/>
