@@ -11,10 +11,10 @@
   <url>http://mir.cs.illinois.edu</url>
 
   <modules>
-    <module>nondex-core</module>
+    <module>nondex-instrumentation</module>
     <module>nondex-common</module>
     <module>nondex-maven-plugin</module>
-    <module>nondex-instrumentation</module>
+    <module>nondex-core</module>
   </modules>
 
   <properties>

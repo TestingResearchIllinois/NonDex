@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>edu.illinois</groupId>
     <artifactId>nondex</artifactId>
@@ -27,7 +27,7 @@
             <fork>true</fork>
           </configuration>
         </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -57,7 +57,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.19.1</version>
         <configuration>
-          <argLine>-Xbootclasspath/p:${project.build.directory}/classes/:${project.build.directory}/../../nondex-common/target/classes/</argLine>
+          <argLine>-Xbootclasspath/p:${project.basedir}/../nondex-instrumentation/resources/out.jar:${project.build.directory}/../../nondex-common/target/classes/</argLine>
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
