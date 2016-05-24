@@ -111,36 +111,6 @@ public final class Instrumenter {
         outZip.write(hashIterShuffBytes, 0, hashIterShuffBytes.length);
         outZip.closeEntry();
 
-
-        /*InputStream hashmapStream = rt.getInputStream(rt.getEntry("java/util/HashMap$HashIterator.class"));
-        ClassReader hashcr = new ClassReader(hashmapStream);
-        ClassWriter hashcw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        CheckClassAdapter hashca = new CheckClassAdapter(hashcw);
-        ClassVisitor hashcv = new HashMapShufflingAdder(hashca);
-
-        hashcr.accept(hashcv, 0);
-        byte[] hasharr = hashcw.toByteArray();
-
-        ZipEntry hashMapEntry = new ZipEntry("java/util/HashMap$HashIterator.class");
-        outZip.putNextEntry(hashMapEntry);
-        outZip.write(hasharr, 0, hasharr.length);
-        outZip.closeEntry();
-
-        InputStream chashmapStream = rt.getInputStream(
-                rt.getEntry("java/util/concurrent/ConcurrentHashMap$Traverser.class"));
-        ClassReader chashcr = new ClassReader(chashmapStream);
-        ClassWriter chashcw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        CheckClassAdapter chashca = new CheckClassAdapter(chashcw);
-        ClassVisitor chashcv = new ConcurrentHashMapShufflingAdder(chashca);
-
-        chashcr.accept(chashcv, 0);
-        byte[] chasharr = chashcw.toByteArray();
-
-        ZipEntry chashMapEntry = new ZipEntry("java/util/concurrent/ConcurrentHashMap$Traverser.class");
-        outZip.putNextEntry(chashMapEntry);
-        outZip.write(chasharr, 0, chasharr.length);
-        outZip.closeEntry();*/
-
         instrumentClass("java/util/HashMap$HashIterator.class", Instrumenter::createHashMapShuffler, rt, outZip);
         instrumentClass("java/util/concurrent/ConcurrentHashMap$Traverser.class",
                 Instrumenter::createConcurrentHashMapShuffler, rt, outZip);
