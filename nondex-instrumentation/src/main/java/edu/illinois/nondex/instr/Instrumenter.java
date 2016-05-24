@@ -74,17 +74,17 @@ public final class Instrumenter {
         ClassVisitor cv = createShuffler.apply(ca);
 
         cr.accept(cv, 0);
-        byte[] hasharr = cw.toByteArray();
+        byte[] arr = cw.toByteArray();
 
         ZipEntry zipEntry = new ZipEntry(className);
         outZip.putNextEntry(zipEntry);
-        outZip.write(hasharr, 0, hasharr.length);
+        outZip.write(arr, 0, arr.length);
         outZip.closeEntry();
     }
 
-    public static final void instrument(String rtjar, String outjar) throws IOException {
-        ZipFile rt = new ZipFile(rtjar);
-        ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(outjar));
+    public static final void instrument(String rtJar, String outJar) throws IOException {
+        ZipFile rt = new ZipFile(rtJar);
+        ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(outJar));
 
         for (String cl : classesToShuffle) {
             InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
