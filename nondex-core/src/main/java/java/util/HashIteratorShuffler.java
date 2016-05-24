@@ -38,14 +38,6 @@ public class HashIteratorShuffler<K, V> {
     public HashIteratorShuffler(HashIterator hi) {
         hashIter = hi;
         List<Node<K, V>> oneOrder = new ArrayList<>();
-        /*Class hmi = HashIterator.class;
-        try {
-            while ((boolean) hmi.getMethod("original_hasNext", null).invoke(hashIter, null)) {
-                oneOrder.add((Node<K, V>) hmi.getMethod("original_nextNode", null).invoke(hashIter, null));
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exc) {
-            Logger.getGlobal().log(Level.CONFIG, "Reflectio Error when invoking original_hasNext: ", exc);
-        }*/
         while (hashIter.original_hasNext()) {
             oneOrder.add(hashIter.original_nextNode());
         }

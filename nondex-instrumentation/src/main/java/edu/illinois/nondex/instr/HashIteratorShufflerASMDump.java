@@ -3,7 +3,7 @@ import java.util.*;
 import org.objectweb.asm.*;
 public class HashIteratorShufflerASMDump implements Opcodes {
 
-public static byte[] dump () throws Exception {
+public static byte[] dump () {
 
 ClassWriter cw = new ClassWriter(0);
 FieldVisitor fv;

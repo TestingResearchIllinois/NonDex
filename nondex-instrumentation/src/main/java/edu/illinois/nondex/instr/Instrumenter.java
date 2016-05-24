@@ -29,8 +29,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.instr;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -53,7 +55,34 @@ public final class Instrumenter {
     private Instrumenter() {
     }
 
-    public static final void instrument(String rtjar, String outjar) throws Exception {
+    private static ClassVisitor createHashMapShuffler(CheckClassAdapter ca) {
+        return new HashMapShufflingAdder(ca);
+    }
+
+    private static ClassVisitor createConcurrentHashMapShuffler(CheckClassAdapter ca) {
+        return new ConcurrentHashMapShufflingAdder(ca);
+    }
+
+    private static void instrumentClass(String className,
+                                        Function<CheckClassAdapter, ClassVisitor> createShuffler,
+                                        ZipFile rt, ZipOutputStream outZip) throws IOException {
+
+        InputStream classStream = rt.getInputStream(rt.getEntry(className));
+        ClassReader cr = new ClassReader(classStream);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        CheckClassAdapter ca = new CheckClassAdapter(cw);
+        ClassVisitor cv = createShuffler.apply(ca);
+
+        cr.accept(cv, 0);
+        byte[] hasharr = cw.toByteArray();
+
+        ZipEntry zipEntry = new ZipEntry(className);
+        outZip.putNextEntry(zipEntry);
+        outZip.write(hasharr, 0, hasharr.length);
+        outZip.closeEntry();
+    }
+
+    public static final void instrument(String rtjar, String outjar) throws IOException {
         ZipFile rt = new ZipFile(rtjar);
         ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(outjar));
 
@@ -82,11 +111,12 @@ public final class Instrumenter {
         outZip.write(hashIterShuffBytes, 0, hashIterShuffBytes.length);
         outZip.closeEntry();
 
-        InputStream hashmapStream = rt.getInputStream(rt.getEntry("java/util/HashMap$HashIterator.class"));
+
+        /*InputStream hashmapStream = rt.getInputStream(rt.getEntry("java/util/HashMap$HashIterator.class"));
         ClassReader hashcr = new ClassReader(hashmapStream);
         ClassWriter hashcw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         CheckClassAdapter hashca = new CheckClassAdapter(hashcw);
-        ClassVisitor hashcv = new AddShufflingToHashMap(hashca);
+        ClassVisitor hashcv = new HashMapShufflingAdder(hashca);
 
         hashcr.accept(hashcv, 0);
         byte[] hasharr = hashcw.toByteArray();
@@ -96,14 +126,12 @@ public final class Instrumenter {
         outZip.write(hasharr, 0, hasharr.length);
         outZip.closeEntry();
 
-
-
         InputStream chashmapStream = rt.getInputStream(
                 rt.getEntry("java/util/concurrent/ConcurrentHashMap$Traverser.class"));
         ClassReader chashcr = new ClassReader(chashmapStream);
         ClassWriter chashcw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         CheckClassAdapter chashca = new CheckClassAdapter(chashcw);
-        ClassVisitor chashcv = new AddShufflingToConcurrentHashMap(chashca);
+        ClassVisitor chashcv = new ConcurrentHashMapShufflingAdder(chashca);
 
         chashcr.accept(chashcv, 0);
         byte[] chasharr = chashcw.toByteArray();
@@ -111,9 +139,12 @@ public final class Instrumenter {
         ZipEntry chashMapEntry = new ZipEntry("java/util/concurrent/ConcurrentHashMap$Traverser.class");
         outZip.putNextEntry(chashMapEntry);
         outZip.write(chasharr, 0, chasharr.length);
-        outZip.closeEntry();
+        outZip.closeEntry();*/
+
+        instrumentClass("java/util/HashMap$HashIterator.class", Instrumenter::createHashMapShuffler, rt, outZip);
+        instrumentClass("java/util/concurrent/ConcurrentHashMap$Traverser.class",
+                Instrumenter::createConcurrentHashMapShuffler, rt, outZip);
 
         outZip.close();
     }
-
 }

@@ -34,7 +34,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class AddShufflingToHashMap extends ClassVisitor {
+public class HashMapShufflingAdder extends ClassVisitor {
 
     private class MethodProperties {
         int access;
@@ -47,20 +47,20 @@ public class AddShufflingToHashMap extends ClassVisitor {
     MethodProperties hasNextProp;
     MethodProperties nextNodeProp;
 
-    public AddShufflingToHashMap(ClassVisitor ca) {
+    public HashMapShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
 
         hasNextProp = new MethodProperties();
         nextNodeProp = new MethodProperties();
     }
 
-    public FieldVisitor add_shuffler() {
+    public FieldVisitor addShuffler() {
         FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashIteratorShuffler;", null, null);
         fv.visitEnd();
         return fv;
     }
 
-    public void add_nextNode() {
+    public void addNextNode() {
         MethodVisitor mv = super.visitMethod(nextNodeProp.access, nextNodeProp.name,
                 nextNodeProp.desc, nextNodeProp.signature, nextNodeProp.exceptions);
 
@@ -81,7 +81,7 @@ public class AddShufflingToHashMap extends ClassVisitor {
         mv.visitEnd();
     }
 
-    public void add_hasNext() {
+    public void addHasNext() {
         MethodVisitor mv = super.visitMethod(hasNextProp.access, hasNextProp.name,
                 hasNextProp.desc, hasNextProp.signature, hasNextProp.exceptions);
 
@@ -101,9 +101,9 @@ public class AddShufflingToHashMap extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-        add_shuffler();
-        add_nextNode();
-        add_hasNext();
+        addShuffler();
+        addNextNode();
+        addHasNext();
 
         super.visitEnd();
     }

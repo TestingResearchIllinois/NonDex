@@ -35,9 +35,9 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class AddShufflingToConcurrentHashMap extends ClassVisitor {
+public class ConcurrentHashMapShufflingAdder extends ClassVisitor {
 
-    public AddShufflingToConcurrentHashMap(ClassVisitor ca) {
+    public ConcurrentHashMapShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
     }
 
@@ -72,8 +72,6 @@ public class AddShufflingToConcurrentHashMap extends ClassVisitor {
                                     Opcodes.INTEGER, Opcodes.INTEGER},
                                 0, new Object[]{});
                         mv.visitInsn(Opcodes.RETURN);
-                        //mv.visitMaxs(4, 5);
-                        //mv.visitEnd();
                     }
                     super.visitInsn(opcode);
                 }
