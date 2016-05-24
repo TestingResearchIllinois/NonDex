@@ -92,7 +92,7 @@ public final class Instrumenter {
             ClassReader cr = new ClassReader(clInputStream);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-            ClassVisitor cv = new AddShufflingToClassVisitor(cw);
+            ClassVisitor cv = new ClassVisitorShufflingAdder(cw);
 
             cr.accept(cv, 0);
 

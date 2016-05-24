@@ -29,15 +29,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.instr;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 
 
-public class AddShufflingToClassVisitor extends ClassVisitor {
+public class ClassVisitorShufflingAdder extends ClassVisitor {
     private static final HashSet<String> apisReturningShufflableArrays = new HashSet<>();
     private String cn;
 
@@ -63,7 +61,7 @@ public class AddShufflingToClassVisitor extends ClassVisitor {
         apisReturningShufflableArrays.add("java/io/File.listRoots");
     }
 
-    public AddShufflingToClassVisitor(ClassVisitor ca) {
+    public ClassVisitorShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
     }
 
@@ -95,7 +93,7 @@ public class AddShufflingToClassVisitor extends ClassVisitor {
 
                 private void shuffleJustReturnedArray() {
                     this.visitVarInsn(Opcodes.ALOAD, 0);
-                    this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, AddShufflingToClassVisitor.this.cn,
+                    this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, ClassVisitorShufflingAdder.this.cn,
                             "hashCode", "()I", false);
                     this.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism",
                             "shuffle", "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
