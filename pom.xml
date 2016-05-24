@@ -12,9 +12,9 @@
 
   <modules>
     <module>nondex-instrumentation</module>
+    <module>nondex-core</module>
     <module>nondex-common</module>
     <module>nondex-maven-plugin</module>
-    <module>nondex-core</module>
   </modules>
 
   <properties>
