@@ -14,24 +14,24 @@ public abstract class AbstractCollectionTest<T> {
     
     protected void parameterized(T ds, Object derived, String str) {
         switch (ControlNondeterminism.getConfiguration().mode) {
-        case FULL: 
-            String s = derived.toString();
-            assertNotEquals("FULL is improperly running", str, s);
-            assertEqualstUnordered("Does not match Permutation", str, s);
-            break;
-        case ID:
-            assertEquals("ID should return the same when collection is unchanged", str, derived.toString());
-            this.addRemoveDS(ds);
-            assertNotEquals("ID should return different when collection is modified", str, derived.toString());
-            break;
-        case EQ:
-            assertEquals("EQ is improperly running", str, derived.toString());
-            this.addRemoveDS(ds);
-            assertEquals("EQ should return the same for two equal collections", str, derived.toString());
-            break;
-        case ONE:
-            assertEquals("ONE is improperly running", str, derived.toString());
-            break;
+            case FULL: 
+                String s = derived.toString();
+                assertNotEquals("FULL is improperly running", str, s);
+                assertEqualstUnordered("Does not match Permutation", str, s);
+                break;
+            case ID:
+                assertEquals("ID should return the same when collection is unchanged", str, derived.toString());
+                this.addRemoveDS(ds);
+                assertNotEquals("ID should return different when collection is modified", str, derived.toString());
+                break;
+            case EQ:
+                assertEquals("EQ is improperly running", str, derived.toString());
+                this.addRemoveDS(ds);
+                assertEquals("EQ should return the same for two equal collections", str, derived.toString());
+                break;
+            case ONE:
+                assertEquals("ONE is improperly running", str, derived.toString());
+                break;
         }
     }
     
