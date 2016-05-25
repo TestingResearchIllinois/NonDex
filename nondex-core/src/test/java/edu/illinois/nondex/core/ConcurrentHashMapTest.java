@@ -75,7 +75,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
         ConcurrentHashMap<Integer, Integer> map = createResizedDS();
         Set<Integer> keySet = map.keySet();
 
-        this.parametrized(map, keySet, keySet.toString());
+        this.parameterized(map, keySet, keySet.toString());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
     }
 
     @Test
-    public void testValuesParametrized() {
+    public void testValuesParameterized() {
         ConcurrentHashMap<Integer, Integer> map = createResizedDS();
         Collection<Integer> values = map.values();
 
@@ -95,7 +95,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
         assertEqualstUnordered("The strings are not a permutation of each other", "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
 
         String str = values.toString();
-        parametrized(map, values, str);
+        parameterized(map, values, str);
     }
 
     @Test
@@ -108,12 +108,12 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
     }
 
     @Test
-    public void testEntrySetParametrized() {
+    public void testEntrySetParameterized() {
         ConcurrentHashMap<Integer, Integer> map = createResizedDS();
         Set<Entry<Integer, Integer>> entrySet = map.entrySet();
 
         String str = entrySet.toString();
-        parametrized(map, entrySet, str);
+        parameterized(map, entrySet, str);
     }
 
     @Test

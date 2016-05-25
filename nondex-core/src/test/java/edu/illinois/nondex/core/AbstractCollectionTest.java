@@ -12,7 +12,7 @@ public abstract class AbstractCollectionTest<T> {
     abstract protected T createResizedDS(int start, int maxSize);    
     abstract protected T addRemoveDS(T ds);
     
-    protected void parametrized(T ds, Object derived, String str) {
+    protected void parameterized(T ds, Object derived, String str) {
         switch (ControlNondeterminism.getConfiguration().mode) {
         case FULL: 
             String s = derived.toString();
