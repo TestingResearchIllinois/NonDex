@@ -17,7 +17,7 @@ public abstract class AbstractCollectionTest<T> {
             case FULL: 
                 String s = derived.toString();
                 assertNotEquals("FULL is improperly running", str, s);
-                assertEqualstUnordered("Does not match Permutation", str, s);
+                assertEqualstUnordered("Does not match permutation", str, s);
                 break;
             case ID:
                 assertEquals("ID should return the same when collection is unchanged", str, derived.toString());
@@ -37,7 +37,7 @@ public abstract class AbstractCollectionTest<T> {
     
     protected void assertEqualstUnordered(String msg, String expected, String actual) {
         assertEquals(msg + ": " + expected + " =/= " + actual, expected.length(), actual.length());
-        expected = expected.substring(1,expected.length() - 1);
+        expected = expected.substring(1, expected.length() - 1);
         String[] elems = expected.split(",");
         // TODO(gyori): fix and make this more robust. It does not check duplicates, substrings, etc.
         for (int i = 0; i < elems.length; i++) {
