@@ -119,9 +119,9 @@ public class NonDexSurefireExecution {
     }
 
     private String getPathToNondexJar(String localRepo) {
-        String pathToNondex = Paths.get(localRepo, "edu/illinois/nondex-core/" + ConfigurationDefaults.VERSION
-                + "/nondex-core-" + ConfigurationDefaults.VERSION + ".jar").toString();
-        return pathToNondex;
+        return ConfigurationDefaults.NONDEX_DIR + "/" + ConfigurationDefaults.INSTRUMENTATION_JAR
+                + ":" + Paths.get(localRepo, "edu/illinois/nondex-common/" + ConfigurationDefaults.VERSION
+                + "/nondex-common-" + ConfigurationDefaults.VERSION + ".jar").toString();
     }
 
     private Xpp3Dom createListenerConfiguration(Xpp3Dom configuration) {

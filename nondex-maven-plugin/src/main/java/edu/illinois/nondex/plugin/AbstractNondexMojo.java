@@ -29,16 +29,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.plugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
 import edu.illinois.nondex.common.Utils;
+import edu.illinois.nondex.instr.Instrumenter;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
@@ -123,6 +127,14 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
         if (this.rtJarPath == null) {
             Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
             throw new MojoExecutionException("Cannot find the rt.jar!");
+        }
+
+        try {
+            Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId).toFile().mkdirs();
+            Instrumenter.instrument(rtJarPath.toString(), ConfigurationDefaults.NONDEX_DIR + "/"
+                    + ConfigurationDefaults.INSTRUMENTATION_JAR);
+        } catch (IOException exc) {
+            exc.printStackTrace();
         }
 
         this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");

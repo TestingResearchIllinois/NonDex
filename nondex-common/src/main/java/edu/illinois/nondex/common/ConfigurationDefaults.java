@@ -72,6 +72,7 @@ public class ConfigurationDefaults {
     public static final String PROPERTY_DEFAULT_RUN_ID = LATEST_RUN_ID;
 
     public static final String NONDEX_DIR = ".nondex";
+    public static final String INSTRUMENTATION_JAR = "nondex-instr.jar";
     public static final String FAILURES_FILE = "failures";
     public static final String INVOCATIONS_FILE = "invocations";
     public static final String CONFIGURATION_FILE = "config";
