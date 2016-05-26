@@ -55,6 +55,6 @@ public class HashSetTest extends AbstractCollectionTest<Set<Integer>>{
     @Test
     public void testHashSetParametrized() {
         Set<Integer> s = createResizedDS(0, 100000); 
-        this.parametrized(s, s, s.toString());
+        this.parameterized(s, s, s.toString());
     }
 }
