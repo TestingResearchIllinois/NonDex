@@ -76,7 +76,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>>{
         Map<Integer, Integer> map = createResizedDS();
         Set<Integer> keySet = map.keySet();
 
-        this.parametrized(map, keySet, keySet.toString());
+        this.parameterized(map, keySet, keySet.toString());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>>{
         assertEqualstUnordered("The strings are not a permuation of each other", "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
 
         String str = values.toString();
-        parametrized(map, values, str);
+        parameterized(map, values, str);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>>{
         Set<Entry<Integer, Integer>> entrySet = map.entrySet();
 
         String str = entrySet.toString();
-        parametrized(map, entrySet, str);
+        parameterized(map, entrySet, str);
     }
 
 }
