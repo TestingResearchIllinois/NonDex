@@ -61,6 +61,7 @@
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
+          <rerunFailingTestsCount>2</rerunFailingTestsCount>
         </configuration>
       </plugin>
     </plugins>
