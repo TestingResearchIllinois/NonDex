@@ -156,8 +156,8 @@ public class Configuration {
 
     public int getInvocationCount() {
         if (this.invoCount == null) {
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.INVOCATIONS_FILE)
-                    .toFile();
+            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId,
+                    ConfigurationDefaults.INVOCATIONS_FILE).toFile();
 
             try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
                 String line;
