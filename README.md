@@ -1,4 +1,4 @@
-https://travis-ci.org/TestingResearchIllinois/NonDex.svg?branch=master
+[![Build Status](https://travis-ci.org/TestingResearchIllinois/NonDex.svg?branch=master)](https://travis-ci.org/TestingResearchIllinois/NonDex)
 
 
 Prerequisites:
