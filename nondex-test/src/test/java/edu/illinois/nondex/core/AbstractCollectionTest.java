@@ -40,7 +40,7 @@ public abstract class AbstractCollectionTest<T> {
 
     protected abstract T addRemoveDS(T ds);
 
-    protected void parameterized(T ds, Object derived, String str) {
+    protected void assertParameterized(T ds, Object derived, String str) {
         switch (ControlNondeterminism.getConfiguration().mode) {
             case FULL:
                 String tempStr = derived.toString();
@@ -67,12 +67,12 @@ public abstract class AbstractCollectionTest<T> {
 
     protected void assertEqualstUnordered(String msg, String expected, String actual) {
         Assert.assertEquals(msg + ": " + expected + " =/= " + actual, expected.length(), actual.length());
-        expected = expected.substring(1, expected.length() - 1);
-        String[] elems = expected.split(",");
+        String trimmed = expected.substring(1, expected.length() - 1);
+        String[] elems = trimmed.split(",");
         // TODO(gyori): fix and make this more robust. It does not check duplicates, substrings, etc.
         for (int i = 0; i < elems.length; i++) {
             elems[i] = elems[i].trim();
-            Assert.assertTrue(msg + ": " + expected + " =/= " + actual, actual.contains(elems[i]));
+            Assert.assertTrue(msg + ": " + trimmed + " =/= " + actual, actual.contains(elems[i]));
         }
 
 

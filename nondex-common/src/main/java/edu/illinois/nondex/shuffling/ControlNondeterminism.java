@@ -31,7 +31,9 @@ package edu.illinois.nondex.shuffling;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -52,43 +54,43 @@ public class ControlNondeterminism {
 
     static {
         // Add shutdown hook
-        Runtime.getRuntime().addShutdownHook(jvmShutdownHook);
-        r = new Random(config.seed);
+        Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
+        ControlNondeterminism.r = new Random(ControlNondeterminism.config.seed);
     }
 
     public static Configuration getConfiguration() {
-        return config;
+        return ControlNondeterminism.config;
     }
 
     private static Random getRandomnessSource(int id, int modCount, int objHash, String source) {
-        logger.log(Level.FINEST, "getRandomnessSource for API: " + source);
-        if (!config.filter.matcher(source).matches()) {
-            logger.log(Level.FINE, "Source does not apply " + source + "");
+        ControlNondeterminism.logger.log(Level.FINEST, "getRandomnessSource for API: " + source);
+        if (!ControlNondeterminism.config.filter.matcher(source).matches()) {
+            ControlNondeterminism.logger.log(Level.FINE, "Source does not apply " + source + "");
             return null;
             // Use null to denote do not randomize, only if passed
             // in source option and stack trace does not contain
         }
 
-        switch (config.mode) {
+        switch (ControlNondeterminism.config.mode) {
             case FULL:
                 //if (r == null) {
                 //    r = new Random(config.SEED);
                 //}
-                return r;
+                return ControlNondeterminism.r;
             case ONE:
-                return new Random(config.seed);
+                return new Random(ControlNondeterminism.config.seed);
             case ID:
-                return new Random(config.seed + id + modCount);
+                return new Random(ControlNondeterminism.config.seed + id + modCount);
             case EQ:
-                return new Random(config.seed + objHash);
+                return new Random(ControlNondeterminism.config.seed + objHash);
             default:
-                logger.log(Level.WARNING, "Unrecognized option for shuffle kind. Not shuffling.");
+                ControlNondeterminism.logger.log(Level.WARNING, "Unrecognized option for shuffle kind. Not shuffling.");
                 return null;
         }
     }
 
     public static <T> List<T> shuffle(List<T> objs, int id, int modCount, int hash) {
-        return internalShuffle(objs, id, modCount, hash, getSource());
+        return ControlNondeterminism.internalShuffle(objs, id, modCount, hash, ControlNondeterminism.getSource());
     }
 
     public static <T> T[] shuffle(T[] objs, int hash) {
@@ -96,8 +98,8 @@ public class ControlNondeterminism {
             return null;
         }
 
-        java.util.List<T> ls = Arrays.asList(objs);
-        internalShuffle(ls, hash, 0, hash, getSource());
+        List<T> ls = Arrays.asList(objs);
+        ControlNondeterminism.internalShuffle(ls, hash, 0, hash, ControlNondeterminism.getSource());
 
         int index = 0;
         for (T l : ls) {
@@ -108,45 +110,48 @@ public class ControlNondeterminism {
     }
 
     private static <T> List<T> internalShuffle(List<T> objs, int id, int modCount, int hash, String source) {
-        Random currentRandom = getRandomnessSource(id, modCount, hash, source);
+        Random currentRandom = ControlNondeterminism.getRandomnessSource(id, modCount, hash, source);
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
             return objs;
         }
-        java.util.List<T> ls = new java.util.ArrayList<T>(objs);
-        java.util.Collections.shuffle(ls, currentRandom);
+        List<T> ls = new ArrayList<T>(objs);
+        Collections.shuffle(ls, currentRandom);
 
         // Determine if should return ordered or non-ordered
-        if (shouldExploreForInstance()) {
+        if (ControlNondeterminism.shouldExploreForInstance()) {
             // If bounds are the same, then the one we want is when count is one
             // of those bounds
-            if (config.start >= 0 && config.end >= 0 && config.start == config.end && count == config.start) {
+            if (ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
+                    && ControlNondeterminism.config.start == ControlNondeterminism.config.end
+                    && ControlNondeterminism.count == ControlNondeterminism.config.start) {
                 StackTraceElement[] traces = Thread.currentThread().getStackTrace();
                 for (StackTraceElement traceElement : traces) {
                     Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
                 }
             }
-            count++;
-            shuffleCount++;
+            ControlNondeterminism.count++;
+            ControlNondeterminism.shuffleCount++;
             for (int i = 0; i < ls.size(); i++) {
                 objs.set(i, ls.get(i));
             }
             return objs;
         } else {
-            count++;
+            ControlNondeterminism.count++;
             return objs;
         }
     }
 
     private static boolean shouldExploreForInstance() {
-        return count >= config.start && count <= config.end;
+        return ControlNondeterminism.count >= ControlNondeterminism.config.start
+                && ControlNondeterminism.count <= ControlNondeterminism.config.end;
     }
 
     public static String[][] extendZoneStrings(String[][] strs) {
-        logger.log(Level.FINEST, "extendZoneStrings");
+        ControlNondeterminism.logger.log(Level.FINEST, "extendZoneStrings");
 
         // passing 0 makes configs 1, 2, 3 the same thing.
-        Random currentRandom = getRandomnessSource(0, 0, 0, getSource());
+        Random currentRandom = ControlNondeterminism.getRandomnessSource(0, 0, 0, ControlNondeterminism.getSource());
 
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
@@ -155,9 +160,9 @@ public class ControlNondeterminism {
         if (currentRandom.nextBoolean()) {
             return strs;
         }
-        if (shouldExploreForInstance()) {
+        if (ControlNondeterminism.shouldExploreForInstance()) {
             for (int i = 0; i < strs.length; i++) {
-                strs[i] = java.util.Arrays.copyOf(strs[i], strs[i].length + 1);
+                strs[i] = Arrays.copyOf(strs[i], strs[i].length + 1);
             }
         }
         return strs;
@@ -170,14 +175,18 @@ public class ControlNondeterminism {
     }
 
     private static class JVMShutdownHook extends Thread {
+        @Override
         public void run() {
             ConfigurationDefaults.createNondexDirIfNeeded();
             try {
-                Files.write(config.getConfigPath(), config.toString().getBytes(), StandardOpenOption.CREATE,
+                Files.write(ControlNondeterminism.config.getConfigPath(),
+                        ControlNondeterminism.config.toString().getBytes(),
+                        StandardOpenOption.CREATE,
                         StandardOpenOption.APPEND);
-                Files.write(config.getInvocationsPath(), ("COUNT:" + ControlNondeterminism.count + "\n").getBytes(),
+                Files.write(ControlNondeterminism.config.getInvocationsPath(),
+                        ("COUNT:" + ControlNondeterminism.count + "\n").getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                Files.write(config.getInvocationsPath(),
+                Files.write(ControlNondeterminism.config.getInvocationsPath(),
                         ("SHUFFLES:" + ControlNondeterminism.shuffleCount + "\n").getBytes(),
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {

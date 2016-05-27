@@ -71,9 +71,9 @@ public class DebugTask {
 
         //The test must have failed if it's being debugged, ergo there should exist a failing configuration
 
-        assert (!failingConfigurations.isEmpty());
+        assert (!this.failingConfigurations.isEmpty());
 
-        Configuration failingOne = debugWithConfigurations(limits, this.failingConfigurations);
+        Configuration failingOne = this.debugWithConfigurations(limits, this.failingConfigurations);
 
         Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
 
@@ -83,8 +83,8 @@ public class DebugTask {
 
         // The seeds that failed with the full test-suite no longer fail
         // Searching for different seeds
-        Set<Configuration> retryWOtherSeeds = createNewSeedsToRetry();
-        failingOne = debugWithConfigurations(limits, retryWOtherSeeds);
+        Set<Configuration> retryWOtherSeeds = this.createNewSeedsToRetry();
+        failingOne = this.debugWithConfigurations(limits, retryWOtherSeeds);
 
         if (failingOne != null) {
             return failingOne.toArgLine();
@@ -94,7 +94,7 @@ public class DebugTask {
     }
 
     private Set<Configuration> createNewSeedsToRetry() {
-        Configuration someFailingConfig = failingConfigurations.iterator().next();
+        Configuration someFailingConfig = this.failingConfigurations.iterator().next();
         int newSeed = someFailingConfig.seed * ConfigurationDefaults.SEED_FACTOR;
         Set<Configuration> retryWOtherSeeds = new HashSet<>();
         for (int i = 0; i < 10; i++) {
@@ -111,8 +111,8 @@ public class DebugTask {
             Set<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
-            if (failsOnDry(config)) {
-                Configuration failingConfig = startDebugBinary(config);
+            if (this.failsOnDry(config)) {
+                Configuration failingConfig = this.startDebugBinary(config);
 
                 if (failingConfig.hasLessChoicePoints(debConfig)) {
                     debConfig = failingConfig;
@@ -135,17 +135,17 @@ public class DebugTask {
             Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
 
             int midPoint = (start + end) / 2;
-            if (failsWithConfig(config, start, midPoint)) {
+            if (this.failsWithConfig(config, start, midPoint)) {
                 failingConfiguration = config;
                 end = midPoint;
                 continue;
-            } else if (failsWithConfig(config, midPoint + 1, end)) {
+            } else if (this.failsWithConfig(config, midPoint + 1, end)) {
                 failingConfiguration = config;
                 start = midPoint + 1;
                 continue;
             } else {
                 Logger.getGlobal().log(Level.FINE, "Binary splitting did not work. Going to linear");
-                return startDebugLinear(config, start, end);
+                return this.startDebugLinear(config, start, end);
             }
         }
         return failingConfiguration;
@@ -153,16 +153,18 @@ public class DebugTask {
 
     public Configuration startDebugLinear(Configuration config, int start, int end) {
         Configuration failingConfiguration = null;
-        while (start < end) {
-            Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + start + " : " + end);
+        int localStart = start;
+        int localEnd = end;
+        while (localStart < localEnd) {
+            Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
 
-            if (failsWithConfig(config, start, end - 1)) {
+            if (this.failsWithConfig(config, localStart, localEnd - 1)) {
                 failingConfiguration = config;
-                end = end - 1;
+                localEnd = localEnd - 1;
                 continue;
-            } else if (failsWithConfig(config, start + 1, end)) {
+            } else if (this.failsWithConfig(config, localStart + 1, localEnd)) {
                 failingConfiguration = config;
-                start = start + 1;
+                localStart = localStart + 1;
                 continue;
             } else {
                 Logger.getGlobal().log(Level.FINE, "Refining did not work. Does not fail with linear.");
@@ -174,7 +176,8 @@ public class DebugTask {
 
     public boolean failsWithConfig(Configuration config, int start, int end) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
-                    start, end, test, surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
+                    start, end, this.test, this.surefire, this.originalArgLine, this.mavenProject,
+                    this.mavenSession, this.pluginManager);
         try {
             execution.run();
         } catch (Throwable thr) {

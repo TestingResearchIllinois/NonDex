@@ -107,7 +107,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
         ConcurrentHashMap<Integer, Integer> map = this.createResizedDS();
         Set<Integer> keySet = map.keySet();
 
-        this.parameterized(map, keySet, keySet.toString());
+        this.assertParameterized(map, keySet, keySet.toString());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
 
         String str = values.toString();
-        this.parameterized(map, values, str);
+        this.assertParameterized(map, values, str);
     }
 
     @Test
@@ -150,7 +150,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
         Set<Entry<Integer, Integer>> entrySet = map.entrySet();
 
         String str = entrySet.toString();
-        this.parameterized(map, entrySet, str);
+        this.assertParameterized(map, entrySet, str);
     }
 
     @Test

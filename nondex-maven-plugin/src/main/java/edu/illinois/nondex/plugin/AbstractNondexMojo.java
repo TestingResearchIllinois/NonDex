@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
@@ -111,9 +110,6 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected Plugin surefire;
     protected String originalArgLine;
 
-
-    private Path rtJarPath;
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
@@ -123,8 +119,9 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
             throw new MojoExecutionException("JAVA_HOME is not set!");
         }
 
-        this.rtJarPath = Utils.getRtJarLocation(javaHome);
-        if (this.rtJarPath == null) {
+        Path rtJarPath;
+        rtJarPath = Utils.getRtJarLocation(javaHome);
+        if (rtJarPath == null) {
             Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
             throw new MojoExecutionException("Cannot find the rt.jar!");
         }
