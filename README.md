@@ -1,3 +1,5 @@
+https://travis-ci.org/TestingResearchIllinois/NonDex.svg?branch=master
+
 
 Prerequisites:
 ==============
