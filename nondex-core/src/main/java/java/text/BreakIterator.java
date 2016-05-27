@@ -231,8 +231,8 @@ public abstract class BreakIterator implements Cloneable
      * Constructor. BreakIterator is stateless and has no default behavior.
      */
     protected BreakIterator()
-    {
-    }
+        {
+        }
 
     /**
      * Create a copy of this iterator
@@ -240,14 +240,14 @@ public abstract class BreakIterator implements Cloneable
      */
     @Override
     public Object clone()
-    {
-        try {
-            return super.clone();
+        {
+            try {
+                return super.clone();
+            }
+            catch (CloneNotSupportedException e) {
+                throw new InternalError(e);
+            }
         }
-        catch (CloneNotSupportedException e) {
-            throw new InternalError(e);
-        }
-    }
 
     /**
      * DONE is returned by previous(), next(), next(int), preceding(int)
@@ -416,9 +416,9 @@ public abstract class BreakIterator implements Cloneable
      * @param newText new text to scan.
      */
     public void setText(String newText)
-    {
-        setText(new StringCharacterIterator(newText));
-    }
+        {
+            setText(new StringCharacterIterator(newText));
+        }
 
     /**
      * Set a new text for scanning.  The current scan
@@ -442,9 +442,9 @@ public abstract class BreakIterator implements Cloneable
      * @return A break iterator for word breaks
      */
     public static BreakIterator getWordInstance()
-    {
-        return getWordInstance(Locale.getDefault());
-    }
+        {
+            return getWordInstance(Locale.getDefault());
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -455,9 +455,9 @@ public abstract class BreakIterator implements Cloneable
      * @exception NullPointerException if <code>locale</code> is null
      */
     public static BreakIterator getWordInstance(Locale locale)
-    {
-        return getBreakInstance(locale, WORD_INDEX);
-    }
+        {
+            return getBreakInstance(locale, WORD_INDEX);
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -466,9 +466,9 @@ public abstract class BreakIterator implements Cloneable
      * @return A break iterator for line breaks
      */
     public static BreakIterator getLineInstance()
-    {
-        return getLineInstance(Locale.getDefault());
-    }
+        {
+            return getLineInstance(Locale.getDefault());
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -479,9 +479,9 @@ public abstract class BreakIterator implements Cloneable
      * @exception NullPointerException if <code>locale</code> is null
      */
     public static BreakIterator getLineInstance(Locale locale)
-    {
-        return getBreakInstance(locale, LINE_INDEX);
-    }
+        {
+            return getBreakInstance(locale, LINE_INDEX);
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -490,9 +490,9 @@ public abstract class BreakIterator implements Cloneable
      * @return A break iterator for character breaks
      */
     public static BreakIterator getCharacterInstance()
-    {
-        return getCharacterInstance(Locale.getDefault());
-    }
+        {
+            return getCharacterInstance(Locale.getDefault());
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -503,9 +503,9 @@ public abstract class BreakIterator implements Cloneable
      * @exception NullPointerException if <code>locale</code> is null
      */
     public static BreakIterator getCharacterInstance(Locale locale)
-    {
-        return getBreakInstance(locale, CHARACTER_INDEX);
-    }
+        {
+            return getBreakInstance(locale, CHARACTER_INDEX);
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -514,9 +514,9 @@ public abstract class BreakIterator implements Cloneable
      * @return A break iterator for sentence breaks
      */
     public static BreakIterator getSentenceInstance()
-    {
-        return getSentenceInstance(Locale.getDefault());
-    }
+        {
+            return getSentenceInstance(Locale.getDefault());
+        }
 
     /**
      * Returns a new <code>BreakIterator</code> instance
@@ -527,9 +527,9 @@ public abstract class BreakIterator implements Cloneable
      * @exception NullPointerException if <code>locale</code> is null
      */
     public static BreakIterator getSentenceInstance(Locale locale)
-    {
-        return getBreakInstance(locale, SENTENCE_INDEX);
-    }
+        {
+            return getBreakInstance(locale, SENTENCE_INDEX);
+        }
 
     private static BreakIterator getBreakInstance(Locale locale, int type) {
         if (iterCache[type] != null) {
@@ -591,11 +591,11 @@ public abstract class BreakIterator implements Cloneable
      *         <code>BreakIterator</code> instances are available.
      */
     public static synchronized Locale[] getAvailableLocales()
-    {
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(BreakIteratorProvider.class);
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 12);
-    }
+        {
+            LocaleServiceProviderPool pool =
+                LocaleServiceProviderPool.getPool(BreakIteratorProvider.class);
+            return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 12);
+        }
 
     private static final class BreakIteratorCache {
 
