@@ -30,9 +30,7 @@ package edu.illinois.nondex.it;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 

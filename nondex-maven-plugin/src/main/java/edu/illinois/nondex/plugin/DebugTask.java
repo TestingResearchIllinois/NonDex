@@ -73,7 +73,7 @@ public class DebugTask {
 
         assert (!this.failingConfigurations.isEmpty());
 
-        Configuration failingOne = this.debugWithConfigurations(limits, this.failingConfigurations);
+        Configuration failingOne = this.debugWithConfigurations(this.failingConfigurations);
 
         Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
 
@@ -84,7 +84,7 @@ public class DebugTask {
         // The seeds that failed with the full test-suite no longer fail
         // Searching for different seeds
         Set<Configuration> retryWOtherSeeds = this.createNewSeedsToRetry();
-        failingOne = this.debugWithConfigurations(limits, retryWOtherSeeds);
+        failingOne = this.debugWithConfigurations(retryWOtherSeeds);
 
         if (failingOne != null) {
             return failingOne.toArgLine();
@@ -107,8 +107,7 @@ public class DebugTask {
         return retryWOtherSeeds;
     }
 
-    private Configuration debugWithConfigurations(Pair<Long, Long> limits,
-            Set<Configuration> failingConfigurations) {
+    private Configuration debugWithConfigurations(Set<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
             if (this.failsOnDry(config)) {

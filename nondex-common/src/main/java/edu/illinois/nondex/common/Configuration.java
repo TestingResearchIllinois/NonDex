@@ -87,6 +87,7 @@ public class Configuration {
         return sb.toString();
     }
 
+    @Override
     public String toString() {
         return ConfigurationDefaults.PROPERTY_FILTER + "=" + this.filter + "\n"
                 + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode + "\n"
@@ -155,7 +156,7 @@ public class Configuration {
 
     public int getInvocationCount() {
         if (this.invoCount == null) {
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.INVOCATIONS_FILE)
+            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.INVOCATIONS_FILE)
                     .toFile();
 
             try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
@@ -173,13 +174,13 @@ public class Configuration {
                 Logger.getGlobal().log(Level.SEVERE, "Some big error", thr);
             }
         }
-        return invoCount;
+        return this.invoCount;
     }
 
     public Collection<String> getFailedTests() {
-        if (failedTests == null) {
+        if (this.failedTests == null) {
             this.failedTests = new HashSet<>();
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, executionId, ConfigurationDefaults.FAILURES_FILE)
+            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.FAILURES_FILE)
                     .toFile();
 
             try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
@@ -193,7 +194,7 @@ public class Configuration {
                 Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
             }
         }
-        return Collections.unmodifiableCollection(failedTests);
+        return Collections.unmodifiableCollection(this.failedTests);
     }
 
     private long numChoices() {
@@ -202,9 +203,6 @@ public class Configuration {
     }
 
     public boolean hasLessChoicePoints(Configuration debConfig) {
-        if (this.numChoices() < debConfig.numChoices()) {
-            return true;
-        }
-        return false;
+        return (this.numChoices() < debConfig.numChoices());
     }
 }

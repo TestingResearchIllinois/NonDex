@@ -29,7 +29,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.plugin;
 
 import java.nio.file.Paths;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -58,9 +57,6 @@ public class NonDexSurefireExecution {
     private BuildPluginManager pluginManager;
 
     private String originalArgLine;
-
-    private Set<String> failedTests;
-    private Integer invoCount = null;
 
     private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
             MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
@@ -125,10 +121,11 @@ public class NonDexSurefireExecution {
     }
 
     private Xpp3Dom createListenerConfiguration(Xpp3Dom configuration) {
-        if (configuration == null) {
-            configuration = new Xpp3Dom("configuration");
+        Xpp3Dom configNode = configuration;
+        if (configNode == null) {
+            configNode = new Xpp3Dom("configuration");
         }
-        Xpp3Dom properties = this.createChildIfNotExists(configuration, "properties");
+        Xpp3Dom properties = this.createChildIfNotExists(configNode, "properties");
 
         if (properties.getChild("property") != null) {
             for (Xpp3Dom property : properties.getChildren()) {
@@ -136,13 +133,13 @@ public class NonDexSurefireExecution {
                     String value = property.getChild("value").getValue();
                     value = value + ",edu.illinois.nondex.plugin.TestStatusListener";
                     property.getChild("value").setValue(value);
-                    return configuration;
+                    return configNode;
                 }
             }
         }
 
         properties.addChild(this.makeListenerNode());
-        return configuration;
+        return configNode;
     }
 
     private Xpp3Dom makeListenerNode() {
