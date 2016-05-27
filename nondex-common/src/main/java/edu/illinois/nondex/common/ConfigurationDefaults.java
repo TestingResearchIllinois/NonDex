@@ -29,7 +29,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.io.File;
-import java.util.logging.Level;
 
 public class ConfigurationDefaults {
 
@@ -38,38 +37,38 @@ public class ConfigurationDefaults {
 
     public static final String PROPERTY_MODE = "nondex.mode";
     public static final String DEFAULT_MODE_STR = "FULL";
-    public static final Mode DEFAULT_MODE = Mode.valueOf(DEFAULT_MODE_STR);
+    public static final Mode DEFAULT_MODE = Mode.valueOf(ConfigurationDefaults.DEFAULT_MODE_STR);
 
 
     public static final String PROPERTY_SEED = "nondex.seed";
     public static final String DEFAULT_SEED_STR = "43258";
-    public static final int DEFAULT_SEED = new Integer(DEFAULT_SEED_STR);
+    public static final int DEFAULT_SEED = new Integer(ConfigurationDefaults.DEFAULT_SEED_STR);
 
     public static final String DEFAULT_RERUN_STR = "false";
     public static final String PROPERTY_RERUN = "nondex.rerun";
 
     public static final String PROPERTY_NUM_RUNS = "nondex.runs";
     public static final String DEFAULT_NUM_RUNS_STR = "3";
-    public static final int DEFAULT_NUM_RUNS = new Integer(DEFAULT_NUM_RUNS_STR);
+    public static final int DEFAULT_NUM_RUNS = new Integer(ConfigurationDefaults.DEFAULT_NUM_RUNS_STR);
 
     public static final String PROPERTY_FILTER = "nondex.filter";
     public static final String DEFAULT_FILTER = ".*";
 
     public static final String PROPERTY_START = "nondex.start";
     public static final String DEFAULT_START_STR = "0";
-    public static final long DEFAULT_START = new Long(DEFAULT_START_STR);
+    public static final long DEFAULT_START = new Long(ConfigurationDefaults.DEFAULT_START_STR);
 
     public static final String PROPERTY_END = "nondex.end";
     public static final String DEFAULT_END_STR = "9223372036854775807";
-    public static final long DEFAULT_END = new Long(DEFAULT_END_STR);
+    public static final long DEFAULT_END = new Long(ConfigurationDefaults.DEFAULT_END_STR);
 
     public static final String PROPERTY_EXECUTION_ID = "nondex.execid";
     public static final String NO_EXECUTION_ID = "NoId";
-    public static final String PROPERTY_DEFAULT_EXECUTION_ID = NO_EXECUTION_ID;
+    public static final String PROPERTY_DEFAULT_EXECUTION_ID = ConfigurationDefaults.NO_EXECUTION_ID;
 
     public static final String PROPERTY_RUN_ID = "nondex.runId";
     public static final String LATEST_RUN_ID = "LATEST";
-    public static final String PROPERTY_DEFAULT_RUN_ID = LATEST_RUN_ID;
+    public static final String PROPERTY_DEFAULT_RUN_ID = ConfigurationDefaults.LATEST_RUN_ID;
 
     public static final String NONDEX_DIR = ".nondex";
     public static final String INSTRUMENTATION_JAR = "nondex-instr.jar";

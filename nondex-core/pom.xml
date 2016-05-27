@@ -14,20 +14,25 @@
 
   <build>
     <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.3</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-            <compilerArgs>
-              <arg>-XDignore.symbol.file</arg>
-            </compilerArgs>
-            <fork>true</fork>
-          </configuration>
-        </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <compilerArgs>
+            <arg>-XDignore.symbol.file</arg>
+          </compilerArgs>
+          <fork>true</fork>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -38,7 +43,6 @@
 		    <goals>
 			  <goal>shade</goal>
 		    </goals>
-
             <configuration>
               <relocations>
                 <relocation>
@@ -49,20 +53,6 @@
             </configuration>
 	      </execution>
 	    </executions>
-      </plugin>
-
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
-        <configuration>
-          <argLine>-Xbootclasspath/p:${project.basedir}/../nondex-instrumentation/resources/out.jar:${project.build.directory}/../../nondex-common/target/classes/</argLine>
-          <systemPropertyVariables>
-            <buildDirectory>${project.build.directory}</buildDirectory>
-          </systemPropertyVariables>
-          <rerunFailingTestsCount>2</rerunFailingTestsCount>
-        </configuration>
       </plugin>
     </plugins>
   </build>

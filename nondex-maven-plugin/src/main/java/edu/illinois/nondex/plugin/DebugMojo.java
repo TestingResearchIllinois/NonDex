@@ -48,7 +48,6 @@ import edu.illinois.nondex.common.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -66,15 +65,15 @@ public class DebugMojo extends AbstractNondexMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
-        parseExecutions();
-        parseTests();
+        this.parseExecutions();
+        this.parseTests();
 
         Map<String, String> testToRepro = new HashMap<>();
 
-        for (String test : testsFailing.keySet()) {
-            runSinleSurefireTest(test);
-            DebugTask debugging = new DebugTask(test, surefire, originalArgLine,
-                    mavenProject, mavenSession, pluginManager, testsFailing.get(test));
+        for (String test : this.testsFailing.keySet()) {
+            this.runSinleSurefireTest(test);
+            DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine,
+                    this.mavenProject, this.mavenSession, this.pluginManager, this.testsFailing.get(test));
             String repro = debugging.debug();
             Logger.getGlobal().log(Level.SEVERE, "REPRO: mvn nondex:nondex " + repro);
 
@@ -88,7 +87,7 @@ public class DebugMojo extends AbstractNondexMojo {
     }
 
     private void runSinleSurefireTest(String test) {
-        Xpp3Dom configElement = (Xpp3Dom)surefire.getConfiguration();
+        Xpp3Dom configElement = (Xpp3Dom)this.surefire.getConfiguration();
         if (configElement == null) {
             configElement = new Xpp3Dom("configuration");
         }

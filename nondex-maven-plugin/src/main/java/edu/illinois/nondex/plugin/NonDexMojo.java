@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
-import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
@@ -54,27 +53,28 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class NonDexMojo extends AbstractNondexMojo {
 
-    List<NonDexSurefireExecution> executions = new LinkedList<>();
+    private List<NonDexSurefireExecution> executions = new LinkedList<>();
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
         MojoExecutionException allExceptions = null;
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
-                    new NonDexSurefireExecution(mode, computeIthSeed(i),
-                            Pattern.compile(filter), this.start, this.end, surefire, originalArgLine, mavenProject,
-                            mavenSession, pluginManager);
-            executions.add(execution);
+                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
+                            Pattern.compile(this.filter), this.start, this.end, this.surefire,
+                            this.originalArgLine, this.mavenProject, this.mavenSession, this.pluginManager);
+            this.executions.add(execution);
             try {
                 execution.run();
             } catch (MojoExecutionException ex) {
                 allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
             }
-            writeCurrentRunInfo(execution);
+            this.writeCurrentRunInfo(execution);
         }
         Configuration config = this.executions.get(0).getConfiguration();
 
-        printSummary();
+        this.printSummary();
 
         try {
             Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
@@ -96,7 +96,7 @@ public class NonDexMojo extends AbstractNondexMojo {
     private void printSummary() {
         Set<String> allFailures = new HashSet<>();
         this.getLog().info("NonDex SUMMARY:");
-        for (NonDexSurefireExecution exec : executions) {
+        for (NonDexSurefireExecution exec : this.executions) {
             this.getLog().info("*********");
             this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine());
             Collection<String> failedTests = exec.getConfiguration().getFailedTests();

@@ -5,6 +5,7 @@ Copyright (c) 2015 Owolabi Legunsen
 Copyright (c) 2015 Darko Marinov
 Copyright (c) 2015 August Shi
 
+
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
@@ -25,37 +26,27 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package edu.illinois.nondex.it;
+package edu.illinois.nondex.core;
 
+import java.util.HashMap;
+
+import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-
-public class AppTest 
-{
- 
+public class ClassTest {
 
     @Test
-    public void testHashSet() {
-        Set s = new HashSet();
-
-        for (int i  = 0; i<1000000; i++)
-
-            s.add(i);
-
-        for (int i = 10; i<1000000; i++)
-            s.remove(i);
-
-        Iterator it = s.iterator();
-        it.next();
-        it.next();
-        it.remove();
-        it.next();
-
-        // this is the natural order; 2 should be removed by the iterator remove above
-        assertEquals("To Debug", "[0, 2, 3, 4, 5, 6, 7, 8, 9]", s.toString());
+    public void smokeTest() {
+        Class<HashMap> clazz = HashMap.class;
+        Assert.assertNotEquals(clazz.getClasses(), clazz.getClasses());
+        Assert.assertNotEquals(clazz.getFields(), clazz.getFields());
+        Assert.assertNotEquals(clazz.getDeclaredFields(), clazz.getDeclaredFields());
+        Assert.assertNotEquals(clazz.getConstructors(), clazz.getConstructors());
+        Assert.assertNotEquals(clazz.getDeclaredConstructors(), clazz.getDeclaredConstructors());
+        Assert.assertNotEquals(clazz.getMethods(), clazz.getMethods());
+        Assert.assertNotEquals(clazz.getDeclaredMethods(), clazz.getDeclaredMethods());
+        //This class has no annotations, likely
+        //assertNotEquals(clazz.getAnnotations(), clazz.getAnnotations());
+        //assertNotEquals(clazz.getDeclaredAnnotations(), clazz.getDeclaredAnnotations());
     }
 }
