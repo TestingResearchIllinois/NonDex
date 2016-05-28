@@ -46,7 +46,7 @@ public class MethodShufflingAdder extends ClassVisitor {
             return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
                 @Override
                 public void visitInsn(int opcode) {
-                    if (opcode == Opcodes.CHECKCAST) {
+                    if (opcode == Opcodes.ARETURN) {
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/Method",
                                 "hashCode", "()I", false);
