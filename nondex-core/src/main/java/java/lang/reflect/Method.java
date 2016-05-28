@@ -273,7 +273,7 @@ public final class Method extends Executable {
      */
     @Override
     public Class<?>[] getExceptionTypes() {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(exceptionTypes.clone(), exceptionTypes.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(exceptionTypes.clone(), this.hashCode());
     }
 
     /**
@@ -286,7 +286,7 @@ public final class Method extends Executable {
     @Override
     public Type[] getGenericExceptionTypes() {
         return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getGenericExceptionTypes(),
-                super.getGenericExceptionTypes().hashCode());
+                this.hashCode());
     }
 
     /**
@@ -613,8 +613,7 @@ public final class Method extends Executable {
      * @since 1.5
      */
     public Annotation[] getDeclaredAnnotations()  {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getDeclaredAnnotations(),
-                super.getDeclaredAnnotations().hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getDeclaredAnnotations(), this.hashCode());
     }
 
     /**
