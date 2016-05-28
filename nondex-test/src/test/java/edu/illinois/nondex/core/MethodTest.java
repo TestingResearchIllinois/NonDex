@@ -38,10 +38,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class MethodTest {
-    Method myMethod;
+    private Method myMethod;
 
     @Before
-    public void setup() throws NoSuchMethodException {
+    public void setUp() throws NoSuchMethodException {
         Class clazz = ClassTestHelper.class;
         myMethod = clazz.getMethod("m1", Integer.class);
     }

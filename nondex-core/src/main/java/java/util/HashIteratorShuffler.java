@@ -32,8 +32,8 @@ import java.util.HashMap.HashIterator;
 import java.util.HashMap.Node;
 
 public class HashIteratorShuffler<K, V> {
-    Iterator<Node<K, V>> iter;
-    HashIterator hashIter;
+    private Iterator<Node<K, V>> iter;
+    private HashIterator hashIter;
 
     public HashIteratorShuffler(HashIterator hi) {
         hashIter = hi;

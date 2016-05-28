@@ -37,15 +37,15 @@ import org.objectweb.asm.Opcodes;
 public class HashMapShufflingAdder extends ClassVisitor {
 
     private class MethodProperties {
-        int access;
-        String name;
-        String desc;
-        String signature;
-        String[] exceptions;
+        private int access;
+        private String name;
+        private String desc;
+        private String signature;
+        private String[] exceptions;
     }
 
-    MethodProperties hasNextProp;
-    MethodProperties nextNodeProp;
+    private MethodProperties hasNextProp;
+    private MethodProperties nextNodeProp;
 
     public HashMapShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);

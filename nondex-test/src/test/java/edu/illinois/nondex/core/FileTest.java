@@ -39,11 +39,10 @@ import org.junit.Test;
 
 public class FileTest {
 
-    File myDir;
-    File myFile;
+    private File myDir;
 
     @Before
-    public void setup() {
+    public void setUp() {
         myDir = new File(".");
     }
 
@@ -57,8 +56,8 @@ public class FileTest {
         assertThat(myDir.listFiles(), not(equalTo(myDir.listFiles())));
     }
 
-    @Test
+    /*@Test
     public void listRootsTest() {
 
-    }
+    }*/
 }

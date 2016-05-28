@@ -37,10 +37,10 @@ import org.junit.Test;
 
 public class ClassTest {
 
-    Class<ClassTestHelper> clazz;
+    private Class<ClassTestHelper> clazz;
 
     @Before
-    public void setup() {
+    public void setUp() {
         // TODO: pick a class with annotations and test:
         // clazz.getAnnotations();
         // clazz.getDeclaredAnnotations();

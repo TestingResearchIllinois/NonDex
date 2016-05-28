@@ -38,10 +38,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FieldTest {
-    Field myField;
+    private Field myField;
 
     @Before
-    public void setup() throws NoSuchFieldException {
+    public void setUp() throws NoSuchFieldException {
         Class clazz = ClassTestHelper.class;
         myField = clazz.getField("field1");
     }

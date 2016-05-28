@@ -91,9 +91,7 @@ public class ClassTestHelper {
     @TestAnnotation3
     @TestAnnotation4
     public int m1(@TestAnnotation1 @TestAnnotation2 @TestAnnotation3 @TestAnnotation4 Integer param)
-            // TODO: this will be flaky because max throws count is 2. change max throws count or exclude this file
-            // and uncomment?
-            throws NullPointerException, ArithmeticException/*, ArrayIndexOutOfBoundsException, ClassCastException*/ {
+            throws NullPointerException, ArithmeticException, ArrayIndexOutOfBoundsException, ClassCastException {
         return param;
     }
 
