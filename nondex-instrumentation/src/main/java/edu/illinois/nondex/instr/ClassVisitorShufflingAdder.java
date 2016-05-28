@@ -59,6 +59,10 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
         apisReturningShufflableArrays.add("java/io/File.list");
         apisReturningShufflableArrays.add("java/io/File.listFiles");
         apisReturningShufflableArrays.add("java/io/File.listRoots");
+
+        apisReturningShufflableArrays.add("java/text/BreakIterator.getAvailableLocales");
+
+        apisReturningShufflableArrays.add("java/text/DateFormatSymbols.getZoneStrings");
     }
 
     public ClassVisitorShufflingAdder(ClassVisitor ca) {
@@ -84,9 +88,11 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
 
                 @Override
                 public void visitInsn(int opcode) {
-                    if (opcode == Opcodes.ARETURN) {
+                    if (opcode == Opcodes.ARETURN && "java/text/DateFormatSymbols.getZoneStrings".equals(methodId)) {
+                        this.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism",
+                                "extendZoneStrings", "([[Ljava/lang/String;)[[Ljava/lang/String;", false);
+                    } else if (opcode == Opcodes.ARETURN) {
                         shuffleJustReturnedArray();
-                        //System.out.println("We are visiting: " + methodId);
                     }
                     super.visitInsn(opcode);
                 }

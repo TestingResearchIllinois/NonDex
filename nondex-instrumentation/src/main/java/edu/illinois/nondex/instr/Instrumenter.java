@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -50,28 +52,35 @@ public final class Instrumenter {
         classesToShuffle.add("java/lang/Class.class");
         classesToShuffle.add("java/lang/reflect/Field.class");
         classesToShuffle.add("java/io/File.class");
+        classesToShuffle.add("java/text/DateFormatSymbols.class");
+        //classesToShuffle.add("java/lang/reflect/Method.class");
     }
 
     private Instrumenter() {
     }
 
-    private static ClassVisitor createHashMapShuffler(CheckClassAdapter ca) {
+    private static ClassVisitor createHashMapShuffler(ClassVisitor ca) {
         return new HashMapShufflingAdder(ca);
     }
 
-    private static ClassVisitor createConcurrentHashMapShuffler(CheckClassAdapter ca) {
+    private static ClassVisitor createConcurrentHashMapShuffler(ClassVisitor ca) {
         return new ConcurrentHashMapShufflingAdder(ca);
     }
 
-    private static void instrumentClass(String className,
-                                        Function<CheckClassAdapter, ClassVisitor> createShuffler,
-                                        ZipFile rt, ZipOutputStream outZip) throws IOException {
+    private static ClassVisitor createMethodShuffler(ClassVisitor ca) {
+        return new MethodShufflingAdder(ca);
+    }
 
+    private static void instrumentClass(String className,
+                                        Function<ClassVisitor, ClassVisitor> createShuffler,
+                                        ZipFile rt, ZipOutputStream outZip) throws IOException {
         InputStream classStream = rt.getInputStream(rt.getEntry(className));
         ClassReader cr = new ClassReader(classStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        CheckClassAdapter ca = new CheckClassAdapter(cw);
-        ClassVisitor cv = createShuffler.apply(ca);
+        // TODO address CheckClassAdapter problem,
+        // https://stackoverflow.com/questions/10647290/asm-compute-maxs-not-working-for-basic-test-case
+        //CheckClassAdapter ca = new CheckClassAdapter(cw);
+        ClassVisitor cv = createShuffler.apply(cw);
 
         cr.accept(cv, 0);
         byte[] arr = cw.toByteArray();
@@ -114,6 +123,7 @@ public final class Instrumenter {
         instrumentClass("java/util/HashMap$HashIterator.class", Instrumenter::createHashMapShuffler, rt, outZip);
         instrumentClass("java/util/concurrent/ConcurrentHashMap$Traverser.class",
                 Instrumenter::createConcurrentHashMapShuffler, rt, outZip);
+        instrumentClass("java/lang/reflect/Method.class", Instrumenter::createMethodShuffler, rt, outZip);
 
         outZip.close();
     }
