@@ -91,7 +91,7 @@ public class ClassTestHelper {
     @TestAnnotation3
     @TestAnnotation4
     public int m1(@TestAnnotation1 @TestAnnotation2 @TestAnnotation3 @TestAnnotation4 Integer param)
-            throws NullPointerException, ArithmeticException, ArrayIndexOutOfBoundsException, ClassCastException {
+        throws NullPointerException, ArithmeticException, ArrayIndexOutOfBoundsException, ClassCastException, Exception {
         return param;
     }
 

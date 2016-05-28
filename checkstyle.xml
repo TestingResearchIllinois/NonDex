@@ -35,7 +35,7 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
   <module name="TreeWalker">
     <module name="DeclarationOrder"/>
     <module name="ThrowsCount">
-      <property name="max" value="4"/>
+      <property name="max" value="5"/>
     </module>
     <module name="AvoidNestedBlocks"/>
     <module name="MissingOverride"/>
