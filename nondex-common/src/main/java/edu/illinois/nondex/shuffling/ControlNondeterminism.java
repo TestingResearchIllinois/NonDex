@@ -189,7 +189,7 @@ public class ControlNondeterminism {
                         ("COUNT:" + localCount + "\n").getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 Files.write(ControlNondeterminism.config.getInvocationsPath(),
-                        ("SHUFFLES:" + localShuffleCount + "\n").getBytes(),
+                        ("SHUFFLES:" + localShufflesCount + "\n").getBytes(),
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
