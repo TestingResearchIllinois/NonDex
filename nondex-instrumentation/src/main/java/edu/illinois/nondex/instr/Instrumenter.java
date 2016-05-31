@@ -32,9 +32,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -42,7 +39,6 @@ import java.util.zip.ZipOutputStream;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.util.CheckClassAdapter;
 
 
 public final class Instrumenter {
@@ -59,17 +55,10 @@ public final class Instrumenter {
     private Instrumenter() {
     }
 
-    private static ClassVisitor createHashMapShuffler(ClassVisitor ca) {
-        return new HashMapShufflingAdder(ca);
+    private interface Function<T, R> {
+        R apply(T param);
     }
 
-    private static ClassVisitor createConcurrentHashMapShuffler(ClassVisitor ca) {
-        return new ConcurrentHashMapShufflingAdder(ca);
-    }
-
-    private static ClassVisitor createMethodShuffler(ClassVisitor ca) {
-        return new MethodShufflingAdder(ca);
-    }
 
     private static void instrumentClass(String className,
                                         Function<ClassVisitor, ClassVisitor> createShuffler,
@@ -120,10 +109,27 @@ public final class Instrumenter {
         outZip.write(hashIterShuffBytes, 0, hashIterShuffBytes.length);
         outZip.closeEntry();
 
-        instrumentClass("java/util/HashMap$HashIterator.class", Instrumenter::createHashMapShuffler, rt, outZip);
+        instrumentClass("java/util/HashMap$HashIterator.class",
+                new Function<ClassVisitor, ClassVisitor>() {
+                    @Override
+                    public ClassVisitor apply(ClassVisitor cv) {
+                        return new HashMapShufflingAdder(cv);
+                    }
+                }, rt, outZip);
         instrumentClass("java/util/concurrent/ConcurrentHashMap$Traverser.class",
-                Instrumenter::createConcurrentHashMapShuffler, rt, outZip);
-        instrumentClass("java/lang/reflect/Method.class", Instrumenter::createMethodShuffler, rt, outZip);
+                new Function<ClassVisitor, ClassVisitor>() {
+                    @Override
+                    public ClassVisitor apply(ClassVisitor cv) {
+                        return new ConcurrentHashMapShufflingAdder(cv);
+                    }
+                }, rt, outZip);
+        instrumentClass("java/lang/reflect/Method.class",
+                new Function<ClassVisitor, ClassVisitor>() {
+                    @Override
+                    public ClassVisitor apply(ClassVisitor cv) {
+                        return new MethodShufflingAdder(cv);
+                    }
+                }, rt, outZip);
 
         outZip.close();
     }
