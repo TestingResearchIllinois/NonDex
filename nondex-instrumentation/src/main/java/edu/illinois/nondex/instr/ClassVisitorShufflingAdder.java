@@ -80,7 +80,7 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc,
             String signature, String[] exceptions) {
 
-        String methodId = this.cn + "." + name;
+        final String methodId = this.cn + "." + name;
 
         if (apisReturningShufflableArrays.contains(methodId)) {
 
