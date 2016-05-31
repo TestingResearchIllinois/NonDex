@@ -92,7 +92,7 @@
         <executions>
           <execution>
             <id>instrRun</id>
-            <phase>package</phase>
+            <phase>test</phase>
             <goals>
               <goal>java</goal>
             </goals>
