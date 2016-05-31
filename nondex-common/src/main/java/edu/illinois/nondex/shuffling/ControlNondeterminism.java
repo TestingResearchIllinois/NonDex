@@ -179,15 +179,17 @@ public class ControlNondeterminism {
         public void run() {
             ConfigurationDefaults.createNondexDirIfNeeded();
             try {
+                int localCount = ControlNondeterminism.count;
+                int localShufflesCount = ControlNondeterminism.shuffleCount;
                 Files.write(ControlNondeterminism.config.getConfigPath(),
                         ControlNondeterminism.config.toString().getBytes(),
                         StandardOpenOption.CREATE,
                         StandardOpenOption.APPEND);
                 Files.write(ControlNondeterminism.config.getInvocationsPath(),
-                        ("COUNT:" + ControlNondeterminism.count + "\n").getBytes(),
+                        ("COUNT:" + localCount + "\n").getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 Files.write(ControlNondeterminism.config.getInvocationsPath(),
-                        ("SHUFFLES:" + ControlNondeterminism.shuffleCount + "\n").getBytes(),
+                        ("SHUFFLES:" + localShuffleCount + "\n").getBytes(),
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
