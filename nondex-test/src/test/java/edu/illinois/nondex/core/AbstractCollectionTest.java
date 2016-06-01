@@ -47,16 +47,6 @@ public abstract class AbstractCollectionTest<T> {
                 Assert.assertNotEquals("FULL is improperly running", str, tempStr);
                 this.assertEqualstUnordered("Does not match permutation", str, tempStr);
                 break;
-            case ID:
-                Assert.assertEquals("ID should return the same when collection is unchanged", str, derived.toString());
-                this.addRemoveDS(ds);
-                Assert.assertNotEquals("ID should return different when collection is modified", str, derived.toString());
-                break;
-            case EQ:
-                Assert.assertEquals("EQ is improperly running", str, derived.toString());
-                this.addRemoveDS(ds);
-                Assert.assertEquals("EQ should return the same for two equal collections", str, derived.toString());
-                break;
             case ONE:
                 Assert.assertEquals("ONE is improperly running", str, derived.toString());
                 break;

@@ -44,8 +44,8 @@ import edu.illinois.nondex.common.Logger;
 
 public class ControlNondeterminism {
 
-    public static int count = 0;
-    public static int shuffleCount = 0;
+    private static int count = 0;
+    private static int shuffleCount = 0;
 
     private static final Logger logger = Logger.getGlobal();
     private static Random r;
@@ -62,27 +62,20 @@ public class ControlNondeterminism {
         return ControlNondeterminism.config;
     }
 
-    private static Random getRandomnessSource(int id, int modCount, int objHash, String source) {
+    private static Random getRandomnessSource(String source) {
         ControlNondeterminism.logger.log(Level.FINEST, "getRandomnessSource for API: " + source);
         if (!ControlNondeterminism.config.filter.matcher(source).matches()) {
             ControlNondeterminism.logger.log(Level.FINE, "Source does not apply " + source + "");
-            return null;
             // Use null to denote do not randomize, only if passed
             // in source option and stack trace does not contain
+            return null;
         }
 
         switch (ControlNondeterminism.config.mode) {
             case FULL:
-                //if (r == null) {
-                //    r = new Random(config.SEED);
-                //}
                 return ControlNondeterminism.r;
             case ONE:
                 return new Random(ControlNondeterminism.config.seed);
-            case ID:
-                return new Random(ControlNondeterminism.config.seed + id + modCount);
-            case EQ:
-                return new Random(ControlNondeterminism.config.seed + objHash);
             default:
                 ControlNondeterminism.logger.log(Level.WARNING, "Unrecognized option for shuffle kind. Not shuffling.");
                 return null;
@@ -90,7 +83,7 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> objs, int id, int modCount, int hash) {
-        return ControlNondeterminism.internalShuffle(objs, id, modCount, hash, ControlNondeterminism.getSource());
+        return ControlNondeterminism.internalShuffle(objs, ControlNondeterminism.getSource());
     }
 
     public static <T> T[] shuffle(T[] objs, int hash) {
@@ -99,59 +92,16 @@ public class ControlNondeterminism {
         }
 
         List<T> ls = Arrays.asList(objs);
-        ControlNondeterminism.internalShuffle(ls, hash, 0, hash, ControlNondeterminism.getSource());
+        ControlNondeterminism.internalShuffle(ls, ControlNondeterminism.getSource());
+        ls.toArray(objs);
 
-        int index = 0;
-        for (T l : ls) {
-            objs[index++] = l;
-        }
         return objs;
-
-    }
-
-    private static <T> List<T> internalShuffle(List<T> objs, int id, int modCount, int hash, String source) {
-        Random currentRandom = ControlNondeterminism.getRandomnessSource(id, modCount, hash, source);
-        // If randomness was null, that means do not shuffle
-        if (currentRandom == null) {
-            return objs;
-        }
-        List<T> ls = new ArrayList<T>(objs);
-        Collections.shuffle(ls, currentRandom);
-
-        // Determine if should return ordered or non-ordered
-        if (ControlNondeterminism.shouldExploreForInstance()) {
-            // If bounds are the same, then the one we want is when count is one
-            // of those bounds
-            if (ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
-                    && ControlNondeterminism.config.start == ControlNondeterminism.config.end
-                    && ControlNondeterminism.count == ControlNondeterminism.config.start) {
-                StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-                for (StackTraceElement traceElement : traces) {
-                    Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
-                }
-            }
-            ControlNondeterminism.count++;
-            ControlNondeterminism.shuffleCount++;
-            for (int i = 0; i < ls.size(); i++) {
-                objs.set(i, ls.get(i));
-            }
-            return objs;
-        } else {
-            ControlNondeterminism.count++;
-            return objs;
-        }
-    }
-
-    private static boolean shouldExploreForInstance() {
-        return ControlNondeterminism.count >= ControlNondeterminism.config.start
-                && ControlNondeterminism.count <= ControlNondeterminism.config.end;
     }
 
     public static String[][] extendZoneStrings(String[][] strs) {
         ControlNondeterminism.logger.log(Level.FINEST, "extendZoneStrings");
 
-        // passing 0 makes configs 1, 2, 3 the same thing.
-        Random currentRandom = ControlNondeterminism.getRandomnessSource(0, 0, 0, ControlNondeterminism.getSource());
+        Random currentRandom = ControlNondeterminism.getRandomnessSource(ControlNondeterminism.getSource());
 
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
@@ -167,6 +117,42 @@ public class ControlNondeterminism {
         }
         return strs;
 
+    }
+
+    private static <T> List<T> internalShuffle(List<T> objs, String source) {
+        Random currentRandom = ControlNondeterminism.getRandomnessSource(source);
+        // If randomness was null, that means do not shuffle
+        if (currentRandom == null) {
+            return objs;
+        }
+
+        List<T> ls = new ArrayList<T>(objs);
+        Collections.shuffle(ls, currentRandom);
+
+        // Determine if should return ordered or non-ordered
+        if (ControlNondeterminism.shouldExploreForInstance()) {
+            // TODO(gyori): Communicate this stack trace in a better way
+            if (ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
+                    && ControlNondeterminism.config.start == ControlNondeterminism.config.end
+                    && ControlNondeterminism.count == ControlNondeterminism.config.start) {
+                StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+                for (StackTraceElement traceElement : traces) {
+                    Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
+                }
+            }
+            ControlNondeterminism.count++;
+            ControlNondeterminism.shuffleCount++;
+
+            return ls;
+        } else {
+            ControlNondeterminism.count++;
+            return objs;
+        }
+    }
+
+    private static boolean shouldExploreForInstance() {
+        return ControlNondeterminism.count >= ControlNondeterminism.config.start
+                && ControlNondeterminism.count <= ControlNondeterminism.config.end;
     }
 
     private static String getSource() {
