@@ -28,15 +28,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class HashMapShufflingAdder extends ClassVisitor {
+
+    private boolean node;
 
     private class MethodProperties {
         private int access;
@@ -48,8 +47,6 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
     private MethodProperties hasNextProp;
     private MethodProperties nextNodeProp;
-
-    private boolean node;
 
     public HashMapShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
