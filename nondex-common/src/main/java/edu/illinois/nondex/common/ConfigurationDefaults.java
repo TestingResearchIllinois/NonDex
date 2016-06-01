@@ -70,7 +70,9 @@ public class ConfigurationDefaults {
     public static final String LATEST_RUN_ID = "LATEST";
     public static final String PROPERTY_DEFAULT_RUN_ID = ConfigurationDefaults.LATEST_RUN_ID;
 
+    public static final String PROPERTY_NONDEX_DIR = "nondex.dir";
     public static final String NONDEX_DIR = ".nondex";
+
     public static final String INSTRUMENTATION_JAR = "nondex-instr.jar";
     public static final String FAILURES_FILE = "failures";
     public static final String INVOCATIONS_FILE = "invocations";
@@ -80,8 +82,4 @@ public class ConfigurationDefaults {
 
     public static final String PROPERTY_LOGGING_LEVEL = "nondex.logging";
     public static final String DEFAULT_LOGGING_LEVEL = "CONFIG";
-
-    public static void createNondexDirIfNeeded() {
-        new File(ConfigurationDefaults.NONDEX_DIR).mkdir();
-    }
 }

@@ -68,11 +68,11 @@ public class NonDexSurefireExecution {
         this.pluginManager = pluginManager;
     }
 
-    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, Plugin surefire,
-            String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
+    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+            Plugin surefire, String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
             BuildPluginManager pluginManager) {
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
-        this.configuration = new Configuration(mode, seed, filter, start, end, null, this.executionId);
+        this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, null, this.executionId);
     }
 
     public NonDexSurefireExecution(Configuration config, int start, int end, String test, Plugin surefire,
@@ -81,7 +81,7 @@ public class NonDexSurefireExecution {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, test, this.executionId);
+                end, config.nondexDir, test, this.executionId);
     }
 
     public Configuration getConfiguration() {

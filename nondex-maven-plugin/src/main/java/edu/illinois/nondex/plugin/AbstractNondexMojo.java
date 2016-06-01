@@ -73,6 +73,9 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
     protected long end;
 
+    @Parameter(property = ConfigurationDefaults.PROPERTY_NONDEX_DIR, defaultValue = ConfigurationDefaults.NONDEX_DIR)
+    protected String nondexDir;
+
     @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS,
             defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
     protected int numRuns;

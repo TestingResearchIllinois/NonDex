@@ -177,7 +177,7 @@ public class ControlNondeterminism {
     private static class JVMShutdownHook extends Thread {
         @Override
         public void run() {
-            ConfigurationDefaults.createNondexDirIfNeeded();
+            ControlNondeterminism.config.createNondexDirIfNeeded();
             try {
                 int localCount = ControlNondeterminism.count;
                 int localShufflesCount = ControlNondeterminism.shuffleCount;

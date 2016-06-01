@@ -62,7 +62,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
                     new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
-                            Pattern.compile(this.filter), this.start, this.end, this.surefire,
+                            Pattern.compile(this.filter), this.start, this.end, this.nondexDir, this.surefire,
                             this.originalArgLine, this.mavenProject, this.mavenSession, this.pluginManager);
             this.executions.add(execution);
             try {
