@@ -273,7 +273,7 @@ public final class Method extends Executable {
      */
     @Override
     public Class<?>[] getExceptionTypes() {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(exceptionTypes.clone(), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(exceptionTypes.clone());
     }
 
     /**
@@ -285,8 +285,7 @@ public final class Method extends Executable {
      */
     @Override
     public Type[] getGenericExceptionTypes() {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getGenericExceptionTypes(),
-                this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getGenericExceptionTypes());
     }
 
     /**
@@ -613,7 +612,7 @@ public final class Method extends Executable {
      * @since 1.5
      */
     public Annotation[] getDeclaredAnnotations()  {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getDeclaredAnnotations(), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getDeclaredAnnotations());
     }
 
     /**
@@ -624,7 +623,7 @@ public final class Method extends Executable {
     public Annotation[][] getParameterAnnotations() {
 	Annotation[][] anns = sharedGetParameterAnnotations(parameterTypes, parameterAnnotations);
 	for (int i = 0;i<anns.length;i++) {
-	    anns[i] = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(anns[i], this.hashCode());
+	    anns[i] = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(anns[i]);
 	}
         return anns;
     }

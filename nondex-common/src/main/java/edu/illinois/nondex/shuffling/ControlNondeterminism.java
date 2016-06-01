@@ -82,11 +82,11 @@ public class ControlNondeterminism {
         }
     }
 
-    public static <T> List<T> shuffle(List<T> objs, int id, int modCount, int hash) {
+    public static <T> List<T> shuffle(List<T> objs) {
         return ControlNondeterminism.internalShuffle(objs, ControlNondeterminism.getSource());
     }
 
-    public static <T> T[] shuffle(T[] objs, int hash) {
+    public static <T> T[] shuffle(T[] objs) {
         if (objs == null) {
             return null;
         }

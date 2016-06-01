@@ -59,7 +59,7 @@ public class Configuration {
     private Integer invoCount = null;
     private Set<String> failedTests = null;
 
-    public Configuration(Mode mode, int seed, Pattern filter, String executionId) {
+    Configuration(Mode mode, int seed, Pattern filter, String executionId) {
         this(mode, seed, filter, 0, Long.MAX_VALUE, null, executionId);
     }
 

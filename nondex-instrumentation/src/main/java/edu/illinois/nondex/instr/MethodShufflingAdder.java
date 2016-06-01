@@ -47,12 +47,9 @@ public class MethodShufflingAdder extends ClassVisitor {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.ARETURN) {
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/Method",
-                                "hashCode", "()I", false);
                         super.visitMethodInsn(Opcodes.INVOKESTATIC,
                                 "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
-                                "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
+                                "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
                         super.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/Class;");
                     }
                     super.visitInsn(opcode);
@@ -64,9 +61,6 @@ public class MethodShufflingAdder extends ClassVisitor {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.ARETURN) {
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/Method",
-                                "hashCode", "()I", false);
                         super.visitMethodInsn(Opcodes.INVOKESTATIC,
                                 "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
                                 "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
@@ -81,9 +75,6 @@ public class MethodShufflingAdder extends ClassVisitor {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.ARETURN) {
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/Method",
-                                "hashCode", "()I", false);
                         super.visitMethodInsn(Opcodes.INVOKESTATIC,
                                 "edu/illinois/nondex/shuffling/ControlNondeterminism",
                                 "shuffle", "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
@@ -115,12 +106,9 @@ public class MethodShufflingAdder extends ClassVisitor {
                         super.visitVarInsn(Opcodes.ALOAD, 1);
                         super.visitVarInsn(Opcodes.ILOAD, 2);
                         super.visitInsn(Opcodes.AALOAD);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/reflect/Method",
-                                "hashCode", "()I", false);
                         super.visitMethodInsn(Opcodes.INVOKESTATIC,
                                 "edu/illinois/nondex/shuffling/ControlNondeterminism",
-                                "shuffle", "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
+                                "shuffle", "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
                         super.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/annotation/Annotation;");
                         super.visitInsn(Opcodes.AASTORE);
                         super.visitIincInsn(2, 1);

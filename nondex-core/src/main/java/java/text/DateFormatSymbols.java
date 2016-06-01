@@ -298,7 +298,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
     public static Locale[] getAvailableLocales() {
         LocaleServiceProviderPool pool=
             LocaleServiceProviderPool.getPool(DateFormatSymbolsProvider.class);
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 33);
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales());
     }
 
     /**
