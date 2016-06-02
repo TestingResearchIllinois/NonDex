@@ -7,8 +7,55 @@
   <artifactId>nondex</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
+
   <name>NonDex</name>
+  <description>A tool for finding strong assumptions on APIs with non-deterministic specifications.</description>
   <url>http://mir.cs.illinois.edu</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:TestingResearchIllinois/NonDex.git</connection>
+    <developerConnection>scm:git:git@github.com:TestingResearchIllinois/NonDex.git</developerConnection>
+    <url>git@github.com:TestingResearchIllinois/NonDex.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Alex Gyori</name>
+      <email>gyori@illinois.edu</email>
+      <organization>University of Illinois at Urbana-Champaign</organization>
+      <organizationUrl>http://mir.cs.illinois.edu/gyori</organizationUrl>
+    </developer>
+    <developer>
+      <name>Benjamin Lambeth</name>
+      <email>blambet2@illinois.edu</email>
+      <organization>University of Illinois at Urbana-Champaign</organization>
+    </developer>
+    <developer>
+      <name>Owolabi Legunsen</name>
+      <email>legunse2@illinois.edu</email>
+      <organization>University of Illinois at Urbana-Champaign</organization>
+      <organizationUrl>http://mir.cs.illinois.edu/legunsen</organizationUrl>
+    </developer>
+    <developer>
+      <name>Darko Marinov</name>
+      <email>marinov@illinois.edu</email>
+      <organization>University of Illinois at Urbana-Champaign</organization>
+      <organizationUrl>http://mir.cs.illinois.edu</organizationUrl>
+    </developer>
+    <developer>
+      <name>August Shi</name>
+      <email>awshi2@illinois.edu</email>
+      <organization>University of Illinois at Urbana-Champaign</organization>
+      <organizationUrl>http://mir.cs.illinois.edu/~awshi2</organizationUrl>
+    </developer>
+  </developers>
 
   <modules>
     <module>nondex-instrumentation</module>
