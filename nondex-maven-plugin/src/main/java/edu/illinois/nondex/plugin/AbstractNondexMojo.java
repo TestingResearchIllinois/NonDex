@@ -126,7 +126,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected String executionId;
 
     /**
-     * TODO(Gyori): Explain this.
+     * Select which run to perform debugging on. Default is the latest.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
@@ -145,7 +145,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.directory}")
     protected String projectBuildDir;
     @Parameter(defaultValue = "${basedir}")
-    protected File basedir;
+    protected File baseDir;
     @Parameter(property = "goal", alias = "mojo")
     protected String goal;
     @Component
@@ -173,9 +173,12 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
         }
 
         try {
-            Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId).toFile().mkdirs();
-            Instrumenter.instrument(rtJarPath.toString(), ConfigurationDefaults.NONDEX_DIR + "/"
-                    + ConfigurationDefaults.INSTRUMENTATION_JAR);
+            File fileForJar = Paths.get(this.baseDir.getAbsolutePath(),
+                    ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR).toFile();
+
+            fileForJar.mkdirs();
+            Instrumenter.instrument(rtJarPath.toString(), Paths.get(fileForJar.getAbsolutePath(),
+                    ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
         } catch (IOException exc) {
             exc.printStackTrace();
         }

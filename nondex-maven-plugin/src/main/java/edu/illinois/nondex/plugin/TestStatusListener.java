@@ -46,7 +46,7 @@ public class TestStatusListener extends RunListener {
 
     public TestStatusListener() {
         this.runConfig = Configuration.parseArgs();
-        ConfigurationDefaults.createNondexDirIfNeeded();
+        this.runConfig.createNondexDirIfNeeded();
     }
 
     private void log(String testName) {
