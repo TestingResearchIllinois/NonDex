@@ -77,7 +77,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected Mode mode;
 
     /**
-     * Regex filter used to whitelist the sources of non-determinism to explore
+     * Regex filter used to whitelist the sources of non-determinism to explore.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_FILTER, defaultValue = ConfigurationDefaults.DEFAULT_FILTER)
     protected String filter;
@@ -104,7 +104,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     /**
      * The number of seeds to use for shuffle. NonDex will obtain other seeds
      * apart from the specified (or default) seed from the current run and
-     * some internal factor
+     * some internal factor.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS,
             defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
@@ -126,14 +126,14 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected String executionId;
 
     /**
-     * TODO(Gyori): Explain this
+     * TODO(Gyori): Explain this.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
     protected String runId;
 
     /**
-     * Same as the levels defined in java.util.logging.Level
+     * Same as the levels defined in java.util.logging.Level.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_LOGGING_LEVEL,
             defaultValue = ConfigurationDefaults.DEFAULT_LOGGING_LEVEL)
