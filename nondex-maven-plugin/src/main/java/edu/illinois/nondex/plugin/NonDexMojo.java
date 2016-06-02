@@ -30,6 +30,7 @@ package edu.illinois.nondex.plugin;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
+import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
@@ -62,8 +64,12 @@ public class NonDexMojo extends AbstractNondexMojo {
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
                     new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
-                            Pattern.compile(this.filter), this.start, this.end, this.surefire,
-                            this.originalArgLine, this.mavenProject, this.mavenSession, this.pluginManager);
+                            Pattern.compile(this.filter), this.start, this.end,
+                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
+                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
+                                .toString(),
+                            this.surefire, this.originalArgLine, this.mavenProject,
+                            this.mavenSession, this.pluginManager);
             this.executions.add(execution);
             try {
                 execution.run();
