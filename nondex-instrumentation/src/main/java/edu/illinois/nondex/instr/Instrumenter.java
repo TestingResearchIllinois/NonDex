@@ -32,6 +32,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -63,7 +65,13 @@ public final class Instrumenter {
     private static void instrumentClass(String className,
                                         Function<ClassVisitor, ClassVisitor> createShuffler,
                                         ZipFile rt, ZipOutputStream outZip) throws IOException {
-        InputStream classStream = rt.getInputStream(rt.getEntry(className));
+        InputStream classStream = null;
+        try {
+            classStream = rt.getInputStream(rt.getEntry(className));
+        } catch (IOException e) {
+            Logger.getGlobal().log(Level.SEVERE, "Cannot find " + className + " are you sure this is a valid rt.jar?");
+            e.printStackTrace();
+        }
         ClassReader cr = new ClassReader(classStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         // TODO address CheckClassAdapter problem,
@@ -81,11 +89,25 @@ public final class Instrumenter {
     }
 
     public static final void instrument(String rtJar, String outJar) throws IOException {
-        ZipFile rt = new ZipFile(rtJar);
-        ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(outJar));
+        ZipFile rt = null;
+        ZipOutputStream outZip = null;
+        try {
+            rt = new ZipFile(rtJar);
+            outZip = new ZipOutputStream(new FileOutputStream(outJar));
+        } catch (IOException e) {
+            Logger.getGlobal().log(Level.SEVERE, "Are you sure you provided a valid path to your rt.jar?");
+            e.printStackTrace();
+        }
+
 
         for (String cl : classesToShuffle) {
-            InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
+            InputStream clInputStream = null;
+            try {
+                clInputStream = rt.getInputStream(rt.getEntry(cl));
+            } catch (IOException e) {
+                Logger.getGlobal().log(Level.SEVERE, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
+                e.printStackTrace();
+            }
 
             ClassReader cr = new ClassReader(clInputStream);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
