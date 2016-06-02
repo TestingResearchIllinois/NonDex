@@ -16,11 +16,11 @@ public class HashIteratorShufflerNodeASMDump implements Opcodes {
         cw.visitInnerClass("java/util/HashMap$HashIterator", "java/util/HashMap", "HashIterator", ACC_ABSTRACT);
 
         {
-            fv = cw.visitField(0, "iter", "Ljava/util/Iterator;", "Ljava/util/Iterator<Ljava/util/HashMap$Node<TK;TV;>;>;", null);
+            fv = cw.visitField(ACC_PRIVATE, "iter", "Ljava/util/Iterator;", "Ljava/util/Iterator<Ljava/util/HashMap$Node<TK;TV;>;>;", null);
             fv.visitEnd();
         }
         {
-            fv = cw.visitField(0, "hashIter", "Ljava/util/HashMap$HashIterator;", null, null);
+            fv = cw.visitField(ACC_PRIVATE, "hashIter", "Ljava/util/HashMap$HashIterator;", null, null);
             fv.visitEnd();
         }
         {
@@ -53,20 +53,14 @@ public class HashIteratorShufflerNodeASMDump implements Opcodes {
             mv.visitLabel(l1);
             mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I", false);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD, "java/util/HashIteratorShufflerNode", "hashIter", "Ljava/util/HashMap$HashIterator;");
-            mv.visitFieldInsn(GETFIELD, "java/util/HashMap$HashIterator", "expectedModCount", "I");
-            mv.visitIntInsn(BIPUSH, 10);
-            mv.visitMethodInsn(INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle", "(Ljava/util/List;III)Ljava/util/List;", false);
-            mv.visitInsn(POP);
+            mv.visitMethodInsn(INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle", "(Ljava/util/List;)Ljava/util/List;", false);
+            mv.visitVarInsn(ASTORE, 2);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 2);
             mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "iterator", "()Ljava/util/Iterator;", true);
             mv.visitFieldInsn(PUTFIELD, "java/util/HashIteratorShufflerNode", "iter", "Ljava/util/Iterator;");
             mv.visitInsn(RETURN);
-            mv.visitMaxs(4, 3);
+            mv.visitMaxs(2, 3);
             mv.visitEnd();
         }
         {
