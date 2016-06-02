@@ -102,11 +102,18 @@ public final class Instrumenter {
             outZip.closeEntry();
         }
 
-        HashIteratorShufflerASMDump hashIterShuffDump = new HashIteratorShufflerASMDump();
-        ZipEntry hashIterShuffEntry = new ZipEntry("java/util/HashIteratorShuffler.class");
-        outZip.putNextEntry(hashIterShuffEntry);
-        byte[] hashIterShuffBytes = hashIterShuffDump.dump();
-        outZip.write(hashIterShuffBytes, 0, hashIterShuffBytes.length);
+        HashIteratorShufflerNodeASMDump hashIterShuffNodeDump = new HashIteratorShufflerNodeASMDump();
+        ZipEntry hashIterShuffNodeEntry = new ZipEntry("java/util/HashIteratorShufflerNode.class");
+        outZip.putNextEntry(hashIterShuffNodeEntry);
+        byte[] hashIterShuffNodeBytes = hashIterShuffNodeDump.dump();
+        outZip.write(hashIterShuffNodeBytes, 0, hashIterShuffNodeBytes.length);
+        outZip.closeEntry();
+
+        HashIteratorShufflerEntryASMDump hashIterShuffEntryDump = new HashIteratorShufflerEntryASMDump();
+        ZipEntry hashIterShuffEntryEntry = new ZipEntry("java/util/HashIteratorShufflerEntry.class");
+        outZip.putNextEntry(hashIterShuffEntryEntry);
+        byte[] hashIterShuffEntryBytes = hashIterShuffEntryDump.dump();
+        outZip.write(hashIterShuffEntryBytes, 0, hashIterShuffEntryBytes.length);
         outZip.closeEntry();
 
         instrumentClass("java/util/HashMap$HashIterator.class",
