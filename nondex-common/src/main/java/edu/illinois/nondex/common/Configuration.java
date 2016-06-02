@@ -54,25 +54,35 @@ public class Configuration {
     public final long start;
     public final long end;
 
+    public final String nondexDir;
+    public final String nondexJarDir;
+
     public final String testName;
 
     private Integer invoCount = null;
     private Set<String> failedTests = null;
 
-    Configuration(Mode mode, int seed, Pattern filter, String executionId) {
-        this(mode, seed, filter, 0, Long.MAX_VALUE, null, executionId);
+    protected Configuration(Mode mode, int seed, Pattern filter, String executionId) {
+        this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_NONDEX_DIR,
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId);
     }
 
-    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String testName,
-            String executionId) {
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+            String nondexJarDir, String testName, String executionId) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
         this.start = start;
         this.end = end;
+        this.nondexDir = nondexDir;
+        this.nondexJarDir = nondexJarDir;
         this.testName = testName;
         this.executionId = executionId;
         this.createExecutionDirIfNeeded();
+    }
+
+    public void createNondexDirIfNeeded() {
+        new File(this.nondexDir).mkdir();
     }
 
     public String toArgLine() {
@@ -82,6 +92,8 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
         sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);
         return sb.toString();
@@ -94,6 +106,8 @@ public class Configuration {
                 + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + "\n"
                 + ConfigurationDefaults.PROPERTY_START + "=" + this.start + "\n"
                 + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n"
+                + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir + "\n"
+                + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir + "\n"
                 + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId + "\n"
                 + "test=" + (this.testName == null ? "" : this.testName);
     }
@@ -121,42 +135,52 @@ public class Configuration {
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
 
+        final String nondexDir = props.getProperty(ConfigurationDefaults.PROPERTY_NONDEX_DIR,
+                ConfigurationDefaults.DEFAULT_NONDEX_DIR);
+
+        final String nondexJarDir = props.getProperty(ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR,
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR);
+
         final Level level = Level.parse(props.getProperty(
                 ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
         Logger.getGlobal().setLoggineLevel(level);
 
         final String testName = props.getProperty("test", null);
 
-        return new Configuration(nonDetKind, seed, filter, start, end, testName, executionId);
+        return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId);
     }
 
     public void createExecutionDirIfNeeded() {
-        Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId).toFile().mkdirs();
+        Paths.get(this.nondexDir, this.executionId).toFile().mkdirs();
     }
 
     public Path getFailuresPath() {
-        return Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.FAILURES_FILE);
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE);
     }
 
     public Path getInvocationsPath() {
-        return Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.INVOCATIONS_FILE);
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.INVOCATIONS_FILE);
     }
 
     public Path getConfigPath() {
-        return Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.CONFIGURATION_FILE);
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.CONFIGURATION_FILE);
     }
 
     public Path getRunFilePath() {
-        return Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId + ".run");
+        return Paths.get(this.nondexDir, this.executionId + ".run");
     }
 
     public Path getLatestRunFilePath() {
-        return Paths.get(ConfigurationDefaults.NONDEX_DIR, ConfigurationDefaults.LATEST_RUN_ID);
+        return Paths.get(this.nondexDir, ConfigurationDefaults.LATEST_RUN_ID);
+    }
+
+    public Path getPathToJar() {
+        return Paths.get(this.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR);
     }
 
     public int getInvocationCount() {
         if (this.invoCount == null) {
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId,
+            File failed = Paths.get(this.nondexDir, this.executionId,
                     ConfigurationDefaults.INVOCATIONS_FILE).toFile();
 
             try (BufferedReader br = new BufferedReader(new FileReader(failed))) {
@@ -180,7 +204,7 @@ public class Configuration {
     public Collection<String> getFailedTests() {
         if (this.failedTests == null) {
             this.failedTests = new HashSet<>();
-            File failed = Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId, ConfigurationDefaults.FAILURES_FILE)
+            File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)
                     .toFile();
 
             try (BufferedReader br = new BufferedReader(new FileReader(failed))) {

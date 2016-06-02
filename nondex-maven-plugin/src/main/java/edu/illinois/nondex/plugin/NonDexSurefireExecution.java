@@ -68,11 +68,12 @@ public class NonDexSurefireExecution {
         this.pluginManager = pluginManager;
     }
 
-    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, Plugin surefire,
-            String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
-            BuildPluginManager pluginManager) {
+    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+            String nondexJarDir, Plugin surefire, String originalArgLine, MavenProject mavenProject,
+            MavenSession mavenSession, BuildPluginManager pluginManager) {
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
-        this.configuration = new Configuration(mode, seed, filter, start, end, null, this.executionId);
+        this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
+                this.executionId);
     }
 
     public NonDexSurefireExecution(Configuration config, int start, int end, String test, Plugin surefire,
@@ -81,7 +82,7 @@ public class NonDexSurefireExecution {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, test, this.executionId);
+                end, config.nondexDir, config.nondexJarDir, test, this.executionId);
     }
 
     public Configuration getConfiguration() {
@@ -115,7 +116,7 @@ public class NonDexSurefireExecution {
     }
 
     private String getPathToNondexJar(String localRepo) {
-        return ConfigurationDefaults.NONDEX_DIR + "/" + ConfigurationDefaults.INSTRUMENTATION_JAR
+        return this.configuration.nondexJarDir + "/" + ConfigurationDefaults.INSTRUMENTATION_JAR
                 + ":" + Paths.get(localRepo, "edu/illinois/nondex-common/" + ConfigurationDefaults.VERSION
                 + "/nondex-common-" + ConfigurationDefaults.VERSION + ".jar").toString();
     }
