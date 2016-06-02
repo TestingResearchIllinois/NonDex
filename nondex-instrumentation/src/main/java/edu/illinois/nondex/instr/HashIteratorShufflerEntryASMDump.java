@@ -1,12 +1,5 @@
 package edu.illinois.nondex.instr;
-
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-
+import org.objectweb.asm.*;
 public class HashIteratorShufflerEntryASMDump implements Opcodes {
 
     public static byte[] dump () {
@@ -23,11 +16,11 @@ public class HashIteratorShufflerEntryASMDump implements Opcodes {
         cw.visitInnerClass("java/util/HashMap$HashIterator", "java/util/HashMap", "HashIterator", ACC_ABSTRACT);
 
         {
-            fv = cw.visitField(0, "iter", "Ljava/util/Iterator;", "Ljava/util/Iterator<Ljava/util/HashMap$Entry<TK;TV;>;>;", null);
+            fv = cw.visitField(ACC_PRIVATE, "iter", "Ljava/util/Iterator;", "Ljava/util/Iterator<Ljava/util/HashMap$Entry<TK;TV;>;>;", null);
             fv.visitEnd();
         }
         {
-            fv = cw.visitField(0, "hashIter", "Ljava/util/HashMap$HashIterator;", null, null);
+            fv = cw.visitField(ACC_PRIVATE, "hashIter", "Ljava/util/HashMap$HashIterator;", null, null);
             fv.visitEnd();
         }
         {
@@ -60,13 +53,7 @@ public class HashIteratorShufflerEntryASMDump implements Opcodes {
             mv.visitLabel(l1);
             mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I", false);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD, "java/util/HashIteratorShufflerEntry", "hashIter", "Ljava/util/HashMap$HashIterator;");
-            mv.visitFieldInsn(GETFIELD, "java/util/HashMap$HashIterator", "expectedModCount", "I");
-            mv.visitIntInsn(BIPUSH, 10);
-            mv.visitMethodInsn(INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle", "(Ljava/util/List;III)Ljava/util/List;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle", "(Ljava/util/List;)Ljava/util/List;", false);
             mv.visitInsn(POP);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 2);
