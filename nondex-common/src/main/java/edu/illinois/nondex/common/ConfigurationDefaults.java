@@ -39,7 +39,7 @@ public class ConfigurationDefaults {
 
 
     public static final String PROPERTY_SEED = "nondex.seed";
-    public static final String DEFAULT_SEED_STR = "9923";
+    public static final String DEFAULT_SEED_STR = "9928532";
     public static final int DEFAULT_SEED = new Integer(ConfigurationDefaults.DEFAULT_SEED_STR);
 
     public static final String DEFAULT_RERUN_STR = "false";
