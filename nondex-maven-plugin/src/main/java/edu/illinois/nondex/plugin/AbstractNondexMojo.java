@@ -126,7 +126,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     protected String executionId;
 
     /**
-     * TODO(Gyori): Explain this.
+     * Select which run to perform debugging on. Default is the latest.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
