@@ -55,6 +55,7 @@ public class Configuration {
     public final long end;
 
     public final String nondexDir;
+    public final String nondexJarDir;
 
     public final String testName;
 
@@ -62,17 +63,19 @@ public class Configuration {
     private Set<String> failedTests = null;
 
     protected Configuration(Mode mode, int seed, Pattern filter, String executionId) {
-        this(mode, seed, filter, 0, Long.MAX_VALUE, null, null, executionId);
+        this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_NONDEX_DIR,
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId);
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String testName, String executionId) {
+            String nondexJarDir, String testName, String executionId) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
         this.start = start;
         this.end = end;
         this.nondexDir = nondexDir;
+        this.nondexJarDir = nondexJarDir;
         this.testName = testName;
         this.executionId = executionId;
         this.createExecutionDirIfNeeded();
@@ -90,6 +93,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
         sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);
         return sb.toString();
@@ -103,6 +107,7 @@ public class Configuration {
                 + ConfigurationDefaults.PROPERTY_START + "=" + this.start + "\n"
                 + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n"
                 + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir + "\n"
+                + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir + "\n"
                 + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId + "\n"
                 + "test=" + (this.testName == null ? "" : this.testName);
     }
@@ -131,7 +136,10 @@ public class Configuration {
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
 
         final String nondexDir = props.getProperty(ConfigurationDefaults.PROPERTY_NONDEX_DIR,
-                ConfigurationDefaults.NONDEX_DIR);
+                ConfigurationDefaults.DEFAULT_NONDEX_DIR);
+
+        final String nondexJarDir = props.getProperty(ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR,
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR);
 
         final Level level = Level.parse(props.getProperty(
                 ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
@@ -139,7 +147,7 @@ public class Configuration {
 
         final String testName = props.getProperty("test", null);
 
-        return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, testName, executionId);
+        return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId);
     }
 
     public void createExecutionDirIfNeeded() {
@@ -164,6 +172,10 @@ public class Configuration {
 
     public Path getLatestRunFilePath() {
         return Paths.get(this.nondexDir, ConfigurationDefaults.LATEST_RUN_ID);
+    }
+
+    public Path getPathToJar() {
+        return Paths.get(this.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR);
     }
 
     public int getInvocationCount() {

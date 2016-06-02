@@ -73,9 +73,6 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
     protected long end;
 
-    @Parameter(property = ConfigurationDefaults.PROPERTY_NONDEX_DIR, defaultValue = ConfigurationDefaults.NONDEX_DIR)
-    protected String nondexDir;
-
     @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS,
             defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
     protected int numRuns;
@@ -102,7 +99,7 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.directory}")
     protected String projectBuildDir;
     @Parameter(defaultValue = "${basedir}")
-    protected File basedir;
+    protected File baseDir;
     @Parameter(property = "goal", alias = "mojo")
     protected String goal;
     @Component
@@ -130,9 +127,12 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
         }
 
         try {
-            Paths.get(ConfigurationDefaults.NONDEX_DIR, this.executionId).toFile().mkdirs();
-            Instrumenter.instrument(rtJarPath.toString(), ConfigurationDefaults.NONDEX_DIR + "/"
-                    + ConfigurationDefaults.INSTRUMENTATION_JAR);
+            File fileForJar = Paths.get(this.baseDir.getAbsolutePath(),
+                    ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR).toFile();
+
+            fileForJar.mkdirs();
+            Instrumenter.instrument(rtJarPath.toString(), Paths.get(fileForJar.getAbsolutePath(),
+                    ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
         } catch (IOException exc) {
             exc.printStackTrace();
         }
