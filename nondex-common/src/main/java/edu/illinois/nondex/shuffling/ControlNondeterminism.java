@@ -92,7 +92,7 @@ public class ControlNondeterminism {
         }
 
         List<T> ls = Arrays.asList(objs);
-        ControlNondeterminism.internalShuffle(ls, ControlNondeterminism.getSource());
+        ls = ControlNondeterminism.internalShuffle(ls, ControlNondeterminism.getSource());
         ls.toArray(objs);
 
         return objs;

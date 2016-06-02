@@ -41,7 +41,7 @@ public class HashIteratorShuffler<K, V> {
         while (hashIter.original_hasNext()) {
             oneOrder.add(hashIter.original_nextNode());
         }
-        edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(oneOrder);
+        oneOrder = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(oneOrder);
 
         iter = oneOrder.iterator();
     }
