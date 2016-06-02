@@ -58,37 +58,83 @@ import org.apache.maven.project.MavenProject;
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public abstract class AbstractNondexMojo extends AbstractMojo {
     // NonDex Mojo specific properties
+    /**
+     * The seed that is used for randomization during shuffling.
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_SEED, defaultValue = ConfigurationDefaults.DEFAULT_SEED_STR)
     protected int seed;
 
+    /**
+     * The degree/level of shuffling that should be carried out.
+     * Section III.B in http://mir.cs.illinois.edu/~awshi2/publications/ICST2016.pdf)
+     * The options are:
+     * FULL: shuffle on each invocation of methods with nondeterministic specs
+     * ID: does not shuffle during invocations on objects with same identity
+     * EQ: does not shuffle during invocations on objects that are equal
+     * ONE: only shuffle on the first invocation of an object
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_MODE, defaultValue = ConfigurationDefaults.DEFAULT_MODE_STR)
     protected Mode mode;
 
+    /**
+     * Regex filter used to whitelist the sources of non-determinism to explore
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_FILTER, defaultValue = ConfigurationDefaults.DEFAULT_FILTER)
     protected String filter;
 
+    /**
+     * Starting point of the range of invocations to use during the debug phase.
+     * The minimum value is 0 and the maximum can be obtained from first running
+     * the nondex phase. If start and end have the same value, then only the
+     * invocation at that value is shuffled.
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_START_STR)
     protected long start;
 
+    /**
+     * Ending point of the range of invocations to use during the debug phase.
+     * The minimum value is 0 and the maximum can be obtained from first running
+     * the nondex phase. If start and end have the same value, then only the
+     * invocation at that value is shuffled.
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
     protected long end;
 
+
+    /**
+     * The number of seeds to use for shuffle. NonDex will obtain other seeds
+     * apart from the specified (or default) seed from the current run and
+     * some internal factor
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS,
             defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
     protected int numRuns;
 
+    /**
+     * Set this to "true" to rerun multiple times with only the specified (or
+     * default) seed. The number of reruns is equal to numRuns.
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RERUN,
             defaultValue = ConfigurationDefaults.DEFAULT_RERUN_STR)
     protected boolean rerun;
 
+    /**
+     * Unique ID for the current nondex execution.
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_EXECUTION_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID)
     protected String executionId;
 
+    /**
+     * TODO(Gyori): Explain this
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID,
             defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
     protected String runId;
 
+    /**
+     * Same as the levels defined in java.util.logging.Level
+     */
     @Parameter(property = ConfigurationDefaults.PROPERTY_LOGGING_LEVEL,
             defaultValue = ConfigurationDefaults.DEFAULT_LOGGING_LEVEL)
     protected String loggingLevel;
