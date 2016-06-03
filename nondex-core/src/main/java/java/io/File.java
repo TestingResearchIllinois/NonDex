@@ -1119,7 +1119,7 @@ public class File
         if (isInvalid()) {
             return null;
         }
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fs.list(this), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fs.list(this));
     }
 
     /**
@@ -1162,7 +1162,7 @@ public class File
                 v.add(names[i]);
             }
         }
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(v.toArray(new String[v.size()]), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(v.toArray(new String[v.size()]));
     }
 
     /**
@@ -1211,7 +1211,7 @@ public class File
         for (int i = 0; i < n; i++) {
             fs[i] = new File(ss[i], this);
         }
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fs, this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fs);
     }
 
     /**
@@ -1251,7 +1251,7 @@ public class File
         for (String s : ss)
             if ((filter == null) || filter.accept(this, s))
                 files.add(new File(s, this));
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(files.toArray(new File[files.size()]), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(files.toArray(new File[files.size()]));
     }
 
     /**
@@ -1291,7 +1291,7 @@ public class File
             if ((filter == null) || filter.accept(f))
                 files.add(f);
         }
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(files.toArray(new File[files.size()]), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(files.toArray(new File[files.size()]));
     }
 
     /**
@@ -1773,7 +1773,7 @@ public class File
      * @see java.nio.file.FileStore
      */
     public static File[] listRoots() {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fs.listRoots(), 0);
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(fs.listRoots());
     }
 
 

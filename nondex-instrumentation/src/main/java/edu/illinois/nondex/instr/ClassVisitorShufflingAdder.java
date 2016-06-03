@@ -98,11 +98,8 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
                 }
 
                 private void shuffleJustReturnedArray() {
-                    this.visitVarInsn(Opcodes.ALOAD, 0);
-                    this.visitMethodInsn(Opcodes.INVOKEVIRTUAL, ClassVisitorShufflingAdder.this.cn,
-                            "hashCode", "()I", false);
                     this.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism",
-                            "shuffle", "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
+                            "shuffle", "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
                 }
             };
         } else {

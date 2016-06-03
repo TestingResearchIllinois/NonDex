@@ -1123,14 +1123,14 @@ class Field extends AccessibleObject implements Member {
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
         Objects.requireNonNull(annotationClass);
 
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationSupport.getDirectlyAndIndirectlyPresent(declaredAnnotations(), annotationClass), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationSupport.getDirectlyAndIndirectlyPresent(declaredAnnotations(), annotationClass));
     }
 
     /**
      * {@inheritDoc}
      */
     public Annotation[] getDeclaredAnnotations()  {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(declaredAnnotations()), this.hashCode());
+        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(declaredAnnotations()));
     }
 
     private transient Map<Class<? extends Annotation>, Annotation> declaredAnnotations;
