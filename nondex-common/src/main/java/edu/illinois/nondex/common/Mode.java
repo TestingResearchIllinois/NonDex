@@ -29,5 +29,5 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 public enum Mode {
-    FULL, ID, EQ, ONE
+    FULL, ONE
 }

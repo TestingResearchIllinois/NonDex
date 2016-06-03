@@ -594,7 +594,7 @@ public abstract class BreakIterator implements Cloneable
         {
             LocaleServiceProviderPool pool =
                 LocaleServiceProviderPool.getPool(BreakIteratorProvider.class);
-            return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales(), 12);
+            return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(pool.getAvailableLocales());
         }
 
     private static final class BreakIteratorCache {

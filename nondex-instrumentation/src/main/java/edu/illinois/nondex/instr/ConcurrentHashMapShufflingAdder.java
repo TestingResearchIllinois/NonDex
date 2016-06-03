@@ -58,9 +58,8 @@ public class ConcurrentHashMapShufflingAdder extends ClassVisitor {
                         mv.visitInsn(Opcodes.ARRAYLENGTH);
                         mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/util/Arrays", "copyOf",
                                 "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
-                        mv.visitInsn(Opcodes.ICONST_0);
                         mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism",
-                                "shuffle", "([Ljava/lang/Object;I)[Ljava/lang/Object;", false);
+                                "shuffle", "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
                         mv.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/util/concurrent/ConcurrentHashMap$Node;");
                         mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/concurrent/ConcurrentHashMap$Traverser", "tab",
                                 "[Ljava/util/concurrent/ConcurrentHashMap$Node;");
