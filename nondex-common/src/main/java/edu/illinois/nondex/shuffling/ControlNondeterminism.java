@@ -151,9 +151,10 @@ public class ControlNondeterminism {
                             ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
                             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                     }
-                    shouldOutputTrace = true;
                 } catch (IOException ioe) {
-                    ioe.printStackTrace();
+                    Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
+                } finally {
+                    shouldOutputTrace = true;
                 }
             }
             ControlNondeterminism.count++;
@@ -194,7 +195,7 @@ public class ControlNondeterminism {
                         ("SHUFFLES:" + localShufflesCount + "\n").getBytes(),
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                Logger.getGlobal().log(Level.SEVERE, "Exception when printing shuflling counts in shutdown hook.", ioe);
             }
         }
     }
