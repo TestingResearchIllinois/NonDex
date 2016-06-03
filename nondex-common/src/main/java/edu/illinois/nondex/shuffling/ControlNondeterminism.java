@@ -152,7 +152,7 @@ public class ControlNondeterminism {
                             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                     }
                 } catch (IOException ioe) {
-                    Logger.getGlobal().log(Level.SEVERE("Exception when printing debug info.", ioe));
+                    Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
                 } finally {
                     shouldOutputTrace = true;
                 }
@@ -195,7 +195,7 @@ public class ControlNondeterminism {
                         ("SHUFFLES:" + localShufflesCount + "\n").getBytes(),
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                Logger.getGlobal().log(Level.SEVERE, "Exception when printing shuflling counts in shutdown hook.", ioe);
             }
         }
     }
