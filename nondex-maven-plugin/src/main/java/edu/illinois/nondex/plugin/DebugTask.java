@@ -114,6 +114,9 @@ public class DebugTask {
             if (this.failsOnDry(config)) {
                 Configuration failingConfig = this.startDebugBinary(config);
 
+                if (debConfig == null) {
+                    debConfig = failingConfig;
+                }
                 if (failingConfig.hasLessChoicePoints(debConfig)) {
                     debConfig = failingConfig;
                 }
