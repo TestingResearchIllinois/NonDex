@@ -52,6 +52,8 @@ public class ControlNondeterminism {
     private static JVMShutdownHook jvmShutdownHook = new JVMShutdownHook();
     private static Configuration config = Configuration.parseArgs();
 
+    private static boolean shouldOutputTrace = true;
+
     static {
         // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
@@ -136,8 +138,22 @@ public class ControlNondeterminism {
                     && ControlNondeterminism.config.start == ControlNondeterminism.config.end
                     && ControlNondeterminism.count == ControlNondeterminism.config.start) {
                 StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+                StringBuilder stackstring = new StringBuilder();
                 for (StackTraceElement traceElement : traces) {
-                    Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
+                    //Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
+                    stackstring.append(traceElement.toString() + "\n");
+                }
+                try {
+                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file
+                    if (shouldOutputTrace) {
+                        shouldOutputTrace = false;
+                        Files.write(ControlNondeterminism.config.getDebugPath(),
+                            ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
+                            StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                    }
+                    shouldOutputTrace = true;
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
             ControlNondeterminism.count++;
