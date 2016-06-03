@@ -33,11 +33,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.logging.Level;
-
-import edu.illinois.nondex.common.Logger;
 
 import org.junit.Test;
 
