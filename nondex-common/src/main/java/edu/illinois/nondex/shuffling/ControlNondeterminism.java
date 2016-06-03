@@ -152,7 +152,7 @@ public class ControlNondeterminism {
                             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                     }
                 } catch (IOException ioe) {
-                    Logger.getGlobal().log(Level.SEVERE("Exception when printing debug info.", ioe);
+                    Logger.getGlobal().log(Level.SEVERE("Exception when printing debug info.", ioe));
                 } finally {
                     shouldOutputTrace = true;
                 }
