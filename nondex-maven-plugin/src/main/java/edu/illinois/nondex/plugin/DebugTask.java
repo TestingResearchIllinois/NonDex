@@ -114,10 +114,14 @@ public class DebugTask {
             if (this.failsOnDry(config)) {
                 Configuration failingConfig = this.startDebugBinary(config);
 
+                // If debugged down to single choice point, then go ahead and return that
+                if (failingConfig.numChoices() == 0) {
+                    return failingConfig;
+                }
+                // Otherwise should go on until finding better one
                 if (debConfig == null) {
                     debConfig = failingConfig;
-                }
-                if (failingConfig.hasLessChoicePoints(debConfig)) {
+                } else if (failingConfig.hasLessChoicePoints(debConfig)) {
                     debConfig = failingConfig;
                 }
             }
@@ -151,6 +155,10 @@ public class DebugTask {
                 return this.startDebugLinear(config, start, end);
             }
         }
+        // Convert failingConfiguration to one with start and end set to actual values found
+        failingConfiguration = new Configuration(failingConfiguration.mode, failingConfiguration.seed,
+            failingConfiguration.filter, start, end, failingConfiguration.nondexDir, failingConfiguration.nondexJarDir,
+            failingConfiguration.testName, failingConfiguration.executionId);
         return failingConfiguration;
     }
 
