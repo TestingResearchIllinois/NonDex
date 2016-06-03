@@ -68,9 +68,9 @@ public final class Instrumenter {
         InputStream classStream = null;
         try {
             classStream = rt.getInputStream(rt.getEntry(className));
-        } catch (IOException e) {
+        } catch (IOException exc) {
             Logger.getGlobal().log(Level.SEVERE, "Cannot find " + className + " are you sure this is a valid rt.jar?");
-            e.printStackTrace();
+            throw exc;
         }
         ClassReader cr = new ClassReader(classStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -94,9 +94,9 @@ public final class Instrumenter {
         try {
             rt = new ZipFile(rtJar);
             outZip = new ZipOutputStream(new FileOutputStream(outJar));
-        } catch (IOException e) {
+        } catch (IOException exc) {
             Logger.getGlobal().log(Level.SEVERE, "Are you sure you provided a valid path to your rt.jar?");
-            e.printStackTrace();
+            throw exc;
         }
 
 
@@ -104,9 +104,9 @@ public final class Instrumenter {
             InputStream clInputStream = null;
             try {
                 clInputStream = rt.getInputStream(rt.getEntry(cl));
-            } catch (IOException e) {
+            } catch (IOException exc) {
                 Logger.getGlobal().log(Level.SEVERE, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
-                e.printStackTrace();
+                throw exc;
             }
 
             ClassReader cr = new ClassReader(clInputStream);
