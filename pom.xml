@@ -10,7 +10,7 @@
 
   <name>NonDex</name>
   <description>A tool for finding strong assumptions on APIs with non-deterministic specifications.</description>
-  <url>http://mir.cs.illinois.edu</url>
+  <url>https://github.com/TestingResearchIllinois/NonDex</url>
 
   <licenses>
     <license>
