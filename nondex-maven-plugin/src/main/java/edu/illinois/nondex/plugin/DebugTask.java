@@ -119,9 +119,7 @@ public class DebugTask {
                     return failingConfig;
                 }
                 // Otherwise should go on until finding better one
-                if (debConfig == null) {
-                    debConfig = failingConfig;
-                } else if (failingConfig.hasFewerChoicePoints(debConfig)) {
+                if (debConfig == null || failingConfig.hasFewerChoicePoints(debConfig)) {
                     debConfig = failingConfig;
                 }
             }
