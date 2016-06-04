@@ -230,7 +230,7 @@ public class Configuration {
         return this.end - this.start;
     }
 
-    public boolean hasLessChoicePoints(Configuration debConfig) {
+    public boolean hasFewerChoicePoints(Configuration debConfig) {
         return (this.numChoices() < debConfig.numChoices());
     }
 }
