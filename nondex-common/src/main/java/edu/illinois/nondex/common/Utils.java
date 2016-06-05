@@ -89,7 +89,7 @@ public class Utils {
         String javaHome = System.getProperty("java.home");
         if (javaHome == null) {
             Logger.getGlobal().log(Level.SEVERE, "JAVA_HOME is not set!");
-            throw new RuntimeException("JAVA_HOME is not set!");
+            throw new IllegalStateException("JAVA_HOME is not set!");
         }
 
 

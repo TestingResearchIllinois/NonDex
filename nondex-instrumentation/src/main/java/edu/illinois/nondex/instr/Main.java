@@ -37,7 +37,7 @@ public class Main {
         } else if (args.length == 2) {
             Instrumenter.instrument(args[0], args[1]);
         } else {
-            throw new IllegalStateException();
+            throw new IllegalArgumentException();
         }
     }
 }
