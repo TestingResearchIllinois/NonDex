@@ -85,7 +85,14 @@ public class Utils {
         }
     }
 
-    public static Path getRtJarLocation(String javaHome) {
+    public static Path getRtJarLocation() {
+        String javaHome = System.getenv().get("JAVA_HOME");
+        if (javaHome == null) {
+            Logger.getGlobal().log(Level.SEVERE, "JAVA_HOME is not set!");
+            throw new RuntimeException("JAVA_HOME is not set!");
+        }
+
+
         Path pathToRt = Paths.get(javaHome, "jre", "lib", "rt.jar");
         Logger.getGlobal().log(Level.FINE, pathToRt.toString());
         if (Files.exists(pathToRt)) {

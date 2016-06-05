@@ -18,6 +18,11 @@
 	  <artifactId>asm-all</artifactId>
 	  <version>5.0.3</version>
 	</dependency>
+    <dependency>
+      <groupId>edu.illinois</groupId>
+      <artifactId>nondex-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
