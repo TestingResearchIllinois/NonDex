@@ -62,10 +62,10 @@ Use (Command-line):
 After installing, if your application uses the same Java version as you use to build NonDex, run:
 
     root=<path to NonDex root>
-    instrumentingjar=${root}/nondex-instrumentation/target/nondex-instrumentation-1.0-SNAPSHOT.jar
     instrumentedjar=${root}/nondex-instrumentation/resources/out.jar
     # Use the instrumented jar to run your application
-    java -Xbootclasspath/p:${instrumentedjar}:${instrumentingjar} <application>
+    commonjar=${root}/nondex-common/target/nondex-common-1.0-SNAPSHOT.jar
+    java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
 
 Optionally, in case your application needs a different Java version than the one you use to build NonDex, after installing, run:
 
@@ -74,4 +74,5 @@ Optionally, in case your application needs a different Java version than the one
     instrumentedjar=${root}/<unique name of the output jar, such as out.jar>
     java -jar ${instrumentingjar} <path to rt.jar> ${instrumentedjar}
     # Use the instrumented jar to run your application
-    java -Xbootclasspath/p:${instrumentedjar}:${instrumentingjar} <application>
+    commonjar=${root}/nondex-common/target/nondex-common-1.0-SNAPSHOT.jar
+    java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
