@@ -225,12 +225,12 @@ public class Configuration {
         return Collections.unmodifiableCollection(this.failedTests);
     }
 
-    private long numChoices() {
+    public long numChoices() {
         assert (this.end >= this.start);
         return this.end - this.start;
     }
 
-    public boolean hasLessChoicePoints(Configuration debConfig) {
+    public boolean hasFewerChoicePoints(Configuration debConfig) {
         return (this.numChoices() < debConfig.numChoices());
     }
 }
