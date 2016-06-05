@@ -162,6 +162,10 @@ public class Configuration {
         return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.INVOCATIONS_FILE);
     }
 
+    public Path getDebugPath() {
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.DEBUG_FILE);
+    }
+
     public Path getConfigPath() {
         return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.CONFIGURATION_FILE);
     }
