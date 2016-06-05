@@ -159,14 +159,8 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
-        String javaHome = System.getenv().get("JAVA_HOME");
-        if (javaHome == null) {
-            Logger.getGlobal().log(Level.SEVERE, "JAVA_HOME is not set!");
-            throw new MojoExecutionException("JAVA_HOME is not set!");
-        }
-
         Path rtJarPath;
-        rtJarPath = Utils.getRtJarLocation(javaHome);
+        rtJarPath = Utils.getRtJarLocation();
         if (rtJarPath == null) {
             Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
             throw new MojoExecutionException("Cannot find the rt.jar!");
