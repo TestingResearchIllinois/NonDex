@@ -28,11 +28,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
+import edu.illinois.nondex.common.Utils;
+
 public class Main {
     public static void main(String...args) throws Exception {
-        if (args.length != 2) {
+        if (args.length == 1) {
+            Instrumenter.instrument(Utils.getRtJarLocation().toString(), args[0]);
+        } else if (args.length == 2) {
+            Instrumenter.instrument(args[0], args[1]);
+        } else {
             throw new IllegalArgumentException();
         }
-        Instrumenter.instrument(args[0], args[1]);
     }
 }
