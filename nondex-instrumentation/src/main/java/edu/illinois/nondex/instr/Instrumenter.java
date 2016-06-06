@@ -28,9 +28,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -59,6 +66,44 @@ public final class Instrumenter {
         R apply(T param);
     }
 
+    private static byte[] toMd5(InputStream is) throws IOException, NoSuchAlgorithmException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int nRead;
+        byte[] data = new byte[16384]; // 16KB should be more than enough
+
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+
+        buffer.flush();
+
+        byte[] toMd5 = buffer.toByteArray();
+
+        MessageDigest md5er = MessageDigest.getInstance("md5");
+
+        return md5er.digest(toMd5);
+
+    }
+
+    // Returns true if the file should be reinstrumented
+    private static boolean writeMd5(InputStream clInputStream, String name, String md5Dir) throws IOException, NoSuchAlgorithmException {
+        byte[] md5 = toMd5(clInputStream);
+        // TODO make this crossplatform?
+        File md5File = new File(md5Dir + "/" + name);
+        if (md5File.exists()) {
+            byte[] oldMd5 = Files.readAllBytes(Paths.get(md5File.getPath()));
+
+            if (Arrays.equals(md5, oldMd5)) {
+                return false;
+            }
+        }
+
+        FileOutputStream outFile = new FileOutputStream(md5Dir + "/" + name);
+        outFile.write(md5);
+        return true;
+    }
+
 
     private static void instrumentClass(String className,
                                         Function<ClassVisitor, ClassVisitor> createShuffler,
@@ -80,26 +125,27 @@ public final class Instrumenter {
         outZip.closeEntry();
     }
 
-    public static final void instrument(String rtJar, String outJar) throws IOException {
+    public static final void instrument(String rtJar, String outJar, String md5Dir) throws IOException, NoSuchAlgorithmException {
         ZipFile rt = new ZipFile(rtJar);
         ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(outJar));
 
         for (String cl : classesToShuffle) {
             InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
+            if (writeMd5(clInputStream, cl + ".md5", md5Dir)) {
+                ClassReader cr = new ClassReader(clInputStream);
+                ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-            ClassReader cr = new ClassReader(clInputStream);
-            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                ClassVisitor cv = new ClassVisitorShufflingAdder(cw);
 
-            ClassVisitor cv = new ClassVisitorShufflingAdder(cw);
+                cr.accept(cv, 0);
 
-            cr.accept(cv, 0);
+                byte[] arr = cw.toByteArray();
 
-            byte[] arr = cw.toByteArray();
-
-            ZipEntry entry = new ZipEntry(cl);
-            outZip.putNextEntry(entry);
-            outZip.write(arr, 0, arr.length);
-            outZip.closeEntry();
+                ZipEntry entry = new ZipEntry(cl);
+                outZip.putNextEntry(entry);
+                outZip.write(arr, 0, arr.length);
+                outZip.closeEntry();
+            }
         }
 
         HashIteratorShufflerNodeASMDump hashIterShuffNodeDump = new HashIteratorShufflerNodeASMDump();
