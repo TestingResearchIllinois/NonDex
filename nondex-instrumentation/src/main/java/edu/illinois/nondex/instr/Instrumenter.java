@@ -47,10 +47,10 @@ public final class Instrumenter {
     private static final HashSet<String> classesToShuffle = new HashSet<>();
 
     static {
-        classesToShuffle.add("java/lang/Class.class");
-        classesToShuffle.add("java/lang/reflect/Field.class");
-        classesToShuffle.add("java/io/File.class");
-        classesToShuffle.add("java/text/DateFormatSymbols.class");
+        Instrumenter.classesToShuffle.add("java/lang/Class.class");
+        Instrumenter.classesToShuffle.add("java/lang/reflect/Field.class");
+        Instrumenter.classesToShuffle.add("java/io/File.class");
+        Instrumenter.classesToShuffle.add("java/text/DateFormatSymbols.class");
     }
 
     private Instrumenter() {
@@ -99,7 +99,7 @@ public final class Instrumenter {
         }
 
 
-        for (String cl : classesToShuffle) {
+        for (String cl : Instrumenter.classesToShuffle) {
             InputStream clInputStream = null;
             try {
                 clInputStream = rt.getInputStream(rt.getEntry(cl));
@@ -123,35 +123,33 @@ public final class Instrumenter {
             outZip.closeEntry();
         }
 
-        HashIteratorShufflerNodeASMDump hashIterShuffNodeDump = new HashIteratorShufflerNodeASMDump();
         ZipEntry hashIterShuffNodeEntry = new ZipEntry("java/util/HashIteratorShufflerNode.class");
         outZip.putNextEntry(hashIterShuffNodeEntry);
         byte[] hashIterShuffNodeBytes = HashIteratorShufflerNodeASMDump.dump();
         outZip.write(hashIterShuffNodeBytes, 0, hashIterShuffNodeBytes.length);
         outZip.closeEntry();
 
-        HashIteratorShufflerEntryASMDump hashIterShuffEntryDump = new HashIteratorShufflerEntryASMDump();
         ZipEntry hashIterShuffEntryEntry = new ZipEntry("java/util/HashIteratorShufflerEntry.class");
         outZip.putNextEntry(hashIterShuffEntryEntry);
         byte[] hashIterShuffEntryBytes = HashIteratorShufflerEntryASMDump.dump();
         outZip.write(hashIterShuffEntryBytes, 0, hashIterShuffEntryBytes.length);
         outZip.closeEntry();
 
-        instrumentClass("java/util/HashMap$HashIterator.class",
+        Instrumenter.instrumentClass("java/util/HashMap$HashIterator.class",
                 new Function<ClassVisitor, ClassVisitor>() {
                     @Override
                     public ClassVisitor apply(ClassVisitor cv) {
                         return new HashMapShufflingAdder(cv);
                     }
                 }, rt, outZip);
-        instrumentClass("java/util/concurrent/ConcurrentHashMap$Traverser.class",
+        Instrumenter.instrumentClass("java/util/concurrent/ConcurrentHashMap$Traverser.class",
                 new Function<ClassVisitor, ClassVisitor>() {
                     @Override
                     public ClassVisitor apply(ClassVisitor cv) {
                         return new ConcurrentHashMapShufflingAdder(cv);
                     }
                 }, rt, outZip);
-        instrumentClass("java/lang/reflect/Method.class",
+        Instrumenter.instrumentClass("java/lang/reflect/Method.class",
                 new Function<ClassVisitor, ClassVisitor>() {
                     @Override
                     public ClassVisitor apply(ClassVisitor cv) {
