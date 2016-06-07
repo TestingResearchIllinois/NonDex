@@ -40,8 +40,6 @@ public class InstrumenterTest {
     @Test
     public void emptyZipTest() {
         try {
-            //Path cwd = Paths.get("");
-            //Logger.getGlobal().log(Level.WARNING, cwd.toAbsolutePath().toString());
             Instrumenter.instrument("resources/empty.jar", "resources/emptyOut.jar");
             fail("Expected an IOException to be thrown");
         } catch (IOException exc) {
