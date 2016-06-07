@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -174,6 +175,8 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
             Instrumenter.instrument(rtJarPath.toString(), Paths.get(fileForJar.getAbsolutePath(),
                     ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
         } catch (IOException exc) {
+            exc.printStackTrace();
+        } catch (NoSuchAlgorithmException exc) {
             exc.printStackTrace();
         }
 
