@@ -71,7 +71,7 @@ public class DebugMojo extends AbstractNondexMojo {
         Map<String, String> testToRepro = new HashMap<>();
 
         for (String test : this.testsFailing.keySet()) {
-            this.runSinleSurefireTest(test);
+            this.runSingleSurefireTest(test);
             DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine,
                     this.mavenProject, this.mavenSession, this.pluginManager, this.testsFailing.get(test));
             String repro = debugging.debug();
@@ -86,7 +86,7 @@ public class DebugMojo extends AbstractNondexMojo {
         }
     }
 
-    private void runSinleSurefireTest(String test) {
+    private void runSingleSurefireTest(String test) {
         Xpp3Dom configElement = (Xpp3Dom)this.surefire.getConfiguration();
         if (configElement == null) {
             configElement = new Xpp3Dom("configuration");

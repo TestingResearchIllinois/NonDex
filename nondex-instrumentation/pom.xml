@@ -13,51 +13,56 @@
   <name>nondex-instrumentation</name>
 
   <dependencies>
-	<dependency>
-	  <groupId>org.ow2.asm</groupId>
-	  <artifactId>asm-all</artifactId>
-	  <version>5.0.3</version>
-	</dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-all</artifactId>
+      <version>5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.illinois</groupId>
+      <artifactId>nondex-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-	  <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-jar-plugin</artifactId>
-		<version>2.3.1</version>
-		<configuration>
-		  <archive>
-			<manifestFile>resources/META-INF/MANIFEST.MF</manifestFile>
-		  </archive>
-		</configuration>
-	  </plugin>
-      	  <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-shade-plugin</artifactId>
-		<version>2.3</version>
-		<executions>
-		  <execution>
-			<phase>package</phase>
-			<goals>
-			  <goal>shade</goal>
-			</goals>
-			<configuration>
-			  <relocations>
-				<relocation>
-				  <pattern>org.objectweb.asm</pattern>
-				  <shadedPattern>edu.illinois.nondex.instr.org.objectweb.asm</shadedPattern>
-				</relocation>
-			  </relocations>
-			  <minimizeJar>false</minimizeJar>
-			</configuration>
-		  </execution>
-		</executions>
-	  </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <archive>
+            <manifestFile>resources/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+          <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <relocations>
+                <relocation>
+                  <pattern>org.objectweb.asm</pattern>
+                  <shadedPattern>edu.illinois.nondex.instr.org.objectweb.asm</shadedPattern>
+                </relocation>
+              </relocations>
+              <minimizeJar>false</minimizeJar>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.11</version>
+        <version>2.17</version>
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
           <encoding>UTF-8</encoding>
@@ -88,7 +93,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.4.0</version>
+        <version>1.5.0</version>
         <executions>
           <execution>
             <id>instrRun</id>
