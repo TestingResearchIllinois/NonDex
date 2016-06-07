@@ -99,5 +99,11 @@
       <artifactId>nondex-common</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>edu.illinois</groupId>
+      <artifactId>nondex-instrumentation</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
