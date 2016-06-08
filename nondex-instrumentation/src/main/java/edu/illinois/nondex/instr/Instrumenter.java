@@ -93,7 +93,7 @@ public final class Instrumenter {
             Logger.getGlobal().log(Level.SEVERE, "Are you sure you provided a valid path to your rt.jar?");
             throw exc;
         }
-        final Set<String> classesToCopy = this.filterCached(outJar, rt);
+        final Set<String> classesToCopy = this.filterCached(rt, outJar);
 
         // If no class needs to be reinsturmented
         if (this.standardClassesToInstrument.isEmpty() && this.specialClassesToInstrument.isEmpty()) {
@@ -234,10 +234,10 @@ public final class Instrumenter {
         return toCopy;
     }
 
-    private Set<String> filterCached(String outJar, ZipFile rt) throws IOException, NoSuchAlgorithmException {
-        Set<String> classesToCopy = new HashSet<String>();
-        if (new File(outJar).exists()) {
-            ZipFile outJarZipFile = new ZipFile(outJar);
+    private Set<String> filterCached(ZipFile rt, String oldJar) throws IOException, NoSuchAlgorithmException {
+        Set<String> classesToCopy = new HashSet<>();
+        if (new File(oldJar).exists()) {
+            ZipFile outJarZipFile = new ZipFile(oldJar);
             classesToCopy.addAll(this.removeCachedFromShufflingList(this.standardClassesToInstrument,
                     rt, outJarZipFile));
             classesToCopy.addAll(this.removeCachedFromShufflingList(this.specialClassesToInstrument,
@@ -271,23 +271,21 @@ public final class Instrumenter {
         outZip.closeEntry();
     }
 
-    private void copyCachedClassesToOutZip(String outJar, final Set<String> classesToCopy, ZipOutputStream outZip)
+    private void copyCachedClassesToOutZip(String oldJar, final Set<String> classesToCopy, ZipOutputStream outZip)
             throws IOException {
-        ZipFile outZipFile = null;
-        if (new File(outJar).exists()) {
-            outZipFile = new ZipFile(outJar);
-        }
+        if (new File(oldJar).exists()) {
+            ZipFile outZipFile = new ZipFile(oldJar);
 
-        for (String cl : classesToCopy) {
-            InputStream clInputStream = outZipFile.getInputStream(outZipFile.getEntry(cl));
-            byte[] arr = this.readAllBytes(clInputStream);
+            for (String cl : classesToCopy) {
+                InputStream clInputStream = outZipFile.getInputStream(outZipFile.getEntry(cl));
+                byte[] arr = this.readAllBytes(clInputStream);
 
-            ZipEntry entry = new ZipEntry(cl);
-            outZip.putNextEntry(entry);
-            outZip.write(arr, 0, arr.length);
-            outZip.closeEntry();
-        }
-        if (outZipFile != null) {
+                ZipEntry entry = new ZipEntry(cl);
+                outZip.putNextEntry(entry);
+                outZip.write(arr, 0, arr.length);
+                outZip.closeEntry();
+            }
+
             outZipFile.close();
         }
     }
