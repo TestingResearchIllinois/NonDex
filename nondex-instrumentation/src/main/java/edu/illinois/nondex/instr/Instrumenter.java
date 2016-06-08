@@ -49,6 +49,7 @@ import java.util.zip.ZipOutputStream;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.util.CheckClassAdapter;
 
 
 public final class Instrumenter {
@@ -203,13 +204,13 @@ public final class Instrumenter {
         }
         ClassReader cr = new ClassReader(classStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        // TODO address CheckClassAdapter problem,
-        // https://stackoverflow.com/questions/10647290/asm-compute-maxs-not-working-for-basic-test-case
-        //CheckClassAdapter ca = new CheckClassAdapter(cw);
         ClassVisitor cv = createShuffler.apply(cw);
 
         cr.accept(cv, 0);
         byte[] arr = cw.toByteArray();
+
+        cr = new ClassReader(arr);
+        cr.accept(new CheckClassAdapter(new ClassWriter(0)), 0);
 
         ZipEntry zipEntry = new ZipEntry(className);
         outZip.putNextEntry(zipEntry);
