@@ -254,7 +254,7 @@ public final class Instrumenter {
                     public ClassVisitor apply(ClassVisitor cv) {
                         try {
                             return CVFactory.construct(cv, clz);
-                        } catch (NoSuchAlgorithmException e) {
+                        } catch (NoSuchAlgorithmException nsaException) {
                             return null;
                         }
                     }
@@ -272,7 +272,11 @@ public final class Instrumenter {
 
     private void copyCachedClassesToOutZip(String outJar, final Set<String> classesToCopy, ZipOutputStream outZip)
             throws IOException {
-        ZipFile outZipFile = new ZipFile(outJar);
+        ZipFile outZipFile = null;
+        if (new File(outJar).exists()) {
+            outZipFile = new ZipFile(outJar);
+        }
+
         for (String cl : classesToCopy) {
             InputStream clInputStream = outZipFile.getInputStream(outZipFile.getEntry(cl));
             byte[] arr = this.readAllBytes(clInputStream);
@@ -282,6 +286,8 @@ public final class Instrumenter {
             outZip.write(arr, 0, arr.length);
             outZip.closeEntry();
         }
-        outZipFile.close();
+        if (outZipFile != null) {
+            outZipFile.close();
+        }
     }
 }
