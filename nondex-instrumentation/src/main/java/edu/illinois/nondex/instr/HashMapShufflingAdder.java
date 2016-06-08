@@ -54,7 +54,7 @@ public class HashMapShufflingAdder extends ClassVisitor {
         hasNextProp = new MethodProperties();
         nextNodeProp = new MethodProperties();
     }
-
+    
     public FieldVisitor addShufflerNode() {
         FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashIteratorShufflerNode;", null, null);
         fv.visitEnd();
