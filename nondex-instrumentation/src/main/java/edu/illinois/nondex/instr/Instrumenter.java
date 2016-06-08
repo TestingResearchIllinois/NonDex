@@ -38,6 +38,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -58,14 +60,14 @@ public final class Instrumenter {
     private static String methodName = "java/lang/reflect/Method.class";
 
     static {
-        classesToShuffle.add("java/lang/Class.class");
-        classesToShuffle.add("java/lang/reflect/Field.class");
-        classesToShuffle.add("java/io/File.class");
-        classesToShuffle.add("java/text/DateFormatSymbols.class");
+        Instrumenter.classesToShuffle.add("java/lang/Class.class");
+        Instrumenter.classesToShuffle.add("java/lang/reflect/Field.class");
+        Instrumenter.classesToShuffle.add("java/io/File.class");
+        Instrumenter.classesToShuffle.add("java/text/DateFormatSymbols.class");
 
-        specialClassesToShuffle.add(hashMapName);
-        specialClassesToShuffle.add(concurrentHashMapName);
-        specialClassesToShuffle.add(methodName);
+        Instrumenter.specialClassesToShuffle.add(Instrumenter.hashMapName);
+        Instrumenter.specialClassesToShuffle.add(Instrumenter.concurrentHashMapName);
+        Instrumenter.specialClassesToShuffle.add(Instrumenter.methodName);
     }
 
     private Instrumenter() {
@@ -91,7 +93,7 @@ public final class Instrumenter {
     }
 
     private static byte[] toMd5(InputStream is) throws IOException, NoSuchAlgorithmException {
-        byte[] toMd5 = readAllBytes(is);
+        byte[] toMd5 = Instrumenter.readAllBytes(is);
 
         MessageDigest md5er = MessageDigest.getInstance("md5");
 
@@ -102,7 +104,7 @@ public final class Instrumenter {
     // Returns true if the file should be reinstrumented
     private static void writeMd5(InputStream clInputStream, String name, ZipOutputStream zip)
             throws IOException, NoSuchAlgorithmException {
-        byte[] md5 = toMd5(clInputStream);
+        byte[] md5 = Instrumenter.toMd5(clInputStream);
 
         ZipEntry zipEntry = new ZipEntry(name);
         zip.putNextEntry(zipEntry);
@@ -114,7 +116,13 @@ public final class Instrumenter {
     private static void instrumentClass(String className,
                                         Function<ClassVisitor, ClassVisitor> createShuffler,
                                         ZipFile rt, ZipOutputStream outZip) throws IOException {
-        InputStream classStream = rt.getInputStream(rt.getEntry(className));
+        InputStream classStream = null;
+        try {
+            classStream = rt.getInputStream(rt.getEntry(className));
+        } catch (IOException exc) {
+            Logger.getGlobal().log(Level.WARNING, "Cannot find " + className + " are you sure this is a valid rt.jar?");
+            Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + className);
+        }
         ClassReader cr = new ClassReader(classStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         // TODO address CheckClassAdapter problem,
@@ -139,7 +147,7 @@ public final class Instrumenter {
             String cl = it.next();
             InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
             InputStream md5InputStream = outJarZipFile.getInputStream(outJarZipFile.getEntry(cl + ".md5"));
-            if (Arrays.equals(toMd5(clInputStream), readAllBytes(md5InputStream))) {
+            if (Arrays.equals(Instrumenter.toMd5(clInputStream), Instrumenter.readAllBytes(md5InputStream))) {
                 it.remove();
                 toCopy.add(cl);
             }
@@ -149,14 +157,15 @@ public final class Instrumenter {
     private static void filterCached(String outJar, ZipFile rt) throws IOException, NoSuchAlgorithmException {
         if (new File(outJar).exists()) {
             ZipFile outJarZipFile = new ZipFile(outJar);
-            filterCachedFrom(classesToShuffle, classesToCopy, rt, outJarZipFile);
-            filterCachedFrom(specialClassesToShuffle, specialClassesToCopy, rt, outJarZipFile);
+            Instrumenter.filterCachedFrom(Instrumenter.classesToShuffle, Instrumenter.classesToCopy, rt, outJarZipFile);
+            Instrumenter.filterCachedFrom(Instrumenter.specialClassesToShuffle, Instrumenter.specialClassesToCopy,
+                    rt, outJarZipFile);
         }
     }
 
     private static void copyToJar(String cl, ZipFile oldJar, ZipOutputStream outZip) throws IOException {
         InputStream clInputStream = oldJar.getInputStream(oldJar.getEntry(cl));
-        byte[] arr = readAllBytes(clInputStream);
+        byte[] arr = Instrumenter.readAllBytes(clInputStream);
 
         ZipEntry entry = new ZipEntry(cl);
         outZip.putNextEntry(entry);
@@ -165,22 +174,33 @@ public final class Instrumenter {
     }
 
     public static final void instrument(String rtJar, String outJar)
-            throws IOException, NoSuchAlgorithmException {
-        ZipFile rt = new ZipFile(rtJar);
+            throws NoSuchAlgorithmException, IOException {
+        ZipFile rt = null;
+        try {
+            rt = new ZipFile(rtJar);
+        } catch (IOException exc) {
+            Logger.getGlobal().log(Level.SEVERE, "Are you sure you provided a valid path to your rt.jar?");
+            throw exc;
+        }
+        Instrumenter.filterCached(outJar, rt);
 
-        filterCached(outJar, rt);
-
-        if (classesToShuffle.isEmpty() && specialClassesToShuffle.isEmpty()) {
+        if (Instrumenter.classesToShuffle.isEmpty() && Instrumenter.specialClassesToShuffle.isEmpty()) {
             return;
         }
 
         ByteArrayOutputStream outZipBaos = new ByteArrayOutputStream();
         ZipOutputStream outZip = new ZipOutputStream(outZipBaos);
 
-        for (String cl : classesToShuffle) {
-            InputStream clInputStream = rt.getInputStream(rt.getEntry(cl));
+        for (String cl : Instrumenter.classesToShuffle) {
+            InputStream clInputStream = null;
+            try {
+                clInputStream = rt.getInputStream(rt.getEntry(cl));
+            } catch (IOException exc) {
+                Logger.getGlobal().log(Level.SEVERE, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
+                throw exc;
+            }
 
-            writeMd5(clInputStream, cl + ".md5", outZip);
+            Instrumenter.writeMd5(clInputStream, cl + ".md5", outZip);
 
             clInputStream = rt.getInputStream(rt.getEntry(cl));
 
@@ -199,28 +219,27 @@ public final class Instrumenter {
             outZip.closeEntry();
 
         }
-        for (String cl : classesToCopy) {
+        for (String cl : Instrumenter.classesToCopy) {
             ZipFile outZipFile = new ZipFile(outJar);
-            copyToJar(cl, outZipFile, outZip);
+            Instrumenter.copyToJar(cl, outZipFile, outZip);
         }
 
-        HashIteratorShufflerNodeASMDump hashIterShuffNodeDump = new HashIteratorShufflerNodeASMDump();
         ZipEntry hashIterShuffNodeEntry = new ZipEntry("java/util/HashIteratorShufflerNode.class");
         outZip.putNextEntry(hashIterShuffNodeEntry);
-        byte[] hashIterShuffNodeBytes = hashIterShuffNodeDump.dump();
+        byte[] hashIterShuffNodeBytes = HashIteratorShufflerNodeASMDump.dump();
         outZip.write(hashIterShuffNodeBytes, 0, hashIterShuffNodeBytes.length);
         outZip.closeEntry();
 
-        HashIteratorShufflerEntryASMDump hashIterShuffEntryDump = new HashIteratorShufflerEntryASMDump();
         ZipEntry hashIterShuffEntryEntry = new ZipEntry("java/util/HashIteratorShufflerEntry.class");
         outZip.putNextEntry(hashIterShuffEntryEntry);
-        byte[] hashIterShuffEntryBytes = hashIterShuffEntryDump.dump();
+        byte[] hashIterShuffEntryBytes = HashIteratorShufflerEntryASMDump.dump();
         outZip.write(hashIterShuffEntryBytes, 0, hashIterShuffEntryBytes.length);
         outZip.closeEntry();
 
-        if (specialClassesToShuffle.contains(hashMapName)) {
-            writeMd5(rt.getInputStream(rt.getEntry(hashMapName)), hashMapName + ".md5", outZip);
-            instrumentClass(hashMapName,
+        if (Instrumenter.specialClassesToShuffle.contains(Instrumenter.hashMapName)) {
+            Instrumenter.writeMd5(rt.getInputStream(rt.getEntry(Instrumenter.hashMapName)),
+                    Instrumenter.hashMapName + ".md5", outZip);
+            Instrumenter.instrumentClass(Instrumenter.hashMapName,
                     new Function<ClassVisitor, ClassVisitor>() {
                         @Override
                         public ClassVisitor apply(ClassVisitor cv) {
@@ -228,11 +247,12 @@ public final class Instrumenter {
                         }
                     }, rt, outZip);
         } else {
-            copyToJar(hashMapName, new ZipFile(outJar), outZip);
+            Instrumenter.copyToJar(Instrumenter.hashMapName, new ZipFile(outJar), outZip);
         }
-        if (specialClassesToShuffle.contains(concurrentHashMapName)) {
-            writeMd5(rt.getInputStream(rt.getEntry(concurrentHashMapName)), concurrentHashMapName + ".md5", outZip);
-            instrumentClass(concurrentHashMapName,
+        if (Instrumenter.specialClassesToShuffle.contains(Instrumenter.concurrentHashMapName)) {
+            Instrumenter.writeMd5(rt.getInputStream(rt.getEntry(Instrumenter.concurrentHashMapName)),
+                    Instrumenter.concurrentHashMapName + ".md5", outZip);
+            Instrumenter.instrumentClass(Instrumenter.concurrentHashMapName,
                     new Function<ClassVisitor, ClassVisitor>() {
                         @Override
                         public ClassVisitor apply(ClassVisitor cv) {
@@ -240,11 +260,12 @@ public final class Instrumenter {
                         }
                     }, rt, outZip);
         } else {
-            copyToJar(concurrentHashMapName, new ZipFile(outJar), outZip);
+            Instrumenter.copyToJar(Instrumenter.concurrentHashMapName, new ZipFile(outJar), outZip);
         }
-        if (specialClassesToShuffle.contains(methodName)) {
-            writeMd5(rt.getInputStream(rt.getEntry(methodName)), methodName + ".md5", outZip);
-            instrumentClass(methodName,
+        if (Instrumenter.specialClassesToShuffle.contains(Instrumenter.methodName)) {
+            Instrumenter.writeMd5(rt.getInputStream(rt.getEntry(Instrumenter.methodName)),
+                    Instrumenter.methodName + ".md5", outZip);
+            Instrumenter.instrumentClass(Instrumenter.methodName,
                     new Function<ClassVisitor, ClassVisitor>() {
                         @Override
                         public ClassVisitor apply(ClassVisitor cv) {
@@ -252,7 +273,7 @@ public final class Instrumenter {
                         }
                     }, rt, outZip);
         } else {
-            copyToJar(methodName, new ZipFile(outJar), outZip);
+            Instrumenter.copyToJar(Instrumenter.methodName, new ZipFile(outJar), outZip);
         }
         outZip.close();
 
