@@ -224,14 +224,19 @@ public final class Instrumenter {
         Iterator<String> it = toShuffle.iterator();
         while (it.hasNext()) {
             String cl = it.next();
+
             ZipEntry entry = rt.getEntry(cl);
-            if (entry != null) {
-                InputStream clInputStream = rt.getInputStream(entry);
+            if (entry == null) {
+                continue;
             }
+            InputStream clInputStream = rt.getInputStream(entry);
+
             entry = outJarZipFile.getEntry(cl + ".md5");
-            if (entry != null) {
-                InputStream md5InputStream = outJarZipFile.getInputStream(entry);
+            if (entry == null) {
+                continue;
             }
+            InputStream md5InputStream = outJarZipFile.getInputStream(entry);
+
             if (Arrays.equals(this.toMd5(clInputStream), this.readAllBytes(md5InputStream))) {
                 it.remove();
                 toCopy.add(cl);
