@@ -48,6 +48,8 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 public class NonDexSurefireExecution {
 
+    private static boolean isFirstRun = true;
+
     private Configuration configuration;
     private final String executionId;
 
@@ -126,6 +128,12 @@ public class NonDexSurefireExecution {
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
+
+        if (!NonDexSurefireExecution.isFirstRun) {
+            return configNode;
+        }
+        NonDexSurefireExecution.isFirstRun = false;
+
         Xpp3Dom properties = this.createChildIfNotExists(configNode, "properties");
 
         if (properties.getChild("property") != null) {
