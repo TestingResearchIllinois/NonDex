@@ -108,6 +108,20 @@
           <commandlineArgs>${java.home}/lib/rt.jar ${project.basedir}/resources/out.jar</commandlineArgs>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}/resources</directory>
+              <includes>
+                <include>out.jar</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
