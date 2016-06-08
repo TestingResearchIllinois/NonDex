@@ -245,7 +245,7 @@ public final class Instrumenter {
         return classesToCopy;
     }
 
-    private <T extends CVFactory> void instrumentSpecialClass(ZipFile rt, ZipOutputStream outZip, String clz)
+    private <T extends CVFactory> void instrumentSpecialClass(ZipFile rt, ZipOutputStream outZip, final String clz)
             throws IOException, NoSuchAlgorithmException {
         this.writeMd5(rt.getInputStream(rt.getEntry(clz)), clz + ".md5", outZip);
         this.instrumentClass(clz,
