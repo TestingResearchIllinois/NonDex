@@ -91,6 +91,8 @@ public class CleanSurefireExecution {
 
     protected void setupArgline() {
         Logger.getGlobal().log(Level.FINE, "Running clean surefire.");
+        this.mavenProject.getProperties().setProperty("argLine",
+                this.originalArgLine + " " + this.configuration.toArgLine());
     }
 
     private Xpp3Dom createListenerConfiguration(Xpp3Dom configuration) {
