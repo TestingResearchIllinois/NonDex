@@ -154,7 +154,6 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Component
     protected BuildPluginManager pluginManager;
 
-    protected Plugin surefire;
     protected String originalArgLine;
 
     @Override
@@ -180,13 +179,11 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
             exc.printStackTrace();
         }
 
-        this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
-
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
     }
 
-    private Plugin lookupPlugin(String paramString) {
+    protected Plugin lookupPlugin(String paramString) {
         List<Plugin> localList = this.mavenProject.getBuildPlugins();
         Iterator<Plugin> localIterator = localList.iterator();
         while (localIterator.hasNext()) {

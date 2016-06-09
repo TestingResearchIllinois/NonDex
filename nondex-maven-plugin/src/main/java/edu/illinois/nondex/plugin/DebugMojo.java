@@ -48,6 +48,7 @@ import edu.illinois.nondex.common.Utils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
+import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -58,8 +59,9 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 @Mojo(name = "debug", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class DebugMojo extends AbstractNondexMojo {
 
-    private List<String> executions = new LinkedList<>();
+    protected Plugin surefire;
 
+    private List<String> executions = new LinkedList<>();
     private SetMultimap<String, Configuration> testsFailing = HashMultimap.create();
 
     @Override
@@ -72,6 +74,7 @@ public class DebugMojo extends AbstractNondexMojo {
 
         for (String test : this.testsFailing.keySet()) {
             this.runSingleSurefireTest(test);
+            this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
             DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine,
                     this.mavenProject, this.mavenSession, this.pluginManager, this.testsFailing.get(test));
             String repro = debugging.debug();

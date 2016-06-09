@@ -44,6 +44,7 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 public class CleanSurefireExecution {
 
+    protected static boolean isFirstRun = true;
     protected Configuration configuration;
     protected final String executionId;
 
@@ -100,6 +101,13 @@ public class CleanSurefireExecution {
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
+
+        if (!CleanSurefireExecution.isFirstRun) {
+            return configNode;
+        }
+
+        CleanSurefireExecution.isFirstRun = false;
+        Logger.getGlobal().log(Level.SEVERE, "Adding listener");
         Xpp3Dom properties = this.createChildIfNotExists(configNode, "properties");
 
         if (properties.getChild("property") != null) {
