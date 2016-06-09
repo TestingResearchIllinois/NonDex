@@ -4,12 +4,9 @@
 
 Prerequisites:
 ==============
-For now it is tested to build and run on:
-java version "1.8.0"
-
-Java(TM) SE Runtime Environment (build 1.8.0-b132)
-
-Java HotSpot(TM) 64-Bit Server VM (build 25.0-b70, mixed mode)
+Requires OpenJdk 8.
+Requires Junit 4.7 and greater.
+Requires Surefire present in the POM.
 
 Build:
 ======
@@ -32,7 +29,7 @@ dependency in your pom:
       <plugin>
         <groupId>edu.illinois</groupId>
         <artifactId>nondex-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
       </plugin>
     </plugins>
   </build>
@@ -42,7 +39,7 @@ dependency in your pom:
     <dependency>
       <groupId>edu.illinois</groupId>
       <artifactId>nondex-maven-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
 </project>
@@ -64,15 +61,15 @@ After installing, if your application uses the same Java version as you use to b
     root=<path to NonDex root>
     instrumentedjar=${root}/nondex-instrumentation/resources/out.jar
     # Use the instrumented jar to run your application
-    commonjar=${root}/nondex-common/target/nondex-common-1.0-SNAPSHOT.jar
+    commonjar=${root}/nondex-common/target/nondex-common-1.0.0.jar
     java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
 
 Optionally, in case your application needs a different Java version than the one you use to build NonDex, after installing, run:
 
     root=<path to NonDex root>
-    instrumentingjar=${root}/nondex-instrumentation/target/nondex-instrumentation-1.0-SNAPSHOT.jar
+    instrumentingjar=${root}/nondex-instrumentation/target/nondex-instrumentation-1.0.0.jar
     instrumentedjar=${root}/<unique name of the output jar, such as out.jar>
     java -jar ${instrumentingjar} <path to rt.jar> ${instrumentedjar}
     # Use the instrumented jar to run your application
-    commonjar=${root}/nondex-common/target/nondex-common-1.0-SNAPSHOT.jar
+    commonjar=${root}/nondex-common/target/nondex-common-1.0.0.jar
     java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
