@@ -78,8 +78,10 @@ public class NonDexMojo extends AbstractNondexMojo {
                             this.mavenSession, this.pluginManager);
             this.executions.add(execution);
             allExceptions = this.executeSurefireExecution(allExceptions, execution);
+            this.writeCurrentRunInfo(execution);
         }
 
+        this.writeCurrentRunInfo(cleanExec);
         this.postProcessExecutions(cleanExec);
 
         Configuration config = this.executions.get(0).getConfiguration();
@@ -116,7 +118,6 @@ public class NonDexMojo extends AbstractNondexMojo {
         } catch (MojoExecutionException ex) {
             allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
         }
-        this.writeCurrentRunInfo(execution);
         return allExceptions;
     }
 
@@ -159,7 +160,8 @@ public class NonDexMojo extends AbstractNondexMojo {
 
     private void writeCurrentRunInfo(CleanSurefireExecution execution) {
         try {
-            Files.write(execution.getConfiguration().getRunFilePath(),
+            // TODO(gyori): This is quite ugly, you grabbing here the first from a list to establish a run id.
+            Files.write(this.executions.get(0).getConfiguration().getRunFilePath(),
                     (execution.getConfiguration().executionId + "\n").getBytes(),
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
