@@ -41,10 +41,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -136,8 +137,8 @@ public final class Instrumenter {
             try {
                 clInputStream = rt.getInputStream(rt.getEntry(cl));
             } catch (IOException exc) {
-                Logger.getGlobal().log(Level.CONFIG, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
-                Logger.getGlobal().log(Level.CONFIG, "Continuing without insturmenting: " + cl);
+                Logger.getGlobal().log(Level.WARNING, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
+                Logger.getGlobal().log(Level.WARNING, "Continuing without insturmenting: " + cl);
                 continue;
             }
 
@@ -183,6 +184,12 @@ public final class Instrumenter {
 
     private void writeMd5(InputStream isToComputeHashOn, String fileName, ZipOutputStream zip)
             throws IOException, NoSuchAlgorithmException {
+        if (isToComputeHashOn == null) {
+            Logger.getGlobal().log(Level.WARNING, "Could not find " + fileName + " in rt.jar");
+            Logger.getGlobal().log(Level.WARNING, "Are you running java 8?");
+            Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + fileName);
+            return;
+        }
         byte[] md5 = this.toMd5(isToComputeHashOn);
 
         ZipEntry zipEntry = new ZipEntry(fileName);
@@ -259,6 +266,13 @@ public final class Instrumenter {
 
     private <T extends CVFactory> void instrumentSpecialClass(ZipFile rt, ZipOutputStream outZip, final String clz)
             throws IOException, NoSuchAlgorithmException {
+        ZipEntry entry = rt.getEntry(clz);
+        if (entry == null) {
+            Logger.getGlobal().log(Level.WARNING, "Could not find " + clz + " in rt.jar");
+            Logger.getGlobal().log(Level.WARNING, "Are you sure you're running java 8?");
+            Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + clz);
+            return;
+        }
         this.writeMd5(rt.getInputStream(rt.getEntry(clz)), clz + ".md5", outZip);
         this.instrumentClass(clz,
                 new Function<ClassVisitor, ClassVisitor>() {
