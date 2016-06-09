@@ -55,14 +55,20 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class NonDexMojo extends AbstractNondexMojo {
 
-    private List<NonDexSurefireExecution> executions = new LinkedList<>();
+    private List<CleanSurefireExecution> executions = new LinkedList<>();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
         MojoExecutionException allExceptions = null;
+        CleanSurefireExecution cleanExec = new CleanSurefireExecution(
+                this.surefire, this.originalArgLine, this.mavenProject,
+                    this.mavenSession, this.pluginManager);
+
+        allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
+
         for (int i = 0; i < this.numRuns; i++) {
-            NonDexSurefireExecution execution =
+            CleanSurefireExecution execution =
                     new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
                             Pattern.compile(this.filter), this.start, this.end,
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
@@ -71,12 +77,7 @@ public class NonDexMojo extends AbstractNondexMojo {
                             this.surefire, this.originalArgLine, this.mavenProject,
                             this.mavenSession, this.pluginManager);
             this.executions.add(execution);
-            try {
-                execution.run();
-            } catch (MojoExecutionException ex) {
-                allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
-            }
-            this.writeCurrentRunInfo(execution);
+            allExceptions = this.executeSurefireExecution(allExceptions, execution);
         }
         Configuration config = this.executions.get(0).getConfiguration();
 
@@ -95,6 +96,17 @@ public class NonDexMojo extends AbstractNondexMojo {
 
     }
 
+    private MojoExecutionException executeSurefireExecution(MojoExecutionException allExceptions,
+            CleanSurefireExecution execution) {
+        try {
+            execution.run();
+        } catch (MojoExecutionException ex) {
+            allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
+        }
+        this.writeCurrentRunInfo(execution);
+        return allExceptions;
+    }
+
     private int computeIthSeed(int ithSeed) {
         return Utils.computeIthSeed(ithSeed, this.rerun, this.seed);
     }
@@ -102,7 +114,7 @@ public class NonDexMojo extends AbstractNondexMojo {
     private void printSummary() {
         Set<String> allFailures = new HashSet<>();
         this.getLog().info("NonDex SUMMARY:");
-        for (NonDexSurefireExecution exec : this.executions) {
+        for (CleanSurefireExecution exec : this.executions) {
             this.getLog().info("*********");
             this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine());
             Collection<String> failedTests = exec.getConfiguration().getFailedTests();
@@ -122,9 +134,9 @@ public class NonDexMojo extends AbstractNondexMojo {
         }
     }
 
-    private void writeCurrentRunInfo(NonDexSurefireExecution execution) {
+    private void writeCurrentRunInfo(CleanSurefireExecution execution) {
         try {
-            Files.write(this.executions.get(0).getConfiguration().getRunFilePath(),
+            Files.write(execution.getConfiguration().getRunFilePath(),
                     (execution.getConfiguration().executionId + "\n").getBytes(),
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {

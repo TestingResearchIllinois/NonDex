@@ -41,33 +41,13 @@ import edu.illinois.nondex.common.Utils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.twdata.maven.mojoexecutor.MojoExecutor;
 
-public class NonDexSurefireExecution {
-
-    private static boolean isFirstRun = true;
-
-    private Configuration configuration;
-    private final String executionId;
-
-    private Plugin surefire;
-    private MavenProject mavenProject;
-    private MavenSession mavenSession;
-    private BuildPluginManager pluginManager;
-
-    private String originalArgLine;
+public class NonDexSurefireExecution extends CleanSurefireExecution {
 
     private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
             MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
-        this.executionId = Utils.getFreshExecutionId();
-        this.surefire = surefire;
-        this.originalArgLine = originalArgLine;
-        this.mavenProject = mavenProject;
-        this.mavenSession = mavenSession;
-        this.pluginManager = pluginManager;
+        super(surefire, originalArgLine, Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager);
     }
 
     public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
@@ -87,27 +67,8 @@ public class NonDexSurefireExecution {
                 end, config.nondexDir, config.nondexJarDir, test, this.executionId);
     }
 
-    public Configuration getConfiguration() {
-        return this.configuration;
-    }
-
-    public void run() throws MojoExecutionException {
-        this.addNondexToBootClassPath();
-        try {
-            Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
-            MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
-                    this.createListenerConfiguration((Xpp3Dom) this.surefire.getConfiguration()),
-                    MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
-        } catch (MojoExecutionException mojoException) {
-            Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
-            throw mojoException;
-        }
-
-    }
-
-
-    private void addNondexToBootClassPath() {
-
+    @Override
+    protected void setupArgline() {
         String localRepo = this.mavenSession.getSettings().getLocalRepository();
         String pathToNondex = this.getPathToNondexJar(localRepo);
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
@@ -121,55 +82,5 @@ public class NonDexSurefireExecution {
         return this.configuration.nondexJarDir + "/" + ConfigurationDefaults.INSTRUMENTATION_JAR
                 + ":" + Paths.get(localRepo, "edu/illinois/nondex-common/" + ConfigurationDefaults.VERSION
                 + "/nondex-common-" + ConfigurationDefaults.VERSION + ".jar").toString();
-    }
-
-    private Xpp3Dom createListenerConfiguration(Xpp3Dom configuration) {
-        Xpp3Dom configNode = configuration;
-        if (configNode == null) {
-            configNode = new Xpp3Dom("configuration");
-        }
-
-        if (!NonDexSurefireExecution.isFirstRun) {
-            return configNode;
-        }
-        NonDexSurefireExecution.isFirstRun = false;
-
-        Xpp3Dom properties = this.createChildIfNotExists(configNode, "properties");
-
-        if (properties.getChild("property") != null) {
-            for (Xpp3Dom property : properties.getChildren()) {
-                if ("property".equals(property.getName()) && "listener".equals(property.getChild("name").getValue())) {
-                    String value = property.getChild("value").getValue();
-                    value = value + ",edu.illinois.nondex.plugin.TestStatusListener";
-                    property.getChild("value").setValue(value);
-                    return configNode;
-                }
-            }
-        }
-
-        properties.addChild(this.makeListenerNode());
-        return configNode;
-    }
-
-    private Xpp3Dom makeListenerNode() {
-        Xpp3Dom result = new Xpp3Dom("property");
-        Xpp3Dom name = new Xpp3Dom("name");
-        name.setValue("listener");
-        Xpp3Dom value = new Xpp3Dom("value");
-        value.setValue("edu.illinois.nondex.plugin.TestStatusListener");
-
-        result.addChild(name);
-        result.addChild(value);
-
-        return result;
-    }
-
-    private Xpp3Dom createChildIfNotExists(Xpp3Dom configuration, String child) {
-        Xpp3Dom childNode = configuration.getChild(child);
-        if (childNode == null) {
-            childNode = new Xpp3Dom(child);
-            configuration.addChild(childNode);
-        }
-        return childNode;
     }
 }

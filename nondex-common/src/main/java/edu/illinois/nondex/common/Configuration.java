@@ -81,6 +81,13 @@ public class Configuration {
         this.createExecutionDirIfNeeded();
     }
 
+    public Configuration(String executionId) {
+        this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
+                Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
+                ConfigurationDefaults.DEFAULT_NONDEX_DIR, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                null, executionId);
+    }
+
     public void createNondexDirIfNeeded() {
         new File(this.nondexDir).mkdir();
     }
