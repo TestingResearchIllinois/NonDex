@@ -29,9 +29,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -79,6 +81,13 @@ public class Configuration {
         this.testName = testName;
         this.executionId = executionId;
         this.createExecutionDirIfNeeded();
+    }
+
+    public Configuration(String executionId) {
+        this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
+                Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
+                ConfigurationDefaults.DEFAULT_NONDEX_DIR, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                null, executionId);
     }
 
     public void createNondexDirIfNeeded() {
@@ -203,6 +212,27 @@ public class Configuration {
             }
         }
         return this.invoCount;
+    }
+
+    public void filterTests(Collection<String> failedInClean) {
+        Collection<String> failedTestsInExecution = this.getFailedTests();
+
+        failedTestsInExecution = new HashSet<String>(failedTestsInExecution);
+        failedTestsInExecution.removeAll(failedInClean);
+
+        File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)
+                    .toFile();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(failed))) {
+            for (String test : failedTestsInExecution) {
+                bw.write(test + "\n");
+            }
+        } catch (FileNotFoundException fne) {
+            Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
+        } catch (IOException ioe) {
+            Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
+        }
+        this.failedTests = null;
     }
 
     public Collection<String> getFailedTests() {
