@@ -55,7 +55,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class NonDexMojo extends AbstractNondexMojo {
 
-    private List<CleanSurefireExecution> executions = new LinkedList<>();
+    private List<NonDexSurefireExecution> executions = new LinkedList<>();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -68,7 +68,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
 
         for (int i = 0; i < this.numRuns; i++) {
-            CleanSurefireExecution execution =
+            NonDexSurefireExecution execution =
                     new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
                             Pattern.compile(this.filter), this.start, this.end,
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
@@ -79,9 +79,12 @@ public class NonDexMojo extends AbstractNondexMojo {
             this.executions.add(execution);
             allExceptions = this.executeSurefireExecution(allExceptions, execution);
         }
+
+        this.postProcessExecutions(cleanExec);
+
         Configuration config = this.executions.get(0).getConfiguration();
 
-        this.printSummary();
+        this.printSummary(cleanExec);
 
         try {
             Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
@@ -94,6 +97,16 @@ public class NonDexMojo extends AbstractNondexMojo {
             throw allExceptions;
         }
 
+    }
+
+    private void postProcessExecutions(CleanSurefireExecution cleanExec) {
+        Collection<String> failedInClean = cleanExec.getConfiguration().getFailedTests();
+        if (failedInClean.isEmpty()) {
+            return;
+        }
+        for (NonDexSurefireExecution exec : this.executions) {
+            exec.getConfiguration().filterTests(failedInClean);
+        }
     }
 
     private MojoExecutionException executeSurefireExecution(MojoExecutionException allExceptions,
@@ -111,27 +124,37 @@ public class NonDexMojo extends AbstractNondexMojo {
         return Utils.computeIthSeed(ithSeed, this.rerun, this.seed);
     }
 
-    private void printSummary() {
+    private void printSummary(CleanSurefireExecution cleanExec) {
         Set<String> allFailures = new HashSet<>();
         this.getLog().info("NonDex SUMMARY:");
         for (CleanSurefireExecution exec : this.executions) {
-            this.getLog().info("*********");
-            this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine());
-            Collection<String> failedTests = exec.getConfiguration().getFailedTests();
-            if (failedTests.isEmpty()) {
-                this.getLog().info("No Test Failed with this configuration.");
-            }
-            for (String test : failedTests) {
-                allFailures.add(test);
-                this.getLog().warn(test);
-            }
-            this.getLog().info("*********");
+            this.printExecutionResults(allFailures, exec);
         }
+
+        if (!cleanExec.getConfiguration().getFailedTests().isEmpty()) {
+            this.getLog().info("Tests are failing without NonDex.");
+            this.printExecutionResults(allFailures, cleanExec);
+        }
+        allFailures.removeAll(cleanExec.getConfiguration().getFailedTests());
 
         this.getLog().info("Across all seeds:");
         for (String test : allFailures) {
             this.getLog().info(test);
         }
+    }
+
+    private void printExecutionResults(Set<String> allFailures, CleanSurefireExecution exec) {
+        this.getLog().info("*********");
+        this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine());
+        Collection<String> failedTests = exec.getConfiguration().getFailedTests();
+        if (failedTests.isEmpty()) {
+            this.getLog().info("No Test Failed with this configuration.");
+        }
+        for (String test : failedTests) {
+            allFailures.add(test);
+            this.getLog().warn(test);
+        }
+        this.getLog().info("*********");
     }
 
     private void writeCurrentRunInfo(CleanSurefireExecution execution) {

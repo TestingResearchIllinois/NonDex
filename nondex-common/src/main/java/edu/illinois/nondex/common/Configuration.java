@@ -29,9 +29,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -210,6 +212,27 @@ public class Configuration {
             }
         }
         return this.invoCount;
+    }
+
+    public void filterTests(Collection<String> failedInClean) {
+        Collection<String> failedTestsInExecution = this.getFailedTests();
+
+        failedTestsInExecution = new HashSet<String>(failedTestsInExecution);
+        failedTestsInExecution.removeAll(failedInClean);
+
+        File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)
+                    .toFile();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(failed))) {
+            for (String test : failedTestsInExecution) {
+                bw.write(test + "\n");
+            }
+        } catch (FileNotFoundException fne) {
+            Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
+        } catch (IOException ioe) {
+            Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
+        }
+        this.failedTests = null;
     }
 
     public Collection<String> getFailedTests() {
