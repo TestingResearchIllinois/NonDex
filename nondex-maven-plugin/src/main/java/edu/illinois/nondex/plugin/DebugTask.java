@@ -28,7 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -96,7 +96,7 @@ public class DebugTask {
     private Set<Configuration> createNewSeedsToRetry() {
         Configuration someFailingConfig = this.failingConfigurations.iterator().next();
         int newSeed = someFailingConfig.seed * ConfigurationDefaults.SEED_FACTOR;
-        Set<Configuration> retryWOtherSeeds = new HashSet<>();
+        Set<Configuration> retryWOtherSeeds = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             Configuration newConfig = new Configuration(someFailingConfig.mode,
                     Utils.computeIthSeed(i, false, newSeed),
