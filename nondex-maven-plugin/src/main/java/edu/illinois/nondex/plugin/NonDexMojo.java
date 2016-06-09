@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -103,9 +103,7 @@ public class NonDexMojo extends AbstractNondexMojo {
 
     private void postProcessExecutions(CleanSurefireExecution cleanExec) {
         Collection<String> failedInClean = cleanExec.getConfiguration().getFailedTests();
-        if (failedInClean.isEmpty()) {
-            return;
-        }
+
         for (NonDexSurefireExecution exec : this.executions) {
             exec.getConfiguration().filterTests(failedInClean);
         }
@@ -126,7 +124,7 @@ public class NonDexMojo extends AbstractNondexMojo {
     }
 
     private void printSummary(CleanSurefireExecution cleanExec) {
-        Set<String> allFailures = new HashSet<>();
+        Set<String> allFailures = new LinkedHashSet<>();
         this.getLog().info("NonDex SUMMARY:");
         for (CleanSurefireExecution exec : this.executions) {
             this.printExecutionResults(allFailures, exec);
