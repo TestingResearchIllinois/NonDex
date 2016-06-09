@@ -4,9 +4,9 @@
 
 Prerequisites:
 ==============
-Requires OpenJdk 8.
-Requires Junit 4.7 and greater.
-Requires Surefire present in the POM.
+    - OpenJdk 8.
+    - Junit 4.7 and greater.
+    - Surefire present in the POM.
 
 Build:
 ======
