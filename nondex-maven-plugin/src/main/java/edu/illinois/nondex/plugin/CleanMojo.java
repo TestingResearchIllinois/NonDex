@@ -39,20 +39,23 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * Removes NonDex plugin artifacts (i.e. the ".nondex" directories in each
- * module root) as well as the directory containig the NonDex jar.
+ * module root) as well as the NonDex jar.
  */
 @Mojo(name = "clean", requiresDirectInvocation = true)
 public class CleanMojo extends AbstractNondexMojo {
 
     public void execute() throws MojoExecutionException {
-        Path nondexArtifactsPath = Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR);
-        Path nondexJarPath = Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR);
+        Path nondexArtifactsPath = Paths.get(this.baseDir.getAbsolutePath(),
+                ConfigurationDefaults.DEFAULT_NONDEX_DIR);
+        Path nondexJarPath = Paths.get(this.baseDir.getAbsolutePath(),
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                ConfigurationDefaults.INSTRUMENTATION_JAR);
 
         File artifactsDir = nondexArtifactsPath.toFile();
-        File nondexJarDir = nondexJarPath.toFile();
+        File nondexJar = nondexJarPath.toFile();
 
-        if (nondexJarDir.exists()) {
-            delete(nondexJarDir);
+        if (nondexJar.exists()) {
+            delete(nondexJar);
         }
 
         if (artifactsDir.exists()) {
