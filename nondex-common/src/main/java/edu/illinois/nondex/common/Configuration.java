@@ -39,7 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -217,7 +217,7 @@ public class Configuration {
     public void filterTests(Collection<String> failedInClean) {
         Collection<String> failedTestsInExecution = this.getFailedTests();
 
-        failedTestsInExecution = new HashSet<String>(failedTestsInExecution);
+        failedTestsInExecution = new LinkedHashSet<String>(failedTestsInExecution);
         failedTestsInExecution.removeAll(failedInClean);
 
         File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)
@@ -237,7 +237,7 @@ public class Configuration {
 
     public Collection<String> getFailedTests() {
         if (this.failedTests == null) {
-            this.failedTests = new HashSet<>();
+            this.failedTests = new LinkedHashSet<>();
             File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)
                     .toFile();
 
