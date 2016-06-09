@@ -30,7 +30,8 @@ package edu.illinois.nondex.instr;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassVisitor;
 

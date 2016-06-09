@@ -83,5 +83,5 @@ public class ConfigurationDefaults {
     public static final int SEED_FACTOR = 0xA1e4;
 
     public static final String PROPERTY_LOGGING_LEVEL = "nondex.logging";
-    public static final String DEFAULT_LOGGING_LEVEL = "CONFIG";
+    public static final String DEFAULT_LOGGING_LEVEL = "ALL";
 }

@@ -86,6 +86,10 @@ public class Utils {
     }
 
     public static Path getRtJarLocation() {
+        if (!System.getProperty("java.version").startsWith("1.8.")) {
+            Logger.getGlobal().log(Level.SEVERE, System.getProperty("java.version"));
+            throw new UnsupportedOperationException("NonDex only supports Java 8");
+        }
         String javaHome = System.getProperty("java.home");
         if (javaHome == null) {
             Logger.getGlobal().log(Level.SEVERE, "JAVA_HOME is not set!");
