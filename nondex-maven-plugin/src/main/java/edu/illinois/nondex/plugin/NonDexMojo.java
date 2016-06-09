@@ -116,7 +116,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         try {
             execution.run();
         } catch (MojoExecutionException ex) {
-            allExceptions = (MojoExecutionException) Utils.linkException(ex, allExceptions);
+            return (MojoExecutionException) Utils.linkException(ex, allExceptions);
         }
         return allExceptions;
     }
