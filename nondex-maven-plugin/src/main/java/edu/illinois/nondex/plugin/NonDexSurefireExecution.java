@@ -83,8 +83,4 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 + ":" + Paths.get(localRepo, "edu/illinois/nondex-common/" + ConfigurationDefaults.VERSION
                 + "/nondex-common-" + ConfigurationDefaults.VERSION + ".jar").toString();
     }
-
-    public static void resetFirstRun() {
-        CleanSurefireExecution.isFirstRun = true;
-    }
 }

@@ -232,6 +232,7 @@ public class Configuration {
         } catch (IOException ioe) {
             Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
         }
+
         this.failedTests = null;
     }
 

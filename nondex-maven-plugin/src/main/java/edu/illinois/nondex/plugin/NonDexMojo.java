@@ -62,7 +62,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         super.execute();
         MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
-                this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin"), this.originalArgLine, this.mavenProject,
+                this.surefire, this.originalArgLine, this.mavenProject,
                     this.mavenSession, this.pluginManager);
 
         allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
@@ -74,7 +74,7 @@ public class NonDexMojo extends AbstractNondexMojo {
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
                                 .toString(),
-                            this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin"), this.originalArgLine,
+                            this.surefire, this.originalArgLine,
                             this.mavenProject, this.mavenSession, this.pluginManager);
             this.executions.add(execution);
             allExceptions = this.executeSurefireExecution(allExceptions, execution);
@@ -103,6 +103,10 @@ public class NonDexMojo extends AbstractNondexMojo {
 
     private void postProcessExecutions(CleanSurefireExecution cleanExec) {
         Collection<String> failedInClean = cleanExec.getConfiguration().getFailedTests();
+
+        if (failedInClean.isEmpty()) {
+            return;
+        }
 
         for (NonDexSurefireExecution exec : this.executions) {
             exec.getConfiguration().filterTests(failedInClean);
