@@ -111,7 +111,7 @@ public class DebugTask {
     private Configuration debugWithConfigurations(Set<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
-            if (this.failsOnDry(config)) {
+            if (this.failsOnDry(config) != null) {
                 Configuration failingConfig = this.startDebugBinary(config);
 
                 // If debugged down to single choice point, then go ahead and return that
@@ -128,7 +128,7 @@ public class DebugTask {
         return debConfig;
     }
 
-    private boolean failsOnDry(Configuration config) {
+    private Configuration failsOnDry(Configuration config) {
         return this.failsWithConfig(config, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
@@ -140,12 +140,10 @@ public class DebugTask {
             Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
 
             int midPoint = (start + end) / 2;
-            if (this.failsWithConfig(config, start, midPoint)) {
-                failingConfiguration = config;
+            if ((failingConfiguration = this.failsWithConfig(config, start, midPoint)) != null) {
                 end = midPoint;
                 continue;
-            } else if (this.failsWithConfig(config, midPoint + 1, end)) {
-                failingConfiguration = config;
+            } else if ((failingConfiguration = this.failsWithConfig(config, midPoint + 1, end)) != null) {
                 start = midPoint + 1;
                 continue;
             } else {
@@ -153,10 +151,6 @@ public class DebugTask {
                 return this.startDebugLinear(config, start, end);
             }
         }
-        // Convert failingConfiguration to one with start and end set to actual values found
-        failingConfiguration = new Configuration(failingConfiguration.mode, failingConfiguration.seed,
-            failingConfiguration.filter, start, end, failingConfiguration.nondexDir, failingConfiguration.nondexJarDir,
-            failingConfiguration.testName, failingConfiguration.executionId);
         return failingConfiguration;
     }
 
@@ -167,12 +161,10 @@ public class DebugTask {
         while (localStart < localEnd) {
             Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
 
-            if (this.failsWithConfig(config, localStart, localEnd - 1)) {
-                failingConfiguration = config;
+            if ((failingConfiguration = this.failsWithConfig(config, localStart, localEnd - 1)) != null) {
                 localEnd = localEnd - 1;
                 continue;
-            } else if (this.failsWithConfig(config, localStart + 1, localEnd)) {
-                failingConfiguration = config;
+            } else if ((failingConfiguration = this.failsWithConfig(config, localStart + 1, localEnd)) != null) {
                 localStart = localStart + 1;
                 continue;
             } else {
@@ -183,15 +175,15 @@ public class DebugTask {
         return failingConfiguration;
     }
 
-    public boolean failsWithConfig(Configuration config, int start, int end) {
+    public Configuration failsWithConfig(Configuration config, int start, int end) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
                     start, end, this.test, this.surefire, this.originalArgLine, this.mavenProject,
                     this.mavenSession, this.pluginManager);
         try {
             execution.run();
         } catch (Throwable thr) {
-            return true;
+            return execution.getConfiguration();
         }
-        return false;
+        return null;
     }
 }
