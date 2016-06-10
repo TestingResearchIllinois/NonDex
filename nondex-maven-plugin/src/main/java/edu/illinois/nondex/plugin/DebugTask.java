@@ -78,7 +78,8 @@ public class DebugTask {
         Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
 
         if (failingOne != null) {
-            return failingOne.toArgLine();
+            return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
+                + failingOne.getDebugPath();
         }
 
         // The seeds that failed with the full test-suite no longer fail
@@ -87,7 +88,8 @@ public class DebugTask {
         failingOne = this.debugWithConfigurations(retryWOtherSeeds);
 
         if (failingOne != null) {
-            return failingOne.toArgLine();
+            return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
+                + failingOne.getDebugPath();
         }
 
         return "cannot reproduce. may be flaky due to other causes";
