@@ -140,6 +140,45 @@ public class NonDexMojo extends AbstractNondexMojo {
         for (String test : allFailures) {
             this.getLog().info(test);
         }
+
+        generateHtml(allFailures);
+    }
+
+    private void generateHtml(Set<String> allFailures) {
+        String head = "<html>";
+        head += "<head>";
+        head += "<title>Test Results</title>";
+        head += "</head>";
+        String html = head + "<body>" + "<table class=\"table table-striped\">";
+
+        html += "<thead><tr>";
+        html += "<th>Test Name</th>";
+        for (int iter = 0; iter < this.executions.size(); iter++) {
+            html += "<th>";
+            html += "Run " + (iter + 1);
+            html += "</th>";
+        }
+        html += "</tr></thead>";
+        html += "<tbody>";
+        for (String failure : allFailures) {
+            html += "<tr><td>" + failure + "</td>";
+            for (CleanSurefireExecution exec : this.executions) {
+                boolean testDidFail = false;
+                for (String test : exec.getConfiguration().getFailedTests()) {
+                    if (test.equals(failure)) {
+                        testDidFail = true;
+                    }
+                }
+                if (testDidFail) {
+                    html += "<td>Failed</td>";
+                } else {
+                    html += "<td>Passed</td>";
+                }
+            }
+            html += "</tr>";
+        }
+        html += "</tbody></table></body></html>";
+        this.getLog().info(html);
     }
 
     private void printExecutionResults(Set<String> allFailures, CleanSurefireExecution exec) {
