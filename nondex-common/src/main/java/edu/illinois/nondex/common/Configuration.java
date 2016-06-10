@@ -218,6 +218,9 @@ public class Configuration {
         Collection<String> failedTestsInExecution = this.getFailedTests();
 
         failedTestsInExecution = new LinkedHashSet<String>(failedTestsInExecution);
+        if (this.failedTests.isEmpty()) {
+            return;
+        }
         failedTestsInExecution.removeAll(failedInClean);
 
         File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)

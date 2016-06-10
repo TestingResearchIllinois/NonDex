@@ -104,10 +104,6 @@ public class NonDexMojo extends AbstractNondexMojo {
     private void postProcessExecutions(CleanSurefireExecution cleanExec) {
         Collection<String> failedInClean = cleanExec.getConfiguration().getFailedTests();
 
-        if (failedInClean.isEmpty()) {
-            return;
-        }
-
         for (NonDexSurefireExecution exec : this.executions) {
             exec.getConfiguration().filterTests(failedInClean);
         }
