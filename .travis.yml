@@ -6,5 +6,5 @@ os:
 
 before install:
     - echo "ALEX :::  ${TRAVIS_OS_NAME}"
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap caskroom/cask; brew install brew-cask; brew cask install java; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; echo "ALEX:: mac"; brew cask install java; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo "ALEX:: linux"; jdk_switcher use oraclejdk8; fi
