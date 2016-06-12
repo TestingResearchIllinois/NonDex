@@ -75,8 +75,6 @@ public class DebugMojo extends AbstractNondexMojo {
             DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine,
                     this.mavenProject, this.mavenSession, this.pluginManager, this.testsFailing.get(test));
             String repro = debugging.debug();
-            Logger.getGlobal().log(Level.SEVERE, "REPRO: mvn nondex:nondex " + repro);
-
             testToRepro.put(test, repro);
         }
 
