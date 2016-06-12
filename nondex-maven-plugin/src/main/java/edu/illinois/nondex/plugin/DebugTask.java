@@ -117,7 +117,7 @@ public class DebugTask {
                 Configuration failingConfig = this.startDebugBinary(config);
 
                 // If debugged down to single choice point, then go ahead and return that
-                if (failingConfig.numChoices() == 0) {
+                if (failingConfig != null && failingConfig.numChoices() == 0) {
                     return failingConfig;
                 }
                 // Otherwise should go on until finding better one
