@@ -155,7 +155,7 @@ public class DebugTask {
             }
         }
         if (failingConfiguration != null) {
-            this.reportDebugInfo(failingConfiguration);
+            return this.reportDebugInfo(failingConfiguration);
         }
         return failingConfiguration;
     }
