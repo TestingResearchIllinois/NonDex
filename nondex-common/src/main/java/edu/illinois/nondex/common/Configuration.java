@@ -163,6 +163,10 @@ public class Configuration {
         Paths.get(this.nondexDir, this.executionId).toFile().mkdirs();
     }
 
+    public Path getNondexDir() {
+        return Paths.get(this.nondexDir, this.executionId);
+    }
+
     public Path getFailuresPath() {
         return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE);
     }
