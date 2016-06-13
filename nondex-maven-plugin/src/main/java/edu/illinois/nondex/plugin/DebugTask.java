@@ -113,8 +113,9 @@ public class DebugTask {
     private Configuration debugWithConfigurations(Set<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
-            if (this.failsOnDry(config) != null) {
-                Configuration failingConfig = this.startDebugBinary(config);
+            Configuration dryConfig;
+            if ((dryConfig = this.failsOnDry(config)) != null) {
+                Configuration failingConfig = this.startDebugBinary(dryConfig);
 
                 // If debugged down to single choice point, then go ahead and return that
                 if (failingConfig != null && failingConfig.numChoices() == 0) {
