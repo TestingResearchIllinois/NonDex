@@ -154,7 +154,10 @@ public class DebugTask {
                 break;
             }
         }
-        return this.reportDebugInfo(failingConfiguration);
+        if (failingConfiguration != null) {
+            this.reportDebugInfo(failingConfiguration);
+        }
+        return failingConfiguration;
     }
 
     private Configuration reportDebugInfo(Configuration failingConfiguration) {
