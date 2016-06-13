@@ -121,6 +121,11 @@ public class ControlNondeterminism {
     }
 
     private static <T> List<T> internalShuffle(List<T> objs, String source) {
+        // If in state of outputting, do not do any shuffling and other stuff
+        if (!ControlNondeterminism.shouldOutputTrace) {
+            return objs;
+        }
+
         Random currentRandom = ControlNondeterminism.getRandomnessSource(source);
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
@@ -136,17 +141,15 @@ public class ControlNondeterminism {
                 StackTraceElement[] traces = Thread.currentThread().getStackTrace();
                 StringBuilder stackstring = new StringBuilder();
                 for (StackTraceElement traceElement : traces) {
-                    //Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
                     stackstring.append(traceElement.toString() + "\n");
                 }
                 try {
-                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file
-                    if (ControlNondeterminism.shouldOutputTrace) {
-                        ControlNondeterminism.shouldOutputTrace = false;
-                        Files.write(ControlNondeterminism.config.getDebugPath(),
-                            ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
-                            StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                    }
+                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file,
+                    // and to prevent it from doing other things when all we want is to print out a stack trace
+                    ControlNondeterminism.shouldOutputTrace = false;
+                    Files.write(ControlNondeterminism.config.getDebugPath(),
+                        ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 } catch (IOException ioe) {
                     Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
                 } finally {
