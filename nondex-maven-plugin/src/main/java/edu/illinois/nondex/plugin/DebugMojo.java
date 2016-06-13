@@ -103,7 +103,8 @@ public class DebugMojo extends AbstractNondexMojo {
 
     private void parseTests() {
         for (String execution : this.executions) {
-            Properties props = Utils.openPropertiesFrom(Paths.get(ConfigurationDefaults.DEFAULT_NONDEX_DIR, execution,
+            Properties props = Utils.openPropertiesFrom(Paths.get(this.baseDir.getAbsolutePath(),
+                    ConfigurationDefaults.DEFAULT_NONDEX_DIR, execution,
                     ConfigurationDefaults.CONFIGURATION_FILE));
             Configuration config = Configuration.parseArgs(props);
             for (String test : config.getFailedTests()) {
@@ -113,7 +114,7 @@ public class DebugMojo extends AbstractNondexMojo {
     }
 
     private void parseExecutions() {
-        File run = Paths.get(ConfigurationDefaults.DEFAULT_NONDEX_DIR, this.runId)
+        File run = Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR, this.runId)
                 .toFile();
 
         try (BufferedReader br = new BufferedReader(new FileReader(run))) {
