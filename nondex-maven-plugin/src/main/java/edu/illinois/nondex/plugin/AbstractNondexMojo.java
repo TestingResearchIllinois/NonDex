@@ -182,6 +182,10 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
 
         this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
 
+        if (this.surefire == null) {
+            Logger.getGlobal().log(Level.SEVERE, "Make sure surefire is in your pom.xml");
+        }
+
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
     }

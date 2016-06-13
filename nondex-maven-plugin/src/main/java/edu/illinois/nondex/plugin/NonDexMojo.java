@@ -28,7 +28,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -86,7 +89,7 @@ public class NonDexMojo extends AbstractNondexMojo {
 
         Configuration config = this.executions.get(0).getConfiguration();
 
-        this.printSummary(cleanExec);
+        this.printSummary(cleanExec, config);
 
         try {
             Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
@@ -123,7 +126,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         return Utils.computeIthSeed(ithSeed, this.rerun, this.seed);
     }
 
-    private void printSummary(CleanSurefireExecution cleanExec) {
+    private void printSummary(CleanSurefireExecution cleanExec, Configuration config) {
         Set<String> allFailures = new LinkedHashSet<>();
         this.getLog().info("NonDex SUMMARY:");
         for (CleanSurefireExecution exec : this.executions) {
@@ -140,6 +143,56 @@ public class NonDexMojo extends AbstractNondexMojo {
         for (String test : allFailures) {
             this.getLog().info(test);
         }
+
+        generateHtml(allFailures, config);
+    }
+
+    private void generateHtml(Set<String> allFailures, Configuration config) {
+        String head = "<html>";
+        head += "<head>";
+        head += "<title>Test Results</title>";
+        head += "</head>";
+        String html = head + "<body>" + "<table class=\"table table-striped\">";
+
+        html += "<thead><tr>";
+        html += "<th>Test Name</th>";
+        for (int iter = 0; iter < this.executions.size(); iter++) {
+            html += "<th>";
+            html += "Run " + (iter + 1);
+            html += "</th>";
+        }
+        html += "</tr></thead>";
+        html += "<tbody>";
+        for (String failure : allFailures) {
+            html += "<tr><td>" + failure + "</td>";
+            for (CleanSurefireExecution exec : this.executions) {
+                boolean testDidFail = false;
+                for (String test : exec.getConfiguration().getFailedTests()) {
+                    if (test.equals(failure)) {
+                        testDidFail = true;
+                    }
+                }
+                if (testDidFail) {
+                    html += "<td>Failed</td>";
+                } else {
+                    html += "<td>Passed</td>";
+                }
+            }
+            html += "</tr>";
+        }
+        html += "</tbody></table></body></html>";
+
+        File nondexDir = config.getNondexDir().toFile();
+        File htmlFile = new File(nondexDir, "test_results.html");
+        try {
+            PrintWriter htmlPrinter = new PrintWriter(htmlFile);
+            htmlPrinter.print(html);
+            htmlPrinter.close();
+        } catch (FileNotFoundException ex) {
+            this.getLog().info("File Missing.  But that shouldn't happen...");
+        }
+        this.getLog().info("Test results can be found at: ");
+        this.getLog().info("file://" + htmlFile.getPath());
     }
 
     private void printExecutionResults(Set<String> allFailures, CleanSurefireExecution exec) {
