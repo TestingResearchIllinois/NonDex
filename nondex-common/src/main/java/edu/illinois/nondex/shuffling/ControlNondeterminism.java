@@ -39,7 +39,6 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
-import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 
 public class ControlNondeterminism {
@@ -133,10 +132,7 @@ public class ControlNondeterminism {
 
         // Determine if should return ordered or non-ordered
         if (ControlNondeterminism.shouldExploreForInstance()) {
-            // TODO(gyori): Communicate this stack trace in a better way
-            if (ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
-                    && ControlNondeterminism.config.start == ControlNondeterminism.config.end
-                    && ControlNondeterminism.count == ControlNondeterminism.config.start) {
+            if (ControlNondeterminism.config.shouldPrintStackTrace && ControlNondeterminism.isDebuggingUniquePoint()) {
                 StackTraceElement[] traces = Thread.currentThread().getStackTrace();
                 StringBuilder stackstring = new StringBuilder();
                 for (StackTraceElement traceElement : traces) {
@@ -145,8 +141,8 @@ public class ControlNondeterminism {
                 }
                 try {
                     // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file
-                    if (shouldOutputTrace) {
-                        shouldOutputTrace = false;
+                    if (ControlNondeterminism.shouldOutputTrace) {
+                        ControlNondeterminism.shouldOutputTrace = false;
                         Files.write(ControlNondeterminism.config.getDebugPath(),
                             ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
                             StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -154,7 +150,7 @@ public class ControlNondeterminism {
                 } catch (IOException ioe) {
                     Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
                 } finally {
-                    shouldOutputTrace = true;
+                    ControlNondeterminism.shouldOutputTrace = true;
                 }
             }
             ControlNondeterminism.count++;
@@ -165,6 +161,12 @@ public class ControlNondeterminism {
             ControlNondeterminism.count++;
             return objs;
         }
+    }
+
+    private static boolean isDebuggingUniquePoint() {
+        return ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
+                && ControlNondeterminism.config.start == ControlNondeterminism.config.end
+                && ControlNondeterminism.count == ControlNondeterminism.config.start;
     }
 
     private static boolean shouldExploreForInstance() {

@@ -58,13 +58,13 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 this.executionId);
     }
 
-    public NonDexSurefireExecution(Configuration config, int start, int end, String test, Plugin surefire,
+    public NonDexSurefireExecution(Configuration config, long start, long end, boolean print, String test, Plugin surefire,
             String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
             BuildPluginManager pluginManager) {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, config.nondexDir, config.nondexJarDir, test, this.executionId);
+                end, config.nondexDir, config.nondexJarDir, test, this.executionId, print);
     }
 
     @Override
