@@ -37,7 +37,6 @@ import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -67,15 +66,30 @@ public class DebugTask {
     }
 
     public String debug() throws MojoExecutionException {
-        Pair<Long, Long> limits = Pair.of(Long.MIN_VALUE, Long.MAX_VALUE);
 
         //The test must have failed if it's being debugged, ergo there should exist a failing configuration
-
         assert (!this.failingConfigurations.isEmpty());
 
-        Configuration failingOne = this.debugWithConfigurations(this.failingConfigurations);
+        // I think this entire string result returning is very ugly, and checking succes through null-checks
+        // TODO(gyori): refactor this crap.
+        String result = this.tryDebugSeeds();
+        if (result != null) {
+            return result;
+        }
 
-        Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
+        // if the test is null, it will run the entire test suite (one may consider doing this more fine grainedly
+        // going to class, before jumping all the way to project
+        this.test = null;
+        result = this.tryDebugSeeds();
+        if (result != null) {
+            return result;
+        }
+
+        return "cannot reproduce. may be flaky due to other causes";
+    }
+
+    private String tryDebugSeeds() {
+        Configuration failingOne = this.debugWithConfigurations(this.failingConfigurations);
 
         if (failingOne != null) {
             return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
@@ -92,7 +106,7 @@ public class DebugTask {
                 + failingOne.getDebugPath();
         }
 
-        return "cannot reproduce. may be flaky due to other causes";
+        return null;
     }
 
     private Set<Configuration> createNewSeedsToRetry() {
