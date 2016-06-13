@@ -100,6 +100,8 @@ public class CleanSurefireExecution {
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
+
+        Logger.getGlobal().log(Level.FINE, "Adding listener");
         Xpp3Dom properties = this.createChildIfNotExists(configNode, "properties");
 
         if (properties.getChild("property") != null) {

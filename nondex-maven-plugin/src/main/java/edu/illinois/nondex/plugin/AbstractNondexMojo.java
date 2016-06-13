@@ -154,8 +154,8 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
     @Component
     protected BuildPluginManager pluginManager;
 
-    protected Plugin surefire;
     protected String originalArgLine;
+    protected Plugin surefire;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

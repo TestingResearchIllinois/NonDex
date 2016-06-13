@@ -59,7 +59,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 public class DebugMojo extends AbstractNondexMojo {
 
     private List<String> executions = new LinkedList<>();
-
     private SetMultimap<String, Configuration> testsFailing = HashMultimap.create();
 
     @Override
