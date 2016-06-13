@@ -1,29 +1,29 @@
 /*
-The MIT License (MIT)
-Copyright (c) 2015 Alex Gyori
-Copyright (c) 2015 Owolabi Legunsen
-Copyright (c) 2015 Darko Marinov
-Copyright (c) 2015 August Shi
+  The MIT License (MIT)
+  Copyright (c) 2015 Alex Gyori
+  Copyright (c) 2015 Owolabi Legunsen
+  Copyright (c) 2015 Darko Marinov
+  Copyright (c) 2015 August Shi
 
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+  Permission is hereby granted, free of charge, to any person obtaining
+  a copy of this software and associated documentation files (the
+  "Software"), to deal in the Software without restriction, including
+  without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to
+  the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 package edu.illinois.nondex.plugin;
@@ -108,37 +108,37 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
      * some internal factor.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS,
-            defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
-    protected int numRuns;
+               defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_STR)
+               protected int numRuns;
 
     /**
      * Set this to "true" to rerun multiple times with only the specified (or
      * default) seed. The number of reruns is equal to numRuns.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RERUN,
-            defaultValue = ConfigurationDefaults.DEFAULT_RERUN_STR)
-    protected boolean rerun;
+               defaultValue = ConfigurationDefaults.DEFAULT_RERUN_STR)
+               protected boolean rerun;
 
     /**
      * Unique ID for the current nondex execution.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_EXECUTION_ID,
-            defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID)
-    protected String executionId;
+               defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_EXECUTION_ID)
+               protected String executionId;
 
     /**
      * Select which run to perform debugging on. Default is the latest.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_RUN_ID,
-            defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
-    protected String runId;
+               defaultValue = ConfigurationDefaults.PROPERTY_DEFAULT_RUN_ID)
+               protected String runId;
 
     /**
      * Same as the levels defined in java.util.logging.Level.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_LOGGING_LEVEL,
-            defaultValue = ConfigurationDefaults.DEFAULT_LOGGING_LEVEL)
-    protected String loggingLevel;
+               defaultValue = ConfigurationDefaults.DEFAULT_LOGGING_LEVEL)
+               protected String loggingLevel;
 
     // Generic properties
     @Parameter(property = "project")
@@ -169,11 +169,11 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
 
         try {
             File fileForJar = Paths.get(this.baseDir.getAbsolutePath(),
-                    ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR).toFile();
+                                        ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR).toFile();
 
             fileForJar.mkdirs();
             Instrumenter.instrument(rtJarPath.toString(), Paths.get(fileForJar.getAbsolutePath(),
-                    ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
+                                                                    ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
         } catch (IOException exc) {
             exc.printStackTrace();
         } catch (NoSuchAlgorithmException exc) {
@@ -181,6 +181,10 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
         }
 
         this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
+
+        if (surefire == null) {
+            Logger.getGlobal().log(Level.SEVERE, "Make sure you have surefire in your pom.xml");
+        }
 
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
