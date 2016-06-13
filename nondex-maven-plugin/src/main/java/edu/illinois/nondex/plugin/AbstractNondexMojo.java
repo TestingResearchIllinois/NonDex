@@ -50,6 +50,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.PluginNotFoundException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -181,6 +182,10 @@ public abstract class AbstractNondexMojo extends AbstractMojo {
         }
 
         this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
+
+        if (this.surefire == null) {
+            Logger.getGlobal().log(Level.SEVERE, "Make sure surefire is in your pom.xml");
+        }
 
         Properties localProperties = this.mavenProject.getProperties();
         this.originalArgLine = localProperties.getProperty("argLine", "");
