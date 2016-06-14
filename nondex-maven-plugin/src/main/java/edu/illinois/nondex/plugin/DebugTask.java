@@ -70,19 +70,15 @@ public class DebugTask {
         //The test must have failed if it's being debugged, ergo there should exist a failing configuration
         assert (!this.failingConfigurations.isEmpty());
 
-        // I think this entire string result returning is very ugly, and checking succes through null-checks
+        // I think this entire string result returning is very ugly, and checking success through null-checks
         // TODO(gyori): refactor this crap.
-        String result = this.tryDebugSeeds();
-        if (result != null) {
-            return result;
-        }
 
-        // if the test is null, it will run the entire test suite (one may consider doing this more fine grainedly
-        // going to class, before jumping all the way to project
-        this.test = null;
-        result = this.tryDebugSeeds();
-        if (result != null) {
-            return result;
+        // Try debugging test at different levels, from individual test all the way to entire test suite (being null)
+        for (String test : new String[]{this.test, null}) {
+            String result = this.tryDebugSeeds();
+            if (result != null) {
+                return result;
+            }
         }
 
         return "cannot reproduce. may be flaky due to other causes";
