@@ -126,6 +126,11 @@ public class ControlNondeterminism {
             return objs;
         }
 
+        // If size of collection to shuffle has at most one element, no need to shuffle
+        if (objs.size() <= 1) {
+            return objs;
+        }
+
         Random currentRandom = ControlNondeterminism.getRandomnessSource(source);
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
