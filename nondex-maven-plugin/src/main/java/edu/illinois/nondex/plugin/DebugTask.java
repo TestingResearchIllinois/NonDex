@@ -74,7 +74,9 @@ public class DebugTask {
         // TODO(gyori): refactor this crap.
 
         // Try debugging test at different levels, from individual test all the way to entire test suite (being null)
-        for (String test : new String[]{this.test, null}) {
+        String defaultTest = this.test; // Save the original test wanting to debug
+        for (String test : new String[]{defaultTest, null}) {
+            this.test = test;
             String result = this.tryDebugSeeds();
             if (result != null) {
                 return result;
