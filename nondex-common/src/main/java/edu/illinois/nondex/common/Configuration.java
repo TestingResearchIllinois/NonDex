@@ -56,6 +56,8 @@ public class Configuration {
     public final long start;
     public final long end;
 
+    public final boolean shouldPrintStackTrace;
+
     public final String nondexDir;
     public final String nondexJarDir;
 
@@ -71,6 +73,11 @@ public class Configuration {
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
             String nondexJarDir, String testName, String executionId) {
+        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, false);
+    }
+
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+            String nondexJarDir, String testName, String executionId, boolean printStackTrace) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
@@ -80,8 +87,10 @@ public class Configuration {
         this.nondexJarDir = nondexJarDir;
         this.testName = testName;
         this.executionId = executionId;
+        this.shouldPrintStackTrace = printStackTrace;
         this.createExecutionDirIfNeeded();
     }
+
 
     public Configuration(String executionId) {
         this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
@@ -101,6 +110,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
@@ -115,6 +125,7 @@ public class Configuration {
                 + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + "\n"
                 + ConfigurationDefaults.PROPERTY_START + "=" + this.start + "\n"
                 + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n"
+                + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace + "\n"
                 + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir + "\n"
                 + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir + "\n"
                 + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId + "\n"
@@ -144,6 +155,11 @@ public class Configuration {
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
 
+        final boolean shouldPrintStacktrace = Boolean.parseBoolean(
+                props.getProperty(ConfigurationDefaults.PROPERTY_PRINT_STACK,
+                        ConfigurationDefaults.DEFAULT_PRINT_STACK_STR));
+
+
         final String nondexDir = props.getProperty(ConfigurationDefaults.PROPERTY_NONDEX_DIR,
                 ConfigurationDefaults.DEFAULT_NONDEX_DIR);
 
@@ -156,7 +172,8 @@ public class Configuration {
 
         final String testName = props.getProperty("test", null);
 
-        return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId);
+        return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName,
+                executionId, shouldPrintStacktrace);
     }
 
     public void createExecutionDirIfNeeded() {

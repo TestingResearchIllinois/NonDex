@@ -39,7 +39,6 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
-import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 
 public class ControlNondeterminism {
@@ -122,6 +121,11 @@ public class ControlNondeterminism {
     }
 
     private static <T> List<T> internalShuffle(List<T> objs, String source) {
+        // If in state of outputting, do not do any shuffling and other stuff
+        if (!ControlNondeterminism.shouldOutputTrace) {
+            return objs;
+        }
+
         Random currentRandom = ControlNondeterminism.getRandomnessSource(source);
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
@@ -133,28 +137,23 @@ public class ControlNondeterminism {
 
         // Determine if should return ordered or non-ordered
         if (ControlNondeterminism.shouldExploreForInstance()) {
-            // TODO(gyori): Communicate this stack trace in a better way
-            if (ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
-                    && ControlNondeterminism.config.start == ControlNondeterminism.config.end
-                    && ControlNondeterminism.count == ControlNondeterminism.config.start) {
+            if (ControlNondeterminism.config.shouldPrintStackTrace && ControlNondeterminism.isDebuggingUniquePoint()) {
                 StackTraceElement[] traces = Thread.currentThread().getStackTrace();
                 StringBuilder stackstring = new StringBuilder();
                 for (StackTraceElement traceElement : traces) {
-                    //Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
                     stackstring.append(traceElement.toString() + "\n");
                 }
                 try {
-                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file
-                    if (shouldOutputTrace) {
-                        shouldOutputTrace = false;
-                        Files.write(ControlNondeterminism.config.getDebugPath(),
-                            ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
-                            StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                    }
+                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file,
+                    // and to prevent it from doing other things when all we want is to print out a stack trace
+                    ControlNondeterminism.shouldOutputTrace = false;
+                    Files.write(ControlNondeterminism.config.getDebugPath(),
+                        ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 } catch (IOException ioe) {
                     Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
                 } finally {
-                    shouldOutputTrace = true;
+                    ControlNondeterminism.shouldOutputTrace = true;
                 }
             }
             ControlNondeterminism.count++;
@@ -165,6 +164,12 @@ public class ControlNondeterminism {
             ControlNondeterminism.count++;
             return objs;
         }
+    }
+
+    private static boolean isDebuggingUniquePoint() {
+        return ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
+                && ControlNondeterminism.config.start == ControlNondeterminism.config.end
+                && ControlNondeterminism.count == ControlNondeterminism.config.start;
     }
 
     private static boolean shouldExploreForInstance() {
