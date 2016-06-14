@@ -28,8 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
@@ -51,11 +51,11 @@ public class DebugTask {
     private MavenProject mavenProject;
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
-    private Set<Configuration> failingConfigurations;
+    private List<Configuration> failingConfigurations;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
             MavenSession mavenSession, BuildPluginManager pluginManager,
-            Set<Configuration> failingConfigurations) {
+            List<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
@@ -98,7 +98,7 @@ public class DebugTask {
 
         // The seeds that failed with the full test-suite no longer fail
         // Searching for different seeds
-        Set<Configuration> retryWOtherSeeds = this.createNewSeedsToRetry();
+        List<Configuration> retryWOtherSeeds = this.createNewSeedsToRetry();
         failingOne = this.debugWithConfigurations(retryWOtherSeeds);
 
         if (failingOne != null) {
@@ -109,10 +109,10 @@ public class DebugTask {
         return null;
     }
 
-    private Set<Configuration> createNewSeedsToRetry() {
+    private List<Configuration> createNewSeedsToRetry() {
         Configuration someFailingConfig = this.failingConfigurations.iterator().next();
         int newSeed = someFailingConfig.seed * ConfigurationDefaults.SEED_FACTOR;
-        Set<Configuration> retryWOtherSeeds = new LinkedHashSet<>();
+        List<Configuration> retryWOtherSeeds = new LinkedList<>();
         for (int i = 0; i < 10; i++) {
             Configuration newConfig = new Configuration(someFailingConfig.mode,
                     Utils.computeIthSeed(i, false, newSeed),
@@ -124,7 +124,7 @@ public class DebugTask {
         return retryWOtherSeeds;
     }
 
-    private Configuration debugWithConfigurations(Set<Configuration> failingConfigurations) {
+    private Configuration debugWithConfigurations(List<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
             Configuration dryConfig;
