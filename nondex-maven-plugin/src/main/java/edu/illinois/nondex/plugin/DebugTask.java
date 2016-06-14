@@ -127,8 +127,9 @@ public class DebugTask {
     private Configuration debugWithConfigurations(Set<Configuration> failingConfigurations) {
         Configuration debConfig = null;
         for (Configuration config : failingConfigurations) {
-            if (this.failsOnDry(config) != null) {
-                Configuration failingConfig = this.startDebugBinary(config);
+            Configuration dryConfig;
+            if ((dryConfig = this.failsOnDry(config)) != null) {
+                Configuration failingConfig = this.startDebugBinary(dryConfig);
 
                 // If debugged down to single choice point, then go ahead and return that
                 if (failingConfig != null && failingConfig.numChoices() == 0) {
@@ -149,13 +150,13 @@ public class DebugTask {
     }
 
     public Configuration startDebugBinary(Configuration config) {
-        int start = 0;
-        int end = config.getInvocationCount();
+        long start = 0;
+        long end = config.getInvocationCount();
         Configuration failingConfiguration = null;
         while (start < end) {
             Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
 
-            int midPoint = (start + end) / 2;
+            long midPoint = (start + end) / 2;
             if ((failingConfiguration = this.failsWithConfig(config, start, midPoint)) != null) {
                 end = midPoint;
                 continue;
@@ -164,16 +165,24 @@ public class DebugTask {
                 continue;
             } else {
                 Logger.getGlobal().log(Level.FINE, "Binary splitting did not work. Going to linear");
-                return this.startDebugLinear(config, start, end);
+                failingConfiguration = this.startDebugLinear(config, start, end);
+                break;
             }
+        }
+        if (failingConfiguration != null) {
+            return this.reportDebugInfo(failingConfiguration);
         }
         return failingConfiguration;
     }
 
-    public Configuration startDebugLinear(Configuration config, int start, int end) {
+    private Configuration reportDebugInfo(Configuration failingConfiguration) {
+        return this.failsWithConfig(failingConfiguration, failingConfiguration.start, failingConfiguration.end, true);
+    }
+
+    public Configuration startDebugLinear(Configuration config, long start, long end) {
         Configuration failingConfiguration = null;
-        int localStart = start;
-        int localEnd = end;
+        long localStart = start;
+        long localEnd = end;
         while (localStart < localEnd) {
             Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
 
@@ -191,9 +200,13 @@ public class DebugTask {
         return failingConfiguration;
     }
 
-    public Configuration failsWithConfig(Configuration config, int start, int end) {
+    private Configuration failsWithConfig(Configuration config, long start, long end) {
+        return this.failsWithConfig(config, start, end, false);
+    }
+
+    private Configuration failsWithConfig(Configuration config, long start, long end, boolean print) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
-                    start, end, this.test, this.surefire, this.originalArgLine, this.mavenProject,
+                    start, end, print, this.test, this.surefire, this.originalArgLine, this.mavenProject,
                     this.mavenSession, this.pluginManager);
         try {
             execution.run();
