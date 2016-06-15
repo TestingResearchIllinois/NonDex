@@ -149,17 +149,26 @@ public class NonDexMojo extends AbstractNondexMojo {
     }
 
     private void generateHtml(Set<String> allFailures, Configuration config) {
-        String head = "<html>";
-        head += "<head>";
-        head += "<title>Test Results</title>";
-        head += "</head>";
-        String html = head + "<body>" + "<table class=\"table table-striped\">";
+        String head = "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "<title>Test Results</title>"
+                + "<style>"
+                + "table { border-collapse: collapse; width: 100%; }"
+                + "th { height: 50%; }"
+                + "th, td { padding: 10px; text-align: left; }"
+                + "tr:nth-child(even) {background-color:#f2f2f2;}"
+                + ".x { color: red; font-size: 150%;}"
+                + ".✓ { color: green; font-size: 150%;}"
+                + "</style>"
+                + "</head>";
+        String html = head + "<body>" + "<table>";
 
         html += "<thead><tr>";
         html += "<th>Test Name</th>";
         for (int iter = 0; iter < this.executions.size(); iter++) {
             html += "<th>";
-            html += "Run " + (iter + 1);
+            html += "" + this.executions.get(iter).getConfiguration().seed;
             html += "</th>";
         }
         html += "</tr></thead>";
@@ -174,9 +183,9 @@ public class NonDexMojo extends AbstractNondexMojo {
                     }
                 }
                 if (testDidFail) {
-                    html += "<td>Failed</td>";
+                    html += "<td class=\"x\">&#10006;</td>";
                 } else {
-                    html += "<td>Passed</td>";
+                    html += "<td class=\"✓\">&#10004;</td>";
                 }
             }
             html += "</tr>";
