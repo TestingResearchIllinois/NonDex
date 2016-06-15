@@ -73,10 +73,10 @@ public class DebugTask {
         // I think this entire string result returning is very ugly, and checking success through null-checks
         // TODO(gyori): refactor this crap.
 
-        // Try debugging test at different levels, from individual test all the way to entire test suite (being null)
+        // Try debugging test at different levels, from individual test all the way to entire test suite (being empty)
         String defaultTest = this.test;                                     // Save the original test wanting to debug
         String testClass = this.test.substring(0, this.test.indexOf('#'));  // Test class parsing
-        for (String test : new String[]{defaultTest, testClass, null}) {
+        for (String test : new String[]{defaultTest, testClass, ""}) {
             this.test = test;
             String result = this.tryDebugSeeds();
             if (result != null) {
