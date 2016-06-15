@@ -103,6 +103,11 @@ public class ControlNondeterminism {
     public static String[][] extendZoneStrings(String[][] originalArrays) {
         ControlNondeterminism.logger.log(Level.FINEST, "extendZoneStrings");
 
+        // If in state of outputting, do not do any shuffling and other stuff
+        if (!ControlNondeterminism.shouldOutputTrace) {
+            return originalArrays;
+        }
+
         Random currentRandom = ControlNondeterminism.getRandomnessSource(ControlNondeterminism.getSource());
 
         // If randomness was null, that means do not shuffle
@@ -110,20 +115,20 @@ public class ControlNondeterminism {
             return originalArrays;
         }
 
-        ControlNondeterminism.count++;
         boolean shouldFlip = currentRandom.nextBoolean();
 
+        // Determine if should return extended or non-extended
         if (ControlNondeterminism.shouldExploreForInstance()) {
             ControlNondeterminism.printStackTraceIfUniqueDebugPoint();
             ControlNondeterminism.shuffleCount++;
+            // By flip of coin, determine if should extend array or not
             if (shouldFlip) {
-                return originalArrays;
-            }
-
-            for (int i = 0; i < originalArrays.length; i++) {
-                originalArrays[i] = Arrays.copyOf(originalArrays[i], originalArrays[i].length + 1);
+                for (int i = 0; i < originalArrays.length; i++) {
+                    originalArrays[i] = Arrays.copyOf(originalArrays[i], originalArrays[i].length + 1);
+                }
             }
         }
+        ControlNondeterminism.count++;
         return originalArrays;
 
     }
