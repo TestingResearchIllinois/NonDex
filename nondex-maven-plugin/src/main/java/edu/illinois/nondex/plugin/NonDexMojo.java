@@ -66,7 +66,8 @@ public class NonDexMojo extends AbstractNondexMojo {
         MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
                 this.surefire, this.originalArgLine, this.mavenProject,
-                    this.mavenSession, this.pluginManager);
+                    this.mavenSession, this.pluginManager,
+                    Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
 
         allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
 
@@ -144,7 +145,7 @@ public class NonDexMojo extends AbstractNondexMojo {
             this.getLog().info(test);
         }
 
-        generateHtml(allFailures, config);
+        this.generateHtml(allFailures, config);
     }
 
     private void generateHtml(Set<String> allFailures, Configuration config) {

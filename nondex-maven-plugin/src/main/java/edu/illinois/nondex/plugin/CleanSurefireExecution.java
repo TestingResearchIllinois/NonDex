@@ -63,19 +63,21 @@ public class CleanSurefireExecution {
     protected String originalArgLine;
 
     protected CleanSurefireExecution(Plugin surefire, String originalArgLine, String executionId,
-            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
+            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager,
+            String nondexDir) {
         this.executionId = executionId;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
-        this.configuration = new Configuration(executionId);
+        this.configuration = new Configuration(executionId, nondexDir);
     }
 
-    public CleanSurefireExecution(Plugin surefire, String originalArgLine,
-            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
-        this(surefire, originalArgLine, "clean_" + Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager);
+    public CleanSurefireExecution(Plugin surefire, String originalArgLine, MavenProject mavenProject,
+            MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir) {
+        this(surefire, originalArgLine, "clean_" + Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager,
+                nondexDir);
     }
 
     public Configuration getConfiguration() {
