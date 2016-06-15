@@ -99,11 +99,7 @@ public class CleanSurefireExecution {
                 for (ReportTestSuite report : parser.parseXMLReportFiles()) {
                     for (ReportTestCase testCase : report.getTestCases()) {
                         if (testCase.hasFailure()) {
-                            String testName = testCase.getFullName();
-                            int indexOfMethod = testName.lastIndexOf('.');
-                            testName = testName.substring(0, indexOfMethod) + '#'
-                                    + testName.substring(indexOfMethod + 1, testName.length());
-                            failingTests.add(testName);
+                            failingTests.add(testCase.getFullClassName() + '#' + testCase.getName());
                         }
                     }
                 }
@@ -146,8 +142,8 @@ public class CleanSurefireExecution {
     }
 
     private Xpp3Dom makeNode(String nodeName, String value) {
-        Xpp3Dom outputDir = new Xpp3Dom(nodeName);
-        outputDir.setValue(value);
-        return outputDir;
+        Xpp3Dom node = new Xpp3Dom(nodeName);
+        node.setValue(value);
+        return node;
     }
 }
