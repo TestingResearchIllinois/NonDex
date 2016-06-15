@@ -184,6 +184,10 @@ public class Configuration {
         return Paths.get(this.nondexDir, this.executionId);
     }
 
+    public Path getExecutionDir() {
+        return Paths.get(this.nondexDir, this.executionId);
+    }
+
     public Path getFailuresPath() {
         return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE);
     }
@@ -241,6 +245,11 @@ public class Configuration {
         failedTestsInExecution = new LinkedHashSet<String>(failedTestsInExecution);
         failedTestsInExecution.removeAll(failedInClean);
 
+        this.printFailuresToFile(failedTestsInExecution);
+        this.failedTests = null;
+    }
+
+    private void printFailuresToFile(Collection<String> failedTestsInExecution) {
         File failed = Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.FAILURES_FILE)
                     .toFile();
 
@@ -253,7 +262,6 @@ public class Configuration {
         } catch (IOException ioe) {
             Logger.getGlobal().log(Level.WARNING, "Exception reading failures file.", ioe);
         }
-        this.failedTests = null;
     }
 
     public Collection<String> getFailedTests() {
@@ -283,5 +291,9 @@ public class Configuration {
 
     public boolean hasFewerChoicePoints(Configuration debConfig) {
         return (this.numChoices() < debConfig.numChoices());
+    }
+
+    public void setFailures(Set<String> failingTests) {
+        this.printFailuresToFile(failingTests);
     }
 }

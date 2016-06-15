@@ -28,6 +28,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
@@ -38,7 +42,11 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.surefire.report.ReportTestCase;
+import org.apache.maven.plugins.surefire.report.ReportTestSuite;
+import org.apache.maven.plugins.surefire.report.SurefireReportParser;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.reporting.MavenReportException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
@@ -79,15 +87,33 @@ public class CleanSurefireExecution {
         try {
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
-                    this.createListenerConfiguration((Xpp3Dom) this.surefire.getConfiguration()),
+                    this.setReportOutputDirectory((Xpp3Dom) this.surefire.getConfiguration()),
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
         } catch (MojoExecutionException mojoException) {
             Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
+
+            SurefireReportParser parser = new SurefireReportParser(
+                    Arrays.asList(this.configuration.getExecutionDir().toFile()), Locale.getDefault());
+            try {
+                Set<String> failingTests = new LinkedHashSet<>();
+                for (ReportTestSuite report : parser.parseXMLReportFiles()) {
+                    for (ReportTestCase testCase : report.getTestCases()) {
+                        if (testCase.hasFailure()) {
+                            String testName = testCase.getFullName();
+                            int indexOfMethod = testName.lastIndexOf('.');
+                            testName = testName.substring(0, indexOfMethod) + '#'
+                                    + testName.substring(indexOfMethod + 1, testName.length());
+                            failingTests.add(testName);
+                        }
+                    }
+                }
+                this.configuration.setFailures(failingTests);
+            } catch (MavenReportException ex) {
+                throw new MojoExecutionException("Failed to parse mvn reports!");
+            }
             throw mojoException;
         }
-
     }
-
 
     protected void setupArgline() {
         Logger.getGlobal().log(Level.FINE, "Running clean surefire.");
@@ -95,47 +121,33 @@ public class CleanSurefireExecution {
                 this.originalArgLine + " " + this.configuration.toArgLine());
     }
 
-    private Xpp3Dom createListenerConfiguration(Xpp3Dom configuration) {
+    private Xpp3Dom setReportOutputDirectory(Xpp3Dom configuration) {
         Xpp3Dom configNode = configuration;
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
-        Xpp3Dom properties = this.createChildIfNotExists(configNode, "properties");
 
-        if (properties.getChild("property") != null) {
-            for (Xpp3Dom property : properties.getChildren()) {
-                if ("property".equals(property.getName()) && "listener".equals(property.getChild("name").getValue())) {
-                    String value = property.getChild("value").getValue();
-                    value = value + ",edu.illinois.nondex.plugin.TestStatusListener";
-                    property.getChild("value").setValue(value);
-                    return configNode;
-                }
-            }
-        }
-
-        properties.addChild(this.makeListenerNode());
+        configNode = this.addAttributeToConfig(configNode, "reportsDirectory",
+                this.configuration.getExecutionDir().toString());
+        configNode = this.addAttributeToConfig(configNode, "disableXmlReport", "false");
         return configNode;
     }
 
-    private Xpp3Dom makeListenerNode() {
-        Xpp3Dom result = new Xpp3Dom("property");
-        Xpp3Dom name = new Xpp3Dom("name");
-        name.setValue("listener");
-        Xpp3Dom value = new Xpp3Dom("value");
-        value.setValue("edu.illinois.nondex.plugin.TestStatusListener");
+    private Xpp3Dom addAttributeToConfig(Xpp3Dom configNode, String nodeName, String value) {
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if (nodeName.equals(config.getName())) {
+                config.setValue(value);
+                return configNode;
+            }
+        }
 
-        result.addChild(name);
-        result.addChild(value);
-
-        return result;
+        configNode.addChild(this.makeNode(nodeName, value));
+        return configNode;
     }
 
-    private Xpp3Dom createChildIfNotExists(Xpp3Dom configuration, String child) {
-        Xpp3Dom childNode = configuration.getChild(child);
-        if (childNode == null) {
-            childNode = new Xpp3Dom(child);
-            configuration.addChild(childNode);
-        }
-        return childNode;
+    private Xpp3Dom makeNode(String nodeName, String value) {
+        Xpp3Dom outputDir = new Xpp3Dom(nodeName);
+        outputDir.setValue(value);
+        return outputDir;
     }
 }
