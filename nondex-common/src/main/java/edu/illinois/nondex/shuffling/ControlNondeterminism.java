@@ -83,40 +83,47 @@ public class ControlNondeterminism {
         }
     }
 
-    public static <T> List<T> shuffle(List<T> objs) {
-        return ControlNondeterminism.internalShuffle(objs, ControlNondeterminism.getSource());
+    public static <T> List<T> shuffle(List<T> originalOrder) {
+        return ControlNondeterminism.internalShuffle(originalOrder, ControlNondeterminism.getSource());
     }
 
-    public static <T> T[] shuffle(T[] objs) {
-        if (objs == null) {
+    public static <T> T[] shuffle(T[] originalOrder) {
+        if (originalOrder == null) {
             return null;
         }
 
-        List<T> ls = Arrays.asList(objs);
-        ls = ControlNondeterminism.internalShuffle(ls, ControlNondeterminism.getSource());
-        ls.toArray(objs);
+        List<T> newOrder = Arrays.asList(originalOrder);
+        newOrder = ControlNondeterminism.internalShuffle(newOrder, ControlNondeterminism.getSource());
+        newOrder.toArray(originalOrder);
 
-        return objs;
+        // return in place
+        return originalOrder;
     }
 
-    public static String[][] extendZoneStrings(String[][] strs) {
+    public static String[][] extendZoneStrings(String[][] originalArrays) {
         ControlNondeterminism.logger.log(Level.FINEST, "extendZoneStrings");
 
         Random currentRandom = ControlNondeterminism.getRandomnessSource(ControlNondeterminism.getSource());
 
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
-            return strs;
+            return originalArrays;
         }
-        if (currentRandom.nextBoolean()) {
-            return strs;
-        }
+
+        ControlNondeterminism.count++;
+        boolean shouldFlip = currentRandom.nextBoolean();
+
         if (ControlNondeterminism.shouldExploreForInstance()) {
-            for (int i = 0; i < strs.length; i++) {
-                strs[i] = Arrays.copyOf(strs[i], strs[i].length + 1);
+            ControlNondeterminism.shuffleCount++;
+            if (shouldFlip) {
+                return originalArrays;
+            }
+
+            for (int i = 0; i < originalArrays.length; i++) {
+                originalArrays[i] = Arrays.copyOf(originalArrays[i], originalArrays[i].length + 1);
             }
         }
-        return strs;
+        return originalArrays;
 
     }
 
