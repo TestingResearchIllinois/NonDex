@@ -167,7 +167,7 @@ public class NonDexMojo extends AbstractNondexMojo {
         html += "<th>Test Name</th>";
         for (int iter = 0; iter < this.executions.size(); iter++) {
             html += "<th>";
-            html += "" + config.seed;
+            html += "" + this.executions.get(iter).getConfiguration().seed;
             html += "</th>";
         }
         html += "</tr></thead>";
