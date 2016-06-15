@@ -45,8 +45,8 @@ import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.SetMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -60,7 +60,7 @@ public class DebugMojo extends AbstractNondexMojo {
 
     private List<String> executions = new LinkedList<>();
 
-    private SetMultimap<String, Configuration> testsFailing = HashMultimap.create();
+    private ListMultimap<String, Configuration> testsFailing = LinkedListMultimap.create();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

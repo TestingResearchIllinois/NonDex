@@ -60,6 +60,9 @@ public class ConfigurationDefaults {
     public static final String DEFAULT_END_STR = "9223372036854775807";
     public static final long DEFAULT_END = new Long(ConfigurationDefaults.DEFAULT_END_STR);
 
+    public static final String PROPERTY_PRINT_STACK = "nondex.printstack";
+    public static final String DEFAULT_PRINT_STACK_STR = "false";
+
     public static final String PROPERTY_EXECUTION_ID = "nondex.execid";
     public static final String NO_EXECUTION_ID = "NoId";
     public static final String PROPERTY_DEFAULT_EXECUTION_ID = ConfigurationDefaults.NO_EXECUTION_ID;
@@ -84,4 +87,5 @@ public class ConfigurationDefaults {
 
     public static final String PROPERTY_LOGGING_LEVEL = "nondex.logging";
     public static final String DEFAULT_LOGGING_LEVEL = "CONFIG";
+
 }

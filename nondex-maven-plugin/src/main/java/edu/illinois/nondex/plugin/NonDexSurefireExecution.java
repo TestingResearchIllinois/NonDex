@@ -43,6 +43,8 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.project.MavenProject;
 
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+
 public class NonDexSurefireExecution extends CleanSurefireExecution {
 
     private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
@@ -58,19 +60,24 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 this.executionId);
     }
 
-    public NonDexSurefireExecution(Configuration config, int start, int end, String test, Plugin surefire,
+    public NonDexSurefireExecution(Configuration config, long start, long end, boolean print, String test, Plugin surefire,
             String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
             BuildPluginManager pluginManager) {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, config.nondexDir, config.nondexJarDir, test, this.executionId);
+                end, config.nondexDir, config.nondexJarDir, test, this.executionId, print);
     }
 
     @Override
     protected void setupArgline() {
         String localRepo = this.mavenSession.getSettings().getLocalRepository();
         String pathToNondex = this.getPathToNondexJar(localRepo);
+        // Only modify test in configuration if not null, because that means is debugging
+        Xpp3Dom configElement = (Xpp3Dom)this.surefire.getConfiguration();
+        if (configElement != null) {
+            configElement.getChild("test").setValue(this.configuration.testName);
+        }
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
                 "" + "-Xbootclasspath/p:" + pathToNondex + " " + this.originalArgLine + " "

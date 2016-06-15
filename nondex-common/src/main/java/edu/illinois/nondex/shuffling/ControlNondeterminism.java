@@ -39,7 +39,6 @@ import java.util.Random;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
-import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 
 public class ControlNondeterminism {
@@ -84,87 +83,114 @@ public class ControlNondeterminism {
         }
     }
 
-    public static <T> List<T> shuffle(List<T> objs) {
-        return ControlNondeterminism.internalShuffle(objs, ControlNondeterminism.getSource());
+    public static <T> List<T> shuffle(List<T> originalOrder) {
+        return ControlNondeterminism.internalShuffle(originalOrder, ControlNondeterminism.getSource());
     }
 
-    public static <T> T[] shuffle(T[] objs) {
-        if (objs == null) {
+    public static <T> T[] shuffle(T[] originalOrder) {
+        if (originalOrder == null) {
             return null;
         }
 
-        List<T> ls = Arrays.asList(objs);
-        ls = ControlNondeterminism.internalShuffle(ls, ControlNondeterminism.getSource());
-        ls.toArray(objs);
+        List<T> newOrder = Arrays.asList(originalOrder);
+        newOrder = ControlNondeterminism.internalShuffle(newOrder, ControlNondeterminism.getSource());
+        newOrder.toArray(originalOrder);
 
-        return objs;
+        // return in place
+        return originalOrder;
     }
 
-    public static String[][] extendZoneStrings(String[][] strs) {
+    public static String[][] extendZoneStrings(String[][] originalArrays) {
         ControlNondeterminism.logger.log(Level.FINEST, "extendZoneStrings");
+
+        // If in state of outputting, do not do any shuffling and other stuff
+        if (!ControlNondeterminism.shouldOutputTrace) {
+            return originalArrays;
+        }
 
         Random currentRandom = ControlNondeterminism.getRandomnessSource(ControlNondeterminism.getSource());
 
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
-            return strs;
+            return originalArrays;
         }
-        if (currentRandom.nextBoolean()) {
-            return strs;
-        }
+
+        boolean shouldFlip = currentRandom.nextBoolean();
+
+        // Determine if should return extended or non-extended
         if (ControlNondeterminism.shouldExploreForInstance()) {
-            for (int i = 0; i < strs.length; i++) {
-                strs[i] = Arrays.copyOf(strs[i], strs[i].length + 1);
+            ControlNondeterminism.printStackTraceIfUniqueDebugPoint();
+            ControlNondeterminism.shuffleCount++;
+            // By flip of coin, determine if should extend array or not
+            if (shouldFlip) {
+                for (int i = 0; i < originalArrays.length; i++) {
+                    originalArrays[i] = Arrays.copyOf(originalArrays[i], originalArrays[i].length + 1);
+                }
             }
         }
-        return strs;
+        ControlNondeterminism.count++;
+        return originalArrays;
 
     }
 
-    private static <T> List<T> internalShuffle(List<T> objs, String source) {
+    private static <T> List<T> internalShuffle(List<T> originalOrder, String source) {
+        // If in state of outputting, do not do any shuffling and other stuff
+        if (!ControlNondeterminism.shouldOutputTrace) {
+            return originalOrder;
+        }
+
+        // If size of collection to shuffle has at most one element, no need to shuffle
+        if (originalOrder.size() <= 1) {
+            return originalOrder;
+        }
+
         Random currentRandom = ControlNondeterminism.getRandomnessSource(source);
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
-            return objs;
+            return originalOrder;
         }
 
-        List<T> ls = new ArrayList<T>(objs);
-        Collections.shuffle(ls, currentRandom);
+        List<T> newOrder = new ArrayList<T>(originalOrder);
+        Collections.shuffle(newOrder, currentRandom);
 
         // Determine if should return ordered or non-ordered
         if (ControlNondeterminism.shouldExploreForInstance()) {
-            // TODO(gyori): Communicate this stack trace in a better way
-            if (ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
-                    && ControlNondeterminism.config.start == ControlNondeterminism.config.end
-                    && ControlNondeterminism.count == ControlNondeterminism.config.start) {
-                StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-                StringBuilder stackstring = new StringBuilder();
-                for (StackTraceElement traceElement : traces) {
-                    //Logger.getGlobal().log(Level.CONFIG, "FOUND: " + traceElement.toString());
-                    stackstring.append(traceElement.toString() + "\n");
-                }
-                try {
-                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file
-                    if (shouldOutputTrace) {
-                        shouldOutputTrace = false;
-                        Files.write(ControlNondeterminism.config.getDebugPath(),
-                            ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
-                            StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                    }
-                } catch (IOException ioe) {
-                    Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
-                } finally {
-                    shouldOutputTrace = true;
-                }
-            }
+            ControlNondeterminism.printStackTraceIfUniqueDebugPoint();
             ControlNondeterminism.count++;
             ControlNondeterminism.shuffleCount++;
-
-            return ls;
+            return newOrder;
         } else {
             ControlNondeterminism.count++;
-            return objs;
+            return originalOrder;
         }
+    }
+
+    private static void printStackTraceIfUniqueDebugPoint() {
+        if (ControlNondeterminism.config.shouldPrintStackTrace && ControlNondeterminism.isDebuggingUniquePoint()) {
+            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+            StringBuilder stackstring = new StringBuilder();
+            for (StackTraceElement traceElement : traces) {
+                stackstring.append(traceElement.toString() + "\n");
+            }
+            try {
+                // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file,
+                // and to prevent it from doing other things when all we want is to print out a stack trace
+                ControlNondeterminism.shouldOutputTrace = false;
+                Files.write(ControlNondeterminism.config.getDebugPath(),
+                    ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
+            } finally {
+                ControlNondeterminism.shouldOutputTrace = true;
+            }
+        }
+    }
+
+    private static boolean isDebuggingUniquePoint() {
+        return ControlNondeterminism.config.start >= 0 && ControlNondeterminism.config.end >= 0
+                && ControlNondeterminism.config.start == ControlNondeterminism.config.end
+                && ControlNondeterminism.count == ControlNondeterminism.config.start;
     }
 
     private static boolean shouldExploreForInstance() {
