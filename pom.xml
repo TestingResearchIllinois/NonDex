@@ -60,8 +60,8 @@
   
   <modules>
     <module>nondex-instrumentation</module>
-    <!-- <module>nondex-core</module> -->
-    <!-- <module>nondex-test</module> -->
+    <module>nondex-core</module>
+    <module>nondex-test</module>
     <module>nondex-common</module>
     <module>nondex-maven-plugin</module>
   </modules>
