@@ -182,9 +182,9 @@ public class NonDexMojo extends AbstractNondexMojo {
                     }
                 }
                 if (testDidFail) {
-                    html += "<td class=\"x\">x</td>";
+                    html += "<td class=\"x\">&#10006;</td>";
                 } else {
-                    html += "<td class=\"✓\">✓</td>";
+                    html += "<td class=\"✓\">&#10004;</td>";
                 }
             }
             html += "</tr>";
