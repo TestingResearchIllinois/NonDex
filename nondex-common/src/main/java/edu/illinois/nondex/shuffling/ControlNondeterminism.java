@@ -114,6 +114,7 @@ public class ControlNondeterminism {
         boolean shouldFlip = currentRandom.nextBoolean();
 
         if (ControlNondeterminism.shouldExploreForInstance()) {
+            ControlNondeterminism.printStackTraceIfUniqueDebugPoint();
             ControlNondeterminism.shuffleCount++;
             if (shouldFlip) {
                 return originalArrays;
@@ -149,32 +150,35 @@ public class ControlNondeterminism {
 
         // Determine if should return ordered or non-ordered
         if (ControlNondeterminism.shouldExploreForInstance()) {
-            if (ControlNondeterminism.config.shouldPrintStackTrace && ControlNondeterminism.isDebuggingUniquePoint()) {
-                StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-                StringBuilder stackstring = new StringBuilder();
-                for (StackTraceElement traceElement : traces) {
-                    stackstring.append(traceElement.toString() + "\n");
-                }
-                try {
-                    // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file,
-                    // and to prevent it from doing other things when all we want is to print out a stack trace
-                    ControlNondeterminism.shouldOutputTrace = false;
-                    Files.write(ControlNondeterminism.config.getDebugPath(),
-                        ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
-                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                } catch (IOException ioe) {
-                    Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
-                } finally {
-                    ControlNondeterminism.shouldOutputTrace = true;
-                }
-            }
+            ControlNondeterminism.printStackTraceIfUniqueDebugPoint();
             ControlNondeterminism.count++;
             ControlNondeterminism.shuffleCount++;
-
             return ls;
         } else {
             ControlNondeterminism.count++;
             return objs;
+        }
+    }
+
+    private static void printStackTraceIfUniqueDebugPoint() {
+        if (ControlNondeterminism.config.shouldPrintStackTrace && ControlNondeterminism.isDebuggingUniquePoint()) {
+            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
+            StringBuilder stackstring = new StringBuilder();
+            for (StackTraceElement traceElement : traces) {
+                stackstring.append(traceElement.toString() + "\n");
+            }
+            try {
+                // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file,
+                // and to prevent it from doing other things when all we want is to print out a stack trace
+                ControlNondeterminism.shouldOutputTrace = false;
+                Files.write(ControlNondeterminism.config.getDebugPath(),
+                    ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
+            } finally {
+                ControlNondeterminism.shouldOutputTrace = true;
+            }
         }
     }
 
