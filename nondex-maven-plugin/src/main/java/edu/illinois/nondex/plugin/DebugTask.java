@@ -73,26 +73,40 @@ public class DebugTask {
 
         assert (!this.failingConfigurations.isEmpty());
 
-        Configuration failingOne = this.debugWithConfigurations(this.failingConfigurations);
+        List<Configuration> debuggedOnes = this.debugWithConfigurations(this.failingConfigurations);
 
         Logger.getGlobal().log(Level.SEVERE, "limits : " + limits.getLeft() + "  " + limits.getRight());
 
-        if (failingOne != null) {
-            return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
-                + failingOne.getDebugPath();
+        if (debuggedOnes.size() > 0) {
+            return makeResultString(debuggedOnes);
         }
 
         // The seeds that failed with the full test-suite no longer fail
         // Searching for different seeds
+        Logger.getGlobal().log(Level.FINE, "TRYING NEW SEEDS");
         List<Configuration> retryWOtherSeeds = this.createNewSeedsToRetry();
-        failingOne = this.debugWithConfigurations(retryWOtherSeeds);
+        debuggedOnes = this.debugWithConfigurations(retryWOtherSeeds);
 
-        if (failingOne != null) {
-            return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
-                + failingOne.getDebugPath();
+        if (debuggedOnes.size() > 0) {
+            return makeResultString(debuggedOnes);
         }
 
         return "cannot reproduce. may be flaky due to other causes";
+    }
+
+    private String makeResultString(List<Configuration> debuggedOnes) {
+        StringBuilder sb = new StringBuilder();
+        for (Configuration config : debuggedOnes) {
+            sb.append(config.toArgLine());
+            sb.append("\nDEBUG RESULTS FOR ");
+            sb.append(config.testName);
+            sb.append(" AND SEED: ");
+            sb.append(config.seed);
+            sb.append(" AT: ");
+            sb.append(config.getDebugPath());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     private List<Configuration> createNewSeedsToRetry() {
@@ -110,55 +124,64 @@ public class DebugTask {
         return retryWOtherSeeds;
     }
 
-    private Configuration debugWithConfigurations(List<Configuration> failingConfigurations) {
-        Configuration debConfig = null;
+    private List<Configuration> debugWithConfigurations(List<Configuration> failingConfigurations) {
+        //Configuration debConfig = null;
+        List<Configuration> allDebuggedConfigs = new LinkedList<Configuration>();
         for (Configuration config : failingConfigurations) {
             Configuration dryConfig;
             if ((dryConfig = this.failsOnDry(config)) != null) {
-                Configuration failingConfig = this.startDebugBinary(dryConfig);
-
-                // If debugged down to single choice point, then go ahead and return that
-                if (failingConfig != null && failingConfig.numChoices() == 0) {
-                    return failingConfig;
-                }
-                // Otherwise should go on until finding better one
-                if (debConfig == null || failingConfig.hasFewerChoicePoints(debConfig)) {
-                    debConfig = failingConfig;
-                }
+                // Get all debugged points and just add them to the full list
+                List<Configuration> debuggedConfigs = this.startDebugBinary(dryConfig);
+                allDebuggedConfigs.addAll(debuggedConfigs);
             }
         }
 
-        return debConfig;
+        return allDebuggedConfigs;
     }
 
     private Configuration failsOnDry(Configuration config) {
         return this.failsWithConfig(config, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
-    public Configuration startDebugBinary(Configuration config) {
-        long start = 0;
-        long end = config.getInvocationCount();
-        Configuration failingConfiguration = null;
-        while (start < end) {
-            Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
+    public List<Configuration> startDebugBinary(Configuration config) {
+        List<Configuration> allFailingConfigurations = new LinkedList<Configuration>();
 
-            long midPoint = (start + end) / 2;
-            if ((failingConfiguration = this.failsWithConfig(config, start, midPoint)) != null) {
-                end = midPoint;
-                continue;
-            } else if ((failingConfiguration = this.failsWithConfig(config, midPoint + 1, end)) != null) {
-                start = midPoint + 1;
-                continue;
+        List<Pair<Pair<Long, Long>, Configuration>> pairs = new LinkedList<Pair<Pair<Long, Long>, Configuration>>();
+        pairs.add((Pair<Pair<Long, Long>, Configuration>)Pair.of((Pair<Long, Long>)Pair.of(0L,
+            (long)config.getInvocationCount()), (Configuration)null));
+
+        Configuration failingConfiguration = null;
+        while (pairs.size() > 0) {
+            Pair<Pair<Long, Long>, Configuration> pair = pairs.remove(0);
+            Pair<Long, Long> range = pair.getLeft();
+            Configuration falingConfiguration = pair.getRight();
+            long start = range.getLeft();
+            long end = range.getRight();
+
+            if (start < end) {
+                Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
+
+                long midPoint = (start + end) / 2;
+                if ((failingConfiguration = this.failsWithConfig(config, start, midPoint)) != null) {
+                    pairs.add(Pair.of((Pair<Long, Long>)Pair.of(start, midPoint), failingConfiguration));
+                }
+                if ((failingConfiguration = this.failsWithConfig(config, midPoint + 1, end)) != null) {
+                    pairs.add(Pair.of((Pair<Long, Long>)Pair.of(midPoint + 1, end), failingConfiguration));
+                }
+                /*{
+                    Logger.getGlobal().log(Level.FINE, "Binary splitting did not work. Going to linear");
+                    failingConfiguration = this.startDebugLinear(config, start, end);
+                    break;
+                }*/
             } else {
-                Logger.getGlobal().log(Level.FINE, "Binary splitting did not work. Going to linear");
-                failingConfiguration = this.startDebugLinear(config, start, end);
-                break;
+                // Since start <= end is always true, this branch means start == end, so reached end
+                if (failingConfiguration != null) {
+                    allFailingConfigurations.add(this.reportDebugInfo(failingConfiguration));
+                }
             }
         }
-        if (failingConfiguration != null) {
-            return this.reportDebugInfo(failingConfiguration);
-        }
-        return failingConfiguration;
+
+        return allFailingConfigurations;
     }
 
     private Configuration reportDebugInfo(Configuration failingConfiguration) {
