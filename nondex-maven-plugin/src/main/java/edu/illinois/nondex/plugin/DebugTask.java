@@ -154,25 +154,29 @@ public class DebugTask {
         while (pairs.size() > 0) {
             Pair<Pair<Long, Long>, Configuration> pair = pairs.remove(0);
             Pair<Long, Long> range = pair.getLeft();
-            Configuration falingConfiguration = pair.getRight();
+            failingConfiguration = pair.getRight();
             long start = range.getLeft();
             long end = range.getRight();
 
             if (start < end) {
                 Logger.getGlobal().log(Level.INFO, "Debugging binary for " + this.test + " " + start + " : " + end);
 
+                boolean binarySuccess = false;
                 long midPoint = (start + end) / 2;
                 if ((failingConfiguration = this.failsWithConfig(config, start, midPoint)) != null) {
                     pairs.add(Pair.of((Pair<Long, Long>)Pair.of(start, midPoint), failingConfiguration));
+                    binarySuccess = true;
                 }
                 if ((failingConfiguration = this.failsWithConfig(config, midPoint + 1, end)) != null) {
                     pairs.add(Pair.of((Pair<Long, Long>)Pair.of(midPoint + 1, end), failingConfiguration));
+                    binarySuccess = true;
                 }
-                /*{
-                    Logger.getGlobal().log(Level.FINE, "Binary splitting did not work. Going to linear");
-                    failingConfiguration = this.startDebugLinear(config, start, end);
-                    break;
-                }*/
+
+                // If both halves fail, try the entire range
+                if (!binarySuccess) {
+                    Logger.getGlobal().log(Level.SEVERE, "Binary splitting did not work. Going to linear");
+                    allFailingConfigurations.addAll(this.startDebugLinear(config, start, end));
+                }
             } else {
                 // Since start <= end is always true, this branch means start == end, so reached end
                 if (failingConfiguration != null) {
@@ -188,25 +192,42 @@ public class DebugTask {
         return this.failsWithConfig(failingConfiguration, failingConfiguration.start, failingConfiguration.end, true);
     }
 
-    public Configuration startDebugLinear(Configuration config, long start, long end) {
-        Configuration failingConfiguration = null;
-        long localStart = start;
-        long localEnd = end;
-        while (localStart < localEnd) {
-            Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
+    public List<Configuration> startDebugLinear(Configuration config, long start, long end) {
+        List<Configuration> allFailingConfigurations = new LinkedList<Configuration>();
 
-            if ((failingConfiguration = this.failsWithConfig(config, localStart, localEnd - 1)) != null) {
-                localEnd = localEnd - 1;
-                continue;
-            } else if ((failingConfiguration = this.failsWithConfig(config, localStart + 1, localEnd)) != null) {
-                localStart = localStart + 1;
-                continue;
-            } else {
-                Logger.getGlobal().log(Level.FINE, "Refining did not work. Does not fail with linear.");
-                break;
+        List<Pair<Pair<Long, Long>, Configuration>> pairs = new LinkedList<Pair<Pair<Long, Long>, Configuration>>();
+        pairs.add((Pair<Pair<Long, Long>, Configuration>)Pair.of((Pair<Long, Long>)Pair.of(start, end),
+            (Configuration)null));
+
+        Configuration failingConfiguration = null;
+        while (pairs.size() > 0) {
+            Pair<Pair<Long, Long>, Configuration> pair = pairs.remove(0);
+            Pair<Long, Long> range = pair.getLeft();
+            failingConfiguration = pair.getRight();
+            long localStart = range.getLeft();
+            long localEnd = range.getRight();
+
+            if (localStart < localEnd) {
+                Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " "
+                    + localStart + " : " + localEnd);
+
+                boolean found = false;
+                if ((failingConfiguration = this.failsWithConfig(config, localStart, localEnd - 1)) != null) {
+                    pairs.add(Pair.of((Pair<Long, Long>)Pair.of(localStart, localEnd - 1), failingConfiguration));
+                    found = true;
+                }
+                if ((failingConfiguration = this.failsWithConfig(config, localStart + 1, localEnd)) != null) {
+                    pairs.add(Pair.of((Pair<Long, Long>)Pair.of(localStart + 1, localEnd), failingConfiguration));
+                    found = true;
+                }
+
+                if (!found) {
+                    Logger.getGlobal().log(Level.FINE, "Refining did not work. Does not fail with linear on range "
+                        + localStart + " : " + localEnd + ".");
+                }
             }
         }
-        return failingConfiguration;
+        return allFailingConfigurations;
     }
 
     private Configuration failsWithConfig(Configuration config, long start, long end) {
