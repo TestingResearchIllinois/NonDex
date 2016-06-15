@@ -104,7 +104,7 @@ public class DebugTask {
             sb.append(config.seed);
             sb.append(" AT: ");
             sb.append(config.getDebugPath());
-            sb.append("\n");
+            sb.append('\n');
         }
         return sb.toString();
     }
