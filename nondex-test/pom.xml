@@ -5,7 +5,7 @@
   <parent>
     <groupId>edu.illinois</groupId>
     <artifactId>nondex</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nondex-test</artifactId>
@@ -100,18 +100,11 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>edu.illinois</groupId>
       <artifactId>nondex-common</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>edu.illinois</groupId>
-      <artifactId>nondex-instrumentation</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
