@@ -92,10 +92,10 @@ public class Configuration {
     }
 
 
-    public Configuration(String executionId) {
+    public Configuration(String executionId, String nondexDir) {
         this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
                 Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
-                ConfigurationDefaults.DEFAULT_NONDEX_DIR, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
                 null, executionId);
     }
 
