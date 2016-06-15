@@ -145,15 +145,15 @@ public class ControlNondeterminism {
             return originalOrder;
         }
 
-        List<T> ls = new ArrayList<T>(originalOrder);
-        Collections.shuffle(ls, currentRandom);
+        List<T> newOrder = new ArrayList<T>(originalOrder);
+        Collections.shuffle(newOrder, currentRandom);
 
         // Determine if should return ordered or non-ordered
         if (ControlNondeterminism.shouldExploreForInstance()) {
             ControlNondeterminism.printStackTraceIfUniqueDebugPoint();
             ControlNondeterminism.count++;
             ControlNondeterminism.shuffleCount++;
-            return ls;
+            return newOrder;
         } else {
             ControlNondeterminism.count++;
             return originalOrder;
