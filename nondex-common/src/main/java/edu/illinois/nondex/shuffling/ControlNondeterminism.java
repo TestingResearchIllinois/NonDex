@@ -128,24 +128,24 @@ public class ControlNondeterminism {
 
     }
 
-    private static <T> List<T> internalShuffle(List<T> objs, String source) {
+    private static <T> List<T> internalShuffle(List<T> originalOrder, String source) {
         // If in state of outputting, do not do any shuffling and other stuff
         if (!ControlNondeterminism.shouldOutputTrace) {
-            return objs;
+            return originalOrder;
         }
 
         // If size of collection to shuffle has at most one element, no need to shuffle
-        if (objs.size() <= 1) {
-            return objs;
+        if (originalOrder.size() <= 1) {
+            return originalOrder;
         }
 
         Random currentRandom = ControlNondeterminism.getRandomnessSource(source);
         // If randomness was null, that means do not shuffle
         if (currentRandom == null) {
-            return objs;
+            return originalOrder;
         }
 
-        List<T> ls = new ArrayList<T>(objs);
+        List<T> ls = new ArrayList<T>(originalOrder);
         Collections.shuffle(ls, currentRandom);
 
         // Determine if should return ordered or non-ordered
@@ -156,7 +156,7 @@ public class ControlNondeterminism {
             return ls;
         } else {
             ControlNondeterminism.count++;
-            return objs;
+            return originalOrder;
         }
     }
 
