@@ -20,7 +20,7 @@ build_script:
   - cmd: MKLINK "nondex-common\checkstyle.xml" "checkstyle.xml"
   - cmd: MKLINK "nondex-instrumentation\checkstyle.xml" "checkstyle.xml"
   - cmd: MKLINK "nondex-maven-plugin\checkstyle.xml" "checkstyle.xml"
-  - cmd: MKLINK "nondex-maven-plugin/src/it/comprehensive/src/test" "nondex-core/src/test/"
+  - cmd: MKLINK "nondex-maven-plugin\src\it\comprehensive\src\test" "nondex-core\src\test\"
   - mvn clean package --batch-mode -DskipTest
 test_script:
   - mvn clean install --batch-mode
