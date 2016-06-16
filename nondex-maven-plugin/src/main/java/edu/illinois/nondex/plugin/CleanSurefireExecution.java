@@ -100,7 +100,8 @@ public class CleanSurefireExecution {
                 Set<String> failingTests = new LinkedHashSet<>();
                 for (ReportTestSuite report : parser.parseXMLReportFiles()) {
                     for (ReportTestCase testCase : report.getTestCases()) {
-                        if (testCase.hasFailure()) {
+                        // Record if failed, but not skipped
+                        if (testCase.hasFailure() && !"skipped".equals(testCase.getFailureType())) {
                             failingTests.add(testCase.getFullClassName() + '#' + testCase.getName());
                         }
                     }
