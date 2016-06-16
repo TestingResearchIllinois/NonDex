@@ -13,13 +13,13 @@
   <name>nondex-test</name>
   <profiles>
     <profile>
+      <id>unix</id>
+      <activation>
+        <os>
+          <family>unix</family>
+        </os>
+      </activation>
       <build>
-        <id>unix</id>
-        <activation>
-          <os>
-            <family>unix</family>
-          </os>
-        </activation>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -109,13 +109,13 @@
       </build>
     </profile>
     <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
       <build>
-        <id>windows</id>
-        <activation>
-          <os>
-            <family>windows</family>
-          </os>
-        </activation>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
