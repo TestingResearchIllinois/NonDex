@@ -25,7 +25,7 @@ Build:
 Use (Maven):
 ============
 
-After installing, add the plugin to the plugins section under the build section in your pom:
+To use NonDex, add the plugin to the plugins section under the build section in your pom:
 
 ```xml
 <project>
