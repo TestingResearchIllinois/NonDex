@@ -11,8 +11,9 @@
   <artifactId>nondex-test</artifactId>
   <packaging>jar</packaging>
   <name>nondex-test</name>
-  <build>
-      <profile>
+  <profiles>
+    <profile>
+      <build>
         <id>unix</id>
         <activation>
           <os>
@@ -105,8 +106,10 @@
             </configuration>
           </plugin>
         </plugins>
-      </profile>
-      <profile>
+      </build>
+    </profile>
+    <profile>
+      <build>
         <id>windows</id>
         <activation>
           <os>
@@ -199,8 +202,10 @@
             </configuration>
           </plugin>
         </plugins>
-      </profile>
-  </build>
+      </build>
+    </profile>
+  </profiles>
+
 
   <dependencies>
     <dependency>
