@@ -12,7 +12,6 @@
   <packaging>jar</packaging>
   <name>nondex-test</name>
   <build>
-    <profiles>
       <profile>
         <id>unix</id>
         <activation>
@@ -201,10 +200,8 @@
           </plugin>
         </plugins>
       </profile>
-    </profiles>
   </build>
 
-  
   <dependencies>
     <dependency>
       <groupId>edu.illinois</groupId>
