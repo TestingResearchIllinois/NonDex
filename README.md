@@ -2,9 +2,19 @@
 [![Issue Count](https://codeclimate.com/github/TestingResearchIllinois/NonDex/badges/issue_count.svg)](https://codeclimate.com/github/TestingResearchIllinois/NonDex)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ef0b45fa77a4d58af5e23917c9bf5ae)](https://www.codacy.com/app/gyori/NonDex?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TestingResearchIllinois/NonDex&amp;utm_campaign=Badge_Grade)
 
+NonDex is a tool for detecting and debugging wrong assumptions on Java APIs. An
+example of such an assumption is when code assumes the order of iterating
+through the entries in a java.util.HashMap is in a specific, deterministic
+order, but the specification for java.util.HashMap clearly states that this
+iteration order is not guaranteed to be in any particular order. Such
+assumptions can hurt portability for an application when they are moved to
+other machines with a different Java runtime. NonDex helps expose such brittle
+assumptions to the developers early, so they can fix the assumption before it
+becomes a problem far in the future and difficult to fix then.
+
 Prerequisites:
 ==============
-    - Java 8.
+    - Java 8 (Oracle JDK, OpenJDK).
     - Surefire present in the POM.
 
 Build:
@@ -15,7 +25,7 @@ Build:
 Use (Maven):
 ============
 
-After installing, add the plugin to your plugins section in your pom:
+To use NonDex, add the plugin to the plugins section under the build section in your pom:
 
 ```xml
 <project>
@@ -34,7 +44,7 @@ After installing, add the plugin to your plugins section in your pom:
 </project>
 ```
 
-To find if you have bad tests, run:
+To find if you have flaky tests, run:
 
     mvn nondex:nondex
 
@@ -62,3 +72,26 @@ Optionally, in case your application needs a different Java version than the one
     # Use the instrumented jar to run your application
     commonjar=${root}/nondex-common/target/nondex-common-1.0.1.jar
     java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
+
+Output:
+=======
+
+If there are flaky tests, the output will report them under the section marked "NonDex SUMMARY:"
+
+The flaky tests are also logged in files called "failure" in the .nondex/
+directory.  Each execution is identified by an execution ID (also reported in
+the Maven output), and an execution that has a "failure" file will have that
+"failure" file in a directory in the .nondex/ directory with the same name as
+the execution ID.
+
+Output (Debug):
+===============
+
+After running debugging, the Maven output reports for each flaky test both the
+command-line arguments to pass in to reproduce the failure and the path to the
+file containing the debug results for the flaky test. These files are named
+"debug", and they contain the name of the debugged test and the stack trace for
+the single invocation point that when run through NonDex leads to the test
+failing. If the test cannot be debugged to this single point, the Maven output
+when indicate it by reporting that the cause cannot be reproduced and may be
+flaky due to other reasons.
