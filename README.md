@@ -14,7 +14,7 @@ becomes a problem far in the future and difficult to fix then.
 
 Prerequisites:
 ==============
-    - Java 8.
+    - Java 8 (Oracle JDK, OpenJDK).
     - Surefire present in the POM.
 
 Build:
