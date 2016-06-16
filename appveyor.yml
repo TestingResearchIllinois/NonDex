@@ -15,8 +15,6 @@ install:
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
 build_script:
-  - cmd: TREE
-  - cmd: DEL nondex-common/checkstyle.xml nondex-instrumentation/checkstyle.xml nondex-maven-plugin/checkstyle.xml
   - cmd: MKLINK "nondex-common/checkstyle.xml" "checkstyle.xml"
   - cmd: MKLINK "nondex-instrumentation/checkstyle.xml" "checkstyle.xml"
   - cmd: MKLINK "nondex-maven-plugin/checkstyle.xml" "checkstyle.xml"
