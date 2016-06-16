@@ -77,7 +77,11 @@ public class DebugTask {
         String defaultTest = this.test;                                     // Save the original test wanting to debug
         String testClass = this.test.substring(0, this.test.indexOf('#'));  // Test class parsing
         for (String test : new String[]{defaultTest, testClass, ""}) {
-            this.test = test;
+            if (test.contains("[")) {
+                this.test = test.substring(0, test.indexOf('['));
+            } else {
+                this.test = test;
+            }
             String result = this.tryDebugSeeds();
             if (result != null) {
                 return result;
