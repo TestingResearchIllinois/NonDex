@@ -15,7 +15,7 @@ Build:
 Use (Maven):
 ============
 
-After installing, add the plugin to your plugins section in your pom:
+After installing, add the plugin to the plugins section under the build section in your pom:
 
 ```xml
 <project>
@@ -34,7 +34,7 @@ After installing, add the plugin to your plugins section in your pom:
 </project>
 ```
 
-To find if you have bad tests, run:
+To find if you have flaky tests, run:
 
     mvn nondex:nondex
 
@@ -62,3 +62,26 @@ Optionally, in case your application needs a different Java version than the one
     # Use the instrumented jar to run your application
     commonjar=${root}/nondex-common/target/nondex-common-1.0.1.jar
     java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
+
+Output:
+=======
+
+If there are flaky tests, the output will report them under the section marked "NonDex SUMMARY:"
+
+The flaky tests are also logged in files called "failure" in the .nondex/
+directory.  Each execution is identified by an execution ID (also reported in
+the Maven output), and an execution that has a "failure" file will have that
+"failure" file in a directory in the .nondex/ directory with the same name as
+the execution ID.
+
+Output (Debug):
+===============
+
+After running debugging, the Maven output reports for each flaky test both the
+command-line arguments to pass in to reproduce the failure and the path to the
+file containing the debug results for the flaky test. These files are named
+"debug", and they contain the name of the debugged test and the stack trace for
+the single invocation point that when run through NonDex leads to the test
+failing. If the test cannot be debugged to this single point, the Maven output
+when indicate it by reporting that the cause cannot be reproduced and may be
+flaky due to other reasons.
