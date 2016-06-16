@@ -16,9 +16,11 @@ install:
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
 build_script:
   - cmd: DEL nondex-common\checkstyle.xml nondex-instrumentation\checkstyle.xml nondex-maven-plugin\checkstyle.xml
+  - cmd  DEL nondex-maven-plugin/src/it/comprehensive/src/test
   - cmd: MKLINK "nondex-common\checkstyle.xml" "checkstyle.xml"
   - cmd: MKLINK "nondex-instrumentation\checkstyle.xml" "checkstyle.xml"
   - cmd: MKLINK "nondex-maven-plugin\checkstyle.xml" "checkstyle.xml"
+  - cmd: MKLINK "nondex-maven-plugin/src/it/comprehensive/src/test" "nondex-core/src/test/"
   - mvn clean package --batch-mode -DskipTest
 test_script:
   - mvn clean install --batch-mode
