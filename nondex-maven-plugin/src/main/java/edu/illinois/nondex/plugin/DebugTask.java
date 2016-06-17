@@ -186,6 +186,10 @@ public class DebugTask {
         Configuration failingConfiguration = null;
         long localStart = start;
         long localEnd = end;
+        // Give up if range too large
+        if (localEnd - localStart > 50) {
+            return null;
+        }
         while (localStart < localEnd) {
             Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
 
