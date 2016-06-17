@@ -56,7 +56,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 @Mojo(name = "debug", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
-public class DebugMojo extends AbstractNondexMojo {
+public class DebugMojo extends AbstractNonDexMojo {
 
     private List<String> executions = new LinkedList<>();
 
