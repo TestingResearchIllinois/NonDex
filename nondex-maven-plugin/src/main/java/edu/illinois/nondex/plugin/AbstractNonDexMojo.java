@@ -57,7 +57,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
-public abstract class AbstractNondexMojo extends AbstractMojo {
+public abstract class AbstractNonDexMojo extends AbstractMojo {
     // NonDex Mojo specific properties
     /**
      * The seed that is used for randomization during shuffling.
