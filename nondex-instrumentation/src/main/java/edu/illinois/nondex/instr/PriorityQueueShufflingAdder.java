@@ -36,6 +36,9 @@ import org.objectweb.asm.Opcodes;
 
 public class PriorityQueueShufflingAdder extends ClassVisitor {
 
+    private MethodProperties hasNextProp;
+    private MethodProperties nextProp;
+
     private class MethodProperties {
         private int access;
         private String name;
@@ -43,9 +46,6 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
         private String signature;
         private String[] exceptions;
     }
-
-    private MethodProperties hasNextProp;
-    private MethodProperties nextProp;
 
     public PriorityQueueShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);

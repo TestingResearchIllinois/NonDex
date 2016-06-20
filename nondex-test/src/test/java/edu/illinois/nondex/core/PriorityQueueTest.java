@@ -42,7 +42,7 @@ import org.junit.Test;
 
 public class PriorityQueueTest {
 
-    PriorityQueue<Integer> prq;
+    private PriorityQueue<Integer> prq;
 
     @Before
     public void setUp() {
