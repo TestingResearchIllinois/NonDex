@@ -76,6 +76,7 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/io/File.class");
         this.standardClassesToInstrument.add("java/text/DateFormatSymbols.class");
         this.standardClassesToInstrument.add("java/util/PriorityQueue.class");
+        this.standardClassesToInstrument.add("java/util/concurrent/PriorityBlockingQueue.class");
 
         this.specialClassesToInstrument.add(Instrumenter.hashMapName);
         this.specialClassesToInstrument.add(Instrumenter.concurrentHashMapName);
