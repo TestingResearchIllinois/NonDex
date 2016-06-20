@@ -28,17 +28,58 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.core;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
+
+import java.util.AbstractQueue;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import org.junit.Before;
+import org.junit.Test;
 
-public class PriorityQueueTest extends PriorityQueueAbstractTest {
-    @Before
-    @Override
-    public void setUp() {
-        prq = new PriorityQueue<Integer>();
-        for (int ind = 0; ind < 10; ind++) {
-            prq.add(ind);
+public abstract class PriorityQueueAbstractTest {
+
+    protected AbstractQueue<Integer> prq;
+
+    public abstract void setUp();
+
+    @Test
+    public void iteratorTest() {
+        Iterator<Integer> it1 = prq.iterator();
+        List<Integer> list1 = new ArrayList<>();
+
+        while (it1.hasNext()) {
+            list1.add(it1.next());
         }
+
+        Iterator<Integer> it2 = prq.iterator();
+        List<Integer> list2 = new ArrayList<>();
+
+        while (it2.hasNext()) {
+            list2.add(it2.next());
+        }
+
+        assertThat(list1.size(), equalTo(list2.size()));
+        assertThat(list1, not(equalTo(list2)));
+    }
+
+    @Test
+    public void toArrayTest() {
+        assertThat(prq.toArray(), not(equalTo(prq.toArray())));
+    }
+
+    @Test
+    public void toArrayArgTest() {
+        Integer[] list1 = new Integer[10];
+        Integer[] list2 = new Integer[10];
+
+        prq.toArray(list1);
+        prq.toArray(list2);
+
+        assertThat(list1, not(equalTo(list2)));
     }
 }
