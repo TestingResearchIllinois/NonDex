@@ -63,6 +63,8 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
         apisReturningShufflableArrays.add("java/text/BreakIterator.getAvailableLocales");
 
         apisReturningShufflableArrays.add("java/text/DateFormatSymbols.getZoneStrings");
+
+        apisReturningShufflableArrays.add("java/util/PriorityQueue.toArray");
     }
 
     public ClassVisitorShufflingAdder(ClassVisitor ca) {
