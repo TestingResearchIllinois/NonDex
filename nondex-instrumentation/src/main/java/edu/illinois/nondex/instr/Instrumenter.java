@@ -106,18 +106,21 @@ public final class Instrumenter {
 
         this.instrumentStandardClasses(rt, outZip);
 
-        this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShufflerNode.class", new Producer<byte[]>() {
-            @Override
-            public byte[] apply() {
-                return HashIteratorShufflerNodeASMDump.dump();
-            }
-        });
-        this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShufflerEntry.class", new Producer<byte[]>() {
-            @Override
-            public byte[] apply() {
-                return HashIteratorShufflerEntryASMDump.dump();
-            }
-        });
+        if (rt.getEntry("java/util/HashMap$Node.class") != null) {
+            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShuffler.class", new Producer<byte[]>() {
+                @Override
+                public byte[] apply() {
+                    return HashIteratorShufflerASMDump.dump("Node");
+                }
+            });
+        } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
+            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShuffler.class", new Producer<byte[]>() {
+                @Override
+                public byte[] apply() {
+                    return HashIteratorShufflerASMDump.dump("Entry");
+                }
+            });
+        }
 
         for (String clz : this.specialClassesToInstrument) {
             this.instrumentSpecialClass(rt, outZip, clz);
@@ -264,7 +267,7 @@ public final class Instrumenter {
         return classesToCopy;
     }
 
-    private <T extends CVFactory> void instrumentSpecialClass(ZipFile rt, ZipOutputStream outZip, final String clz)
+    private <T extends CVFactory> void instrumentSpecialClass(final ZipFile rt, ZipOutputStream outZip, final String clz)
             throws IOException, NoSuchAlgorithmException {
         ZipEntry entry = rt.getEntry(clz);
         if (entry == null) {
@@ -279,7 +282,7 @@ public final class Instrumenter {
                     @Override
                     public ClassVisitor apply(ClassVisitor cv) {
                         try {
-                            return CVFactory.construct(cv, clz);
+                            return CVFactory.construct(cv, clz, rt);
                         } catch (NoSuchAlgorithmException nsaException) {
                             return null;
                         }
