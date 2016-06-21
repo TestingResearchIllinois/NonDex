@@ -36,9 +36,7 @@ import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public abstract class PriorityQueueAbstractTest {
