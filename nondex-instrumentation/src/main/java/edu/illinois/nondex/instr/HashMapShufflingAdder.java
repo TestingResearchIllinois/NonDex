@@ -60,7 +60,7 @@ public class HashMapShufflingAdder extends ClassVisitor {
     }
 
     public FieldVisitor addShufflerType() {
-        FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashIteratorShuffler;", null, null);
+        FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashIteratorShuffler" + type + ";", null, null);
         fv.visitEnd();
         return fv;
     }
@@ -73,12 +73,12 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                "shuffler", "Ljava/util/HashIteratorShuffler;");
+                "shuffler", "Ljava/util/HashIteratorShuffler" + type + ";");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
                 "this$0", "Ljava/util/HashMap;");
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap", "modCount", "I");
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShuffler",
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShuffler" + type,
                 "next" + type, "(I)Ljava/util/HashMap$" + type + ";", false);
         mv.visitInsn(Opcodes.ARETURN);
 
@@ -95,8 +95,8 @@ public class HashMapShufflingAdder extends ClassVisitor {
         mv.visitVarInsn(Opcodes.ALOAD, 0);
 
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                "shuffler", "Ljava/util/HashIteratorShuffler;");
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShuffler",
+                "shuffler", "Ljava/util/HashIteratorShuffler" + type + ";");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShuffler" + type,
                 "hasNext", "()Z", false);
 
         mv.visitInsn(Opcodes.IRETURN);
@@ -124,14 +124,14 @@ public class HashMapShufflingAdder extends ClassVisitor {
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {
                         this.visitVarInsn(Opcodes.ALOAD, 0);
-                        this.visitTypeInsn(Opcodes.NEW, "java/util/HashIteratorShuffler");
+                        this.visitTypeInsn(Opcodes.NEW, "java/util/HashIteratorShuffler" + type);
                         this.visitInsn(Opcodes.DUP);
                         this.visitVarInsn(Opcodes.ALOAD, 0);
                         this.visitMethodInsn(Opcodes.INVOKESPECIAL,
-                                "java/util/HashIteratorShuffler",
+                                "java/util/HashIteratorShuffler" + type,
                                 "<init>", "(Ljava/util/HashMap$HashIterator;)V", false);
                         this.visitFieldInsn(Opcodes.PUTFIELD, "java/util/HashMap$HashIterator",
-                                "shuffler", "Ljava/util/HashIteratorShuffler;");
+                                "shuffler", "Ljava/util/HashIteratorShuffler" + type + ";");
                     }
                     super.visitInsn(opcode);
                 }

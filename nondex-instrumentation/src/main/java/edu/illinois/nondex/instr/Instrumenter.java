@@ -107,14 +107,14 @@ public final class Instrumenter {
         this.instrumentStandardClasses(rt, outZip);
 
         if (rt.getEntry("java/util/HashMap$Node.class") != null) {
-            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShuffler.class", new Producer<byte[]>() {
+            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShufflerNode.class", new Producer<byte[]>() {
                 @Override
                 public byte[] apply() {
                     return HashIteratorShufflerASMDump.dump("Node");
                 }
             });
         } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
-            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShuffler.class", new Producer<byte[]>() {
+            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShufflerEntry.class", new Producer<byte[]>() {
                 @Override
                 public byte[] apply() {
                     return HashIteratorShufflerASMDump.dump("Entry");
