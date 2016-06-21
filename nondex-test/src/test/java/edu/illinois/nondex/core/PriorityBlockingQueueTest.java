@@ -26,29 +26,19 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package edu.illinois.nondex.instr;
+package edu.illinois.nondex.core;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
+import java.util.concurrent.PriorityBlockingQueue;
 
-import edu.illinois.nondex.common.Logger;
+import org.junit.Before;
 
-import org.objectweb.asm.ClassVisitor;
-
-public class CVFactory {
-    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument) throws NoSuchAlgorithmException {
-        if (clzToInstrument.equals(Instrumenter.concurrentHashMapName)) {
-            return new ConcurrentHashMapShufflingAdder(cv);
-        } else if (clzToInstrument.equals(Instrumenter.hashMapName)) {
-            return new HashMapShufflingAdder(cv);
-        } else if (clzToInstrument.equals(Instrumenter.methodName)) {
-            return new MethodShufflingAdder(cv);
-        } else if (clzToInstrument.equals(Instrumenter.priorityQueueName)) {
-            return new PriorityQueueShufflingAdder(cv);
-        } else {
-            Logger.getGlobal().log(Level.CONFIG, "Trying to construct CV for " + clzToInstrument);
-            throw new NoSuchAlgorithmException();
+public class PriorityBlockingQueueTest extends PriorityQueueAbstractTest {
+    @Before
+    @Override
+    public void setUp() {
+        prq = new PriorityBlockingQueue<>();
+        for (int ind = 0; ind < 10; ind++) {
+            prq.add(ind);
         }
-
     }
 }
