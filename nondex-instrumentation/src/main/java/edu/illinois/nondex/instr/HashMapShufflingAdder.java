@@ -39,6 +39,9 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
     private String type;
 
+    private MethodProperties hasNextProp;
+    private MethodProperties nextTypeProp;
+
     private class MethodProperties {
         private int access;
         private String name;
@@ -47,8 +50,6 @@ public class HashMapShufflingAdder extends ClassVisitor {
         private String[] exceptions;
     }
 
-    private MethodProperties hasNextProp;
-    private MethodProperties nextTypeProp;
 
     public HashMapShufflingAdder(ClassVisitor ca, String type) {
         super(Opcodes.ASM5, ca);
