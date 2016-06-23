@@ -51,6 +51,8 @@ public class CVFactory {
             return new HashMapShufflingAdder(cv, "Entry", "java/util/WeakHashMap");
         } else if (clzToInstrument.equals(Instrumenter.methodName)) {
             return new MethodShufflingAdder(cv);
+        } else if (clzToInstrument.equals(Instrumenter.priorityQueueName)) {
+            return new PriorityQueueShufflingAdder(cv);
         } else {
             Logger.getGlobal().log(Level.CONFIG, "Trying to construct CV for " + clzToInstrument);
             throw new NoSuchAlgorithmException();
