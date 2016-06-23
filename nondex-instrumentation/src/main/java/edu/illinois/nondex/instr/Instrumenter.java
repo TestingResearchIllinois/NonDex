@@ -55,6 +55,7 @@ import org.objectweb.asm.util.CheckClassAdapter;
 
 public final class Instrumenter {
     public static final String hashMapName = "java/util/HashMap$HashIterator.class";
+    public static final String weakHashMapName = "java/util/WeakHashMap$HashIterator.class";
     public static final String concurrentHashMapName = "java/util/concurrent/ConcurrentHashMap$Traverser.class";
     public static final String methodName = "java/lang/reflect/Method.class";
 
@@ -76,6 +77,7 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/text/DateFormatSymbols.class");
 
         this.specialClassesToInstrument.add(Instrumenter.hashMapName);
+        this.specialClassesToInstrument.add(Instrumenter.weakHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.concurrentHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.methodName);
     }
@@ -107,20 +109,30 @@ public final class Instrumenter {
         this.instrumentStandardClasses(rt, outZip);
 
         if (rt.getEntry("java/util/HashMap$Node.class") != null) {
-            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShufflerNode.class", new Producer<byte[]>() {
-                @Override
-                public byte[] apply() {
-                    return HashIteratorShufflerASMDump.dump("Node");
-                }
-            });
+            this.addAsmDumpResultToZip(outZip, "java/util/HashMap$HashIterator$HashIteratorShuffler.class",
+                    new Producer<byte[]>() {
+                        @Override
+                        public byte[] apply() {
+                            return HashIteratorShufflerASMDump.dump("Node", "java/util/HashMap", "current");
+                        }
+                    });
         } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
-            this.addAsmDumpResultToZip(outZip, "java/util/HashIteratorShufflerEntry.class", new Producer<byte[]>() {
-                @Override
-                public byte[] apply() {
-                    return HashIteratorShufflerASMDump.dump("Entry");
-                }
-            });
+            this.addAsmDumpResultToZip(outZip, "java/util/HashMap$HashIterator$HashIteratorShuffler.class",
+                    new Producer<byte[]>() {
+                        @Override
+                        public byte[] apply() {
+                            return HashIteratorShufflerASMDump.dump("Entry", "java/util/HashMap", "current");
+                        }
+                    });
         }
+
+        this.addAsmDumpResultToZip(outZip, "java/util/WeakHashMap$HashIterator$HashIteratorShuffler.class",
+                new Producer<byte[]>() {
+                    @Override
+                    public byte[] apply() {
+                        return HashIteratorShufflerASMDump.dump("Entry", "java/util/WeakHashMap", "entry");
+                    }
+                });
 
         for (String clz : this.specialClassesToInstrument) {
             this.instrumentSpecialClass(rt, outZip, clz);
