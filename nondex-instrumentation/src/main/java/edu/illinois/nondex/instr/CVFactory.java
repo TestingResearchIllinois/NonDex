@@ -49,6 +49,8 @@ public class CVFactory {
             }
         } else if (clzToInstrument.equals(Instrumenter.weakHashMapName)) {
             return new HashMapShufflingAdder(cv, "Entry", "java/util/WeakHashMap");
+        } else if (clzToInstrument.equals(Instrumenter.identityHashMapName)) {
+            return new IdentityHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.methodName)) {
             return new MethodShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.priorityQueueName)) {
