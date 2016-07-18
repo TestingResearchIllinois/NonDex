@@ -34,9 +34,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
-import java.util.logging.Level;
-
-import edu.illinois.nondex.common.Logger;
 
 import org.junit.Test;
 
@@ -51,7 +48,6 @@ public class IdentityHashMapTest {
             ihm.put(i, i);
         }
 
-        Logger.getGlobal().log(Level.SEVERE, ihm.toString());
         assertThat("{0=0, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", not(equalTo(ihm.toString())));
     }
 }
