@@ -30,17 +30,27 @@ package edu.illinois.nondex.instr;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
+import java.util.zip.ZipFile;
 
 import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassVisitor;
 
 public class CVFactory {
-    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument) throws NoSuchAlgorithmException {
+    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument, ZipFile rt)
+            throws NoSuchAlgorithmException {
         if (clzToInstrument.equals(Instrumenter.concurrentHashMapName)) {
             return new ConcurrentHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.hashMapName)) {
-            return new HashMapShufflingAdder(cv);
+            if (rt.getEntry("java/util/HashMap$Node.class") != null) {
+                return new HashMapShufflingAdder(cv, "Node", "java/util/HashMap");
+            } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
+                return new HashMapShufflingAdder(cv, "Entry", "java/util/HashMap");
+            }
+        } else if (clzToInstrument.equals(Instrumenter.weakHashMapName)) {
+            return new HashMapShufflingAdder(cv, "Entry", "java/util/WeakHashMap");
+        } else if (clzToInstrument.equals(Instrumenter.identityHashMapName)) {
+            return new IdentityHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.methodName)) {
             return new MethodShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.priorityQueueName)) {
@@ -49,6 +59,6 @@ public class CVFactory {
             Logger.getGlobal().log(Level.CONFIG, "Trying to construct CV for " + clzToInstrument);
             throw new NoSuchAlgorithmException();
         }
-
+        return null;
     }
 }

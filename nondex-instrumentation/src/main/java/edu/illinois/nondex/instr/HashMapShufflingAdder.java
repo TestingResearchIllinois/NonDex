@@ -35,7 +35,11 @@ import org.objectweb.asm.Opcodes;
 
 public class HashMapShufflingAdder extends ClassVisitor {
 
-    private boolean node;
+    private String type;
+    private String baseName;
+
+    private MethodProperties hasNextProp;
+    private MethodProperties nextTypeProp;
 
     private class MethodProperties {
         private int access;
@@ -45,64 +49,40 @@ public class HashMapShufflingAdder extends ClassVisitor {
         private String[] exceptions;
     }
 
-    private MethodProperties hasNextProp;
-    private MethodProperties nextNodeProp;
 
-    public HashMapShufflingAdder(ClassVisitor ca) {
+    public HashMapShufflingAdder(ClassVisitor ca, String type, String baseName) {
         super(Opcodes.ASM5, ca);
 
         hasNextProp = new MethodProperties();
-        nextNodeProp = new MethodProperties();
+        nextTypeProp = new MethodProperties();
+
+        this.type = type;
+        this.baseName = baseName;
     }
 
-    public FieldVisitor addShufflerNode() {
-        FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashIteratorShufflerNode;", null, null);
+    public FieldVisitor addShufflerType() {
+        FieldVisitor fv = super.visitField(0, "shuffler",
+                "L" + baseName + "$HashIterator$HashIteratorShuffler;",
+                "L" + baseName + "<TK;TV;>.HashIterator.HashIteratorShuffler;", null);
         fv.visitEnd();
         return fv;
     }
 
-    public FieldVisitor addShufflerEntry() {
-        FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashIteratorShufflerEntry;", null, null);
-        fv.visitEnd();
-        return fv;
-    }
-
-    public void addNextNode() {
-        MethodVisitor mv = super.visitMethod(nextNodeProp.access, nextNodeProp.name,
-                nextNodeProp.desc, nextNodeProp.signature, nextNodeProp.exceptions);
+    public void addNextType() {
+        MethodVisitor mv = super.visitMethod(nextTypeProp.access, nextTypeProp.name,
+                nextTypeProp.desc, nextTypeProp.signature, nextTypeProp.exceptions);
 
         mv.visitCode();
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                "shuffler", "Ljava/util/HashIteratorShufflerNode;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, baseName + "$HashIterator",
+                "shuffler", "L" + baseName + "$HashIterator$HashIteratorShuffler;");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                "this$0", "Ljava/util/HashMap;");
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap", "modCount", "I");
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShufflerNode",
-                "nextNode", "(I)Ljava/util/HashMap$Node;", false);
-        mv.visitInsn(Opcodes.ARETURN);
-
-        mv.visitMaxs(2, 1);
-        mv.visitEnd();
-    }
-
-    public void addNextEntry() {
-        MethodVisitor mv = super.visitMethod(nextNodeProp.access, nextNodeProp.name,
-                nextNodeProp.desc, nextNodeProp.signature, nextNodeProp.exceptions);
-
-        mv.visitCode();
-
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                "shuffler", "Ljava/util/HashIteratorShufflerEntry;");
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                "this$0", "Ljava/util/HashMap;");
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap", "modCount", "I");
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShufflerEntry",
-                "nextEntry", "(I)Ljava/util/HashMap$Node;", false);
+        mv.visitFieldInsn(Opcodes.GETFIELD, baseName + "$HashIterator",
+                "this$0", "L" + baseName + ";");
+        mv.visitFieldInsn(Opcodes.GETFIELD, baseName, "modCount", "I");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, baseName + "$HashIterator$HashIteratorShuffler",
+                "next" + type, "(I)L" + baseName + "$" + type + ";", false);
         mv.visitInsn(Opcodes.ARETURN);
 
         mv.visitMaxs(2, 1);
@@ -116,18 +96,11 @@ public class HashMapShufflingAdder extends ClassVisitor {
         mv.visitCode();
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        if (node) {
-            mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                    "shuffler", "Ljava/util/HashIteratorShufflerNode;");
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShufflerNode",
-                    "hasNext", "()Z", false);
-        } else {
-            mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap$HashIterator",
-                    "shuffler", "Ljava/util/HashIteratorShufflerEntry;");
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashIteratorShufflerEntry",
-                    "hasNext", "()Z", false);
-        }
 
+        mv.visitFieldInsn(Opcodes.GETFIELD, baseName + "$HashIterator",
+                "shuffler", "L" + baseName + "$HashIterator$HashIteratorShuffler;");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, baseName + "$HashIterator$HashIteratorShuffler",
+                "hasNext", "()Z", false);
 
         mv.visitInsn(Opcodes.IRETURN);
 
@@ -137,26 +110,21 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-        if (node) {
-            addShufflerNode();
-            addNextNode();
-        } else {
-            addShufflerEntry();
-            addNextEntry();
-        }
+        addShufflerType();
+        addNextType();
 
         addHasNext();
+
+        super.visitInnerClass(baseName + "$HashIterator$HashIteratorShuffler",
+                baseName + "$HashIterator", "HashIteratorShuffler", 0);
 
         super.visitEnd();
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        if ("Ljava/util/HashMap$Node<TK;TV;>;".equals(signature)) {
-            node = true;
-        }
-        if ("Ljava/util/HashMap$Entry<TK;TV;>;".equals(signature)) {
-            node = false;
+        if ("java/util/WeakHashMap".equals(baseName) && ("expectedModCount".equals(name) || "entry".equals(name))) {
+            return super.visitField(access - Opcodes.ACC_PRIVATE, name, desc, signature, value);
         }
         return super.visitField(access, name, desc, signature, value);
     }
@@ -164,45 +132,25 @@ public class HashMapShufflingAdder extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
-        if ("<init>".equals(name) || "HashMap$HashIterator".equals(name)) {
-            if (node) {
-                return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
-                    @Override
-                    public void visitInsn(int opcode) {
-                        if (opcode == Opcodes.RETURN) {
-                            this.visitVarInsn(Opcodes.ALOAD, 0);
-                                this.visitTypeInsn(Opcodes.NEW, "java/util/HashIteratorShufflerNode");
-                            this.visitInsn(Opcodes.DUP);
-                            this.visitVarInsn(Opcodes.ALOAD, 0);
-                                this.visitMethodInsn(Opcodes.INVOKESPECIAL,
-                                        "java/util/HashIteratorShufflerNode",
-                                        "<init>", "(Ljava/util/HashMap$HashIterator;)V", false);
-                                this.visitFieldInsn(Opcodes.PUTFIELD, "java/util/HashMap$HashIterator",
-                                        "shuffler", "Ljava/util/HashIteratorShufflerNode;");
-                        }
-                        super.visitInsn(opcode);
+        if ("<init>".equals(name)) {
+            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+                @Override
+                public void visitInsn(int opcode) {
+                    if (opcode == Opcodes.RETURN) {
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitTypeInsn(Opcodes.NEW, baseName + "$HashIterator$HashIteratorShuffler");
+                        super.visitInsn(Opcodes.DUP);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKESPECIAL,
+                                baseName + "$HashIterator$HashIteratorShuffler",
+                                "<init>", "(L" + baseName + "$HashIterator;L" + baseName + "$HashIterator;)V", false);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, baseName + "$HashIterator",
+                                "shuffler", "L" + baseName + "$HashIterator$HashIteratorShuffler;");
                     }
-                };
-            } else {
-                return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
-                    @Override
-                    public void visitInsn(int opcode) {
-                        if (opcode == Opcodes.RETURN) {
-                            this.visitVarInsn(Opcodes.ALOAD, 0);
-                            this.visitTypeInsn(Opcodes.NEW, "java/util/HashIteratorShufflerEntry");
-                            this.visitInsn(Opcodes.DUP);
-                            this.visitVarInsn(Opcodes.ALOAD, 0);
-                            this.visitMethodInsn(Opcodes.INVOKESPECIAL,
-                                    "java/util/HashIteratorShufflerEntry",
-                                    "<init>", "(Ljava/util/HashMap$HashIterator;)V", false);
-                            this.visitFieldInsn(Opcodes.PUTFIELD, "java/util/HashMap$HashIterator",
-                                    "shuffler", "Ljava/util/HashIteratorShufflerEntry;");
-                        }
-                        super.visitInsn(opcode);
-                    }
-                };
-            }
-
+                    super.visitInsn(opcode);
+                }
+            };
         }
         if ("hasNext".equals(name)) {
             hasNextProp.access = access;
@@ -211,31 +159,30 @@ public class HashMapShufflingAdder extends ClassVisitor {
             hasNextProp.signature = signature;
             hasNextProp.exceptions = exceptions;
 
-            MethodVisitor original = super.visitMethod(access, "original_hasNext", desc, signature, exceptions);
-
-            return original;
+            return super.visitMethod(access, "original_hasNext", desc, signature, exceptions);
         }
-        if ("nextNode".equals(name)) {
-            nextNodeProp.access = access;
-            nextNodeProp.name = name;
-            nextNodeProp.desc = desc;
-            nextNodeProp.signature = signature;
-            nextNodeProp.exceptions = exceptions;
+        if (name.equals("next" + type)) {
+            nextTypeProp.access = access;
+            nextTypeProp.name = name;
+            nextTypeProp.desc = desc;
+            nextTypeProp.signature = signature;
+            nextTypeProp.exceptions = exceptions;
 
-            MethodVisitor original = super.visitMethod(access, "original_nextNode", desc, signature, exceptions);
-
-            return original;
-        }
-        if ("nextEntry".equals(name)) {
-            nextNodeProp.access = access;
-            nextNodeProp.name = name;
-            nextNodeProp.desc = desc;
-            nextNodeProp.signature = signature;
-            nextNodeProp.exceptions = exceptions;
-
-            MethodVisitor original = super.visitMethod(access, "original_nextEntry", desc, signature, exceptions);
-
-            return original;
+            if (baseName.equals("java/util/WeakHashMap")) {
+                return new MethodVisitor(Opcodes.ASM5,
+                        super.visitMethod(access, "original_next" + type, desc, signature, exceptions)) {
+                    @Override
+                    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+                        if ("hasNext".equals(name)) {
+                            super.visitMethodInsn(opcode, owner, "original_hasNext", desc, itf);
+                        } else {
+                            super.visitMethodInsn(opcode, owner, name, desc, itf);
+                        }
+                    }
+                };
+            } else {
+                return super.visitMethod(access, "original_next" + type, desc, signature, exceptions);
+            }
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }
