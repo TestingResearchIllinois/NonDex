@@ -2,15 +2,17 @@
 [![Issue Count](https://codeclimate.com/github/TestingResearchIllinois/NonDex/badges/issue_count.svg)](https://codeclimate.com/github/TestingResearchIllinois/NonDex)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ef0b45fa77a4d58af5e23917c9bf5ae)](https://www.codacy.com/app/gyori/NonDex?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TestingResearchIllinois/NonDex&amp;utm_campaign=Badge_Grade)
 
-NonDex is a tool for detecting and debugging wrong assumptions on Java APIs. An
+NonDex is a tool for detecting and debugging wrong assumptions on under-determined Java APIs. An
 example of such an assumption is when code assumes the order of iterating
 through the entries in a java.util.HashMap is in a specific, deterministic
-order, but the specification for java.util.HashMap clearly states that this
+order, but the specification for java.util.HashMap is under-determined and states that this
 iteration order is not guaranteed to be in any particular order. Such
 assumptions can hurt portability for an application when they are moved to
-other machines with a different Java runtime. NonDex helps expose such brittle
+other environments with a different Java runtime. NonDex explores different behaviors of 
+under-determined APIs and reports test failures under different explored behaviors; 
+NonDex only explores behaviors that are allowed by the specification and any test failure indicates an assumption on an under-determined Java API. NonDex helps expose such brittle
 assumptions to the developers early, so they can fix the assumption before it
-becomes a problem far in the future and difficult to fix then.
+becomes a problem far in the future and more difficult to fix.
 
 Prerequisites:
 ==============
