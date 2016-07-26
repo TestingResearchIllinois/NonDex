@@ -12,6 +12,10 @@ other machines with a different Java runtime. NonDex helps expose such brittle
 assumptions to the developers early, so they can fix the assumption before it
 becomes a problem far in the future and difficult to fix then.
 
+Supported APIs:
+===============
+The list of supported APIs can be found [here](https://github.com/TestingResearchIllinois/NonDex/wiki/Supported-APIs)
+
 Prerequisites:
 ==============
     - Java 8 (Oracle JDK, OpenJDK).
