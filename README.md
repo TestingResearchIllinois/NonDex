@@ -14,6 +14,10 @@ NonDex only explores behaviors that are allowed by the specification and any tes
 assumptions to the developers early, so they can fix the assumption before it
 becomes a problem far in the future and more difficult to fix.
 
+Supported APIs:
+===============
+The list of supported APIs can be found [here](https://github.com/TestingResearchIllinois/NonDex/wiki/Supported-APIs)
+
 Prerequisites:
 ==============
     - Java 8 (Oracle JDK, OpenJDK).
