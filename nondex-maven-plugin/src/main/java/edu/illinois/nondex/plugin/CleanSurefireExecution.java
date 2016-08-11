@@ -131,7 +131,14 @@ public class CleanSurefireExecution {
     }
 
     private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
-        return this.addAttributeToConfig(configNode, "excludedGroups", "edu.illinois.NonDexIgnore");
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("excludedGroups".equals(config.getName())) {
+                config.setValue(config.getValue() + "," + "edu.illinois.NonDexIgnore");
+                return configNode;
+            }
+        }
+        configNode.addChild(this.makeNode("excludedGroups", "edu.illinois.NonDexIgnore"));
+        return configNode;
     }
 
     private Xpp3Dom setReportOutputDirectory(Xpp3Dom configNode) {

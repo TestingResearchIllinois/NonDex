@@ -69,6 +69,8 @@ public class NonDexMojo extends AbstractNonDexMojo {
                     this.mavenSession, this.pluginManager,
                     Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
 
+        // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
+        // Everything in nondex-test is expected to fail without nondex so we through away the result here.
         this.executeSurefireExecution(allExceptions, cleanExec);
 
         for (int i = 0; i < this.numRuns; i++) {
