@@ -147,6 +147,8 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     protected String projectBuildDir;
     @Parameter(defaultValue = "${basedir}")
     protected File baseDir;
+    @Parameter(defaultValue = "${maven.repo.local}")
+    protected String mavenRepoLocal;
     @Parameter(property = "goal", alias = "mojo")
     protected String goal;
     @Component

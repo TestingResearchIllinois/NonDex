@@ -72,7 +72,7 @@ public class DebugMojo extends AbstractNonDexMojo {
 
         for (String test : this.testsFailing.keySet()) {
             this.runSingleSurefireTest(test);
-            DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine,
+            DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine, this.mavenRepoLocal,
                     this.mavenProject, this.mavenSession, this.pluginManager, this.testsFailing.get(test));
             String repro = debugging.debug();
             testToRepro.put(test, repro);

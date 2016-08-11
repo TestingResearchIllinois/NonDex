@@ -47,24 +47,27 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public class NonDexSurefireExecution extends CleanSurefireExecution {
 
-    private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
+    private String mavenRepoLocal;
+
+    private NonDexSurefireExecution(Plugin surefire, String originalArgLine, String mavenRepoLocal,
             MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir) {
         super(surefire, originalArgLine, Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager, nondexDir);
+        this.mavenRepoLocal = mavenRepoLocal;
     }
 
     public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String nondexJarDir, Plugin surefire, String originalArgLine, MavenProject mavenProject,
+            String nondexJarDir, Plugin surefire, String originalArgLine, String mavenRepoLocal, MavenProject mavenProject,
             MavenSession mavenSession, BuildPluginManager pluginManager) {
-        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir);
+        this(surefire, originalArgLine, mavenRepoLocal, mavenProject, mavenSession, pluginManager, nondexDir);
         this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
                 this.executionId);
     }
 
     public NonDexSurefireExecution(Configuration config, long start, long end, boolean print, String test, Plugin surefire,
-            String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
+            String originalArgLine, String mavenRepoLocal, MavenProject mavenProject, MavenSession mavenSession,
             BuildPluginManager pluginManager) {
 
-        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, config.nondexDir);
+        this(surefire, originalArgLine, mavenRepoLocal, mavenProject, mavenSession, pluginManager, config.nondexDir);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
                 end, config.nondexDir, config.nondexJarDir, test, this.executionId, print);
     }
@@ -79,9 +82,11 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             configElement.getChild("test").setValue(this.configuration.testName);
         }
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
+        Logger.getGlobal().log(Level.SEVERE, mavenRepoLocal);
         this.mavenProject.getProperties().setProperty("argLine",
-                "" + "-Xbootclasspath/p:" + pathToNondex + " " + this.originalArgLine + " "
-                + this.configuration.toArgLine());
+                "" + "-Xbootclasspath/p:" + pathToNondex + ":" + Paths.get(mavenRepoLocal,
+                        "edu/illinois/nondex-maven-plugin/1.0.2-SNAPSHOT/nondex-maven-plugin-1.0.2-SNAPSHOT.jar")
+                        + " " + this.originalArgLine + " " + this.configuration.toArgLine());
 
     }
 

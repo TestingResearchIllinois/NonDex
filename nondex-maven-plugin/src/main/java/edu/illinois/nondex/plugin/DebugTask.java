@@ -48,17 +48,19 @@ public class DebugTask {
     private String test;
     private Plugin surefire;
     private String originalArgLine;
+    private String mavenRepoLocal;
     private MavenProject mavenProject;
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
     private List<Configuration> failingConfigurations;
 
-    public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
-            MavenSession mavenSession, BuildPluginManager pluginManager,
-            List<Configuration> failingConfigurations) {
+    public DebugTask(String test, Plugin surefire, String originalArgLine, String mavenRepoLocal,
+                     MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager,
+                     List<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
+        this.mavenRepoLocal = mavenRepoLocal;
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
@@ -213,8 +215,8 @@ public class DebugTask {
 
     private Configuration failsWithConfig(Configuration config, long start, long end, boolean print) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
-                    start, end, print, this.test, this.surefire, this.originalArgLine, this.mavenProject,
-                    this.mavenSession, this.pluginManager);
+                start, end, print, this.test, this.surefire, this.originalArgLine, this.mavenRepoLocal,
+                this.mavenProject, this.mavenSession, this.pluginManager);
         try {
             execution.run();
         } catch (Throwable thr) {

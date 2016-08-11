@@ -69,7 +69,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
                     this.mavenSession, this.pluginManager,
                     Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
 
-        allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
+        this.executeSurefireExecution(allExceptions, cleanExec);
 
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
@@ -78,7 +78,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
                                 .toString(),
-                            this.surefire, this.originalArgLine, this.mavenProject,
+                            this.surefire, this.originalArgLine, this.mavenRepoLocal, this.mavenProject,
                             this.mavenSession, this.pluginManager);
             this.executions.add(execution);
             allExceptions = this.executeSurefireExecution(allExceptions, execution);
