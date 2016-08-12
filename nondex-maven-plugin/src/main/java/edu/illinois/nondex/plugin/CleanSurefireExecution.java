@@ -126,8 +126,7 @@ public class CleanSurefireExecution {
             configNode = new Xpp3Dom("configuration");
         }
 
-        configNode = addExcludedGroups(configNode);
-        return setReportOutputDirectory(configNode);
+        return setReportOutputDirectory(addExcludedGroups(configNode));
     }
 
     private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
