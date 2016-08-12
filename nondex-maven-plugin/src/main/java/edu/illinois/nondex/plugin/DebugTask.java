@@ -48,19 +48,17 @@ public class DebugTask {
     private String test;
     private Plugin surefire;
     private String originalArgLine;
-    private String mavenRepoLocal;
     private MavenProject mavenProject;
     private MavenSession mavenSession;
     private BuildPluginManager pluginManager;
     private List<Configuration> failingConfigurations;
 
-    public DebugTask(String test, Plugin surefire, String originalArgLine, String mavenRepoLocal,
-                     MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager,
+    public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
+                     MavenSession mavenSession, BuildPluginManager pluginManager,
                      List<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
-        this.mavenRepoLocal = mavenRepoLocal;
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
@@ -193,7 +191,8 @@ public class DebugTask {
             return null;
         }
         while (localStart < localEnd) {
-            Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
+            Logger.getGlobal().log(Level.INFO,
+                    "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
 
             if ((failingConfiguration = this.failsWithConfig(config, localStart, localEnd - 1)) != null) {
                 localEnd = localEnd - 1;
