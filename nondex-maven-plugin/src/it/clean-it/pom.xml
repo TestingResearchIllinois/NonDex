@@ -40,7 +40,7 @@
     </dependency>
     <dependency>
       <groupId>@project.groupId@</groupId>
-      <artifactId>@project.artifactId@</artifactId>
+      <artifactId>nondex-annotations</artifactId>
       <version>@project.version@</version>
     </dependency>
   </dependencies>

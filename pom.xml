@@ -64,6 +64,7 @@
     <module>nondex-test</module>
     <module>nondex-common</module>
     <module>nondex-maven-plugin</module>
+    <module>nondex-annotations</module>
   </modules>
 
   <prerequisites>

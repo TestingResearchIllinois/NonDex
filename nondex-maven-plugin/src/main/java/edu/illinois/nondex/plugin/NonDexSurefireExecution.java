@@ -74,6 +74,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
     protected void setupArgline() {
         String localRepo = this.mavenSession.getSettings().getLocalRepository();
         String pathToNondex = this.getPathToNondexJar(localRepo);
+        String annotationsModuleName = "nondex-annotations";
         // Only modify test in configuration if not null, because that means is debugging
         Xpp3Dom configElement = (Xpp3Dom)this.surefire.getConfiguration();
         if (configElement != null) {
@@ -82,8 +83,8 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
                 "" + "-Xbootclasspath/p:" + pathToNondex + ":" + Paths.get(mavenSession.getLocalRepository().getBasedir(),
-                        "edu/illinois/nondex-maven-plugin", ConfigurationDefaults.VERSION,
-                        "nondex-maven-plugin-" + ConfigurationDefaults.VERSION + ".jar")
+                        "edu/illinois/" + annotationsModuleName, ConfigurationDefaults.VERSION,
+                        annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
                         + " " + this.originalArgLine + " " + this.configuration.toArgLine());
 
     }
