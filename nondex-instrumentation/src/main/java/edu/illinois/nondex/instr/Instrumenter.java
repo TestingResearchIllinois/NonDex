@@ -90,6 +90,7 @@ public final class Instrumenter {
 
     public static final void instrument(String rtJar, String outJar)
             throws NoSuchAlgorithmException, IOException {
+        Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtJar + " into " + outJar);
         new Instrumenter().process(rtJar, outJar);
     }
 
@@ -147,7 +148,9 @@ public final class Instrumenter {
         this.copyCachedClassesToOutZip(outJar, classesToCopy, outZip);
 
         outZip.close();
-        outZipBaos.writeTo(new FileOutputStream(outJar));
+        FileOutputStream fos = new FileOutputStream(outJar);
+        outZipBaos.writeTo(fos);
+        fos.close();
     }
 
 
