@@ -45,7 +45,7 @@ public class ConfigurationDefaults {
     public static final String DEFAULT_RERUN_STR = "false";
     public static final String PROPERTY_RERUN = "nondexRerun";
 
-    public static final String PROPERTY_NUM_RUNS = "nondex.runs";
+    public static final String PROPERTY_NUM_RUNS = "nondexRuns";
     public static final String DEFAULT_NUM_RUNS_STR = "3";
     public static final int DEFAULT_NUM_RUNS = new Integer(ConfigurationDefaults.DEFAULT_NUM_RUNS_STR);
 
