@@ -86,8 +86,8 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
     }
 
     private String getPathToNondexJar(String localRepo) {
-        return this.configuration.nondexJarDir + "/" + ConfigurationDefaults.INSTRUMENTATION_JAR
-                + ":" + Paths.get(localRepo, "edu/illinois/nondex-common/" + ConfigurationDefaults.VERSION
-                + "/nondex-common-" + ConfigurationDefaults.VERSION + ".jar").toString();
+        return Paths.get(this.configuration.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR)
+            + ":" + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
+                              "nondex-common-" + ConfigurationDefaults.VERSION + ".jar");
     }
 }
