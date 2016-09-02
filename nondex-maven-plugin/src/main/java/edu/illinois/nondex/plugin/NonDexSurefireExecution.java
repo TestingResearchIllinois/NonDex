@@ -28,6 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.plugin;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -90,8 +91,10 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
     }
 
     private String getPathToNondexJar(String localRepo) {
-        return this.configuration.nondexJarDir + "/" + ConfigurationDefaults.INSTRUMENTATION_JAR
-                + ":" + Paths.get(localRepo, "edu/illinois/nondex-common/" + ConfigurationDefaults.VERSION
-                + "/nondex-common-" + ConfigurationDefaults.VERSION + ".jar").toString();
+        String result = Paths.get(this.configuration.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR)
+            + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
+                              "nondex-common-" + ConfigurationDefaults.VERSION + ".jar");
+        Logger.getGlobal().log(Level.FINE, "The nondex path is: " + result);
+        return result;
     }
 }
