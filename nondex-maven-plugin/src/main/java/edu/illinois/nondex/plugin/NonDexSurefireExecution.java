@@ -95,6 +95,6 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
                               "nondex-common-" + ConfigurationDefaults.VERSION + ".jar");
         Logger.getGlobal().log(Level.FINE, "The nondex path is: " + result);
-        return result;
+        return "\"" + result + "\"";
     }
 }
