@@ -104,7 +104,7 @@
         </executions>
         <configuration>
           <mainClass>edu.illinois.nondex.instr.Main</mainClass>
-          <commandlineArgs>${project.basedir}/resources/out.jar</commandlineArgs>
+          <commandlineArgs>"${project.basedir}/resources/out.jar"</commandlineArgs>
         </configuration>
       </plugin>
       <plugin>
