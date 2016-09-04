@@ -120,16 +120,17 @@ public class Configuration {
 
     @Override
     public String toString() {
-        return ConfigurationDefaults.PROPERTY_FILTER + "=" + this.filter + "\n"
-                + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode + "\n"
-                + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + "\n"
-                + ConfigurationDefaults.PROPERTY_START + "=" + this.start + "\n"
-                + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n"
-                + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace + "\n"
-                + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir + "\n"
-                + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir + "\n"
-                + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId + "\n"
-                + "test=" + (this.testName == null ? "" : this.testName);
+        String[] props = new String[] {ConfigurationDefaults.PROPERTY_FILTER + "=" + this.filter,
+                                       ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode,
+                                       ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed,
+                                       ConfigurationDefaults.PROPERTY_START + "=" + this.start,
+                                       ConfigurationDefaults.PROPERTY_END + "=" + this.end,
+                                       ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace,
+                                       ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir,
+                                       ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
+                                       ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId,
+                                       "test=" + (this.testName == null ? "" : this.testName)};
+        return String.join(String.format("%n"), props);
     }
 
     public static Configuration parseArgs() {
@@ -255,7 +256,7 @@ public class Configuration {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(failed))) {
             for (String test : failedTestsInExecution) {
-                bw.write(test + "\n");
+                bw.write(test + String.format("%n"));
             }
         } catch (FileNotFoundException fne) {
             Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");

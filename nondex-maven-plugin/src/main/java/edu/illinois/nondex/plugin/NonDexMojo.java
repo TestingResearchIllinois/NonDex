@@ -223,8 +223,8 @@ public class NonDexMojo extends AbstractNonDexMojo {
         try {
             // TODO(gyori): This is quite ugly, you grabbing here the first from a list to establish a run id.
             Files.write(this.executions.get(0).getConfiguration().getRunFilePath(),
-                    (execution.getConfiguration().executionId + "\n").getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                        (execution.getConfiguration().executionId + String.format("%n")).getBytes(),
+                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Cannot write execution id to current run file", ex);
         }
