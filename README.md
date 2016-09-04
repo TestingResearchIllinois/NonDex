@@ -57,6 +57,11 @@ To find if you have flaky tests, run:
 To debug, run:
 
     mvn nondex:debug
+    
+The NonDex Maven plugin also offers additional options; to see them all, run:
+
+    mvn nondex:help
+
 
 Use (Command-line):
 ===================
