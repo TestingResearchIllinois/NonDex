@@ -93,7 +93,7 @@
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <argLine>-Xbootclasspath/p:"${project.basedir}/../nondex-instrumentation/resources/out.jar:${project.build.directory}/../../nondex-common/target/classes/"</argLine>
+          <argLine>-Xbootclasspath/p:"${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
