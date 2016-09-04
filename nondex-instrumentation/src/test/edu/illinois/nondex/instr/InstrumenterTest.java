@@ -33,6 +33,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class InstrumenterTest {
     @Test
     public void emptyZipTest() {
         try {
-            Instrumenter.instrument("resources/empty.jar", "resources/emptyOut.jar");
+            Instrumenter.instrument(Paths.get("resources", "empty.jar"), Paths.get("resources", "emptyOut.jar"));
             fail("Expected an IOException to be thrown");
         } catch (IOException exc) {
             assertThat(exc.getMessage(), is("zip file is empty"));
@@ -50,7 +51,7 @@ public class InstrumenterTest {
     @Test
     public void nonexistantZipTest() {
         try {
-            Instrumenter.instrument("resources/doesnotexist.jar", "resources/doesnotexistOut.jar");
+            Instrumenter.instrument(Paths.get("resources", "doesnotexist.jar").toString(), Paths.get("resources", "doesnotexistOut.jar").toString());
             fail("Expected an IOException to be thrown");
         } catch (IOException exc) {
             assertThat(exc.getMessage(), is("resources/doesnotexist.jar (No such file or directory)"));
