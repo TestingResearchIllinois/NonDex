@@ -170,14 +170,15 @@ public class ControlNondeterminism {
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
             StringBuilder stackstring = new StringBuilder();
             for (StackTraceElement traceElement : traces) {
-                stackstring.append(traceElement.toString() + "\n");
+                stackstring.append(String.format(traceElement.toString() + "%n"));
             }
             try {
                 // Writing to file invokes NonDex, so this flag is to prevent it from infinitely trying to write to file,
                 // and to prevent it from doing other things when all we want is to print out a stack trace
                 ControlNondeterminism.shouldOutputTrace = false;
                 Files.write(ControlNondeterminism.config.getDebugPath(),
-                    ("TEST: " + ControlNondeterminism.config.testName + "\n" + stackstring.toString()).getBytes(),
+                    String.format("TEST: " + ControlNondeterminism.config.testName + "%n" + stackstring.toString())
+                            .getBytes(),
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
@@ -215,10 +216,10 @@ public class ControlNondeterminism {
                         StandardOpenOption.CREATE,
                         StandardOpenOption.APPEND);
                 Files.write(ControlNondeterminism.config.getInvocationsPath(),
-                        ("COUNT:" + localCount + "\n").getBytes(),
+                        String.format("COUNT:" + localCount + "%n").getBytes(),
                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 Files.write(ControlNondeterminism.config.getInvocationsPath(),
-                        ("SHUFFLES:" + localShufflesCount + "\n").getBytes(),
+                        String.format("SHUFFLES:" + localShufflesCount + "%n").getBytes(),
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE, "Exception when printing shuflling counts in shutdown hook.", ioe);

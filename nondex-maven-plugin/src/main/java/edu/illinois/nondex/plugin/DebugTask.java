@@ -95,8 +95,8 @@ public class DebugTask {
         Configuration failingOne = this.debugWithConfigurations(this.failingConfigurations);
 
         if (failingOne != null) {
-            return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
-                + failingOne.getDebugPath();
+            return String.format(failingOne.toArgLine() + "%nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
+                                 + failingOne.getDebugPath());
         }
 
         // The seeds that failed with the full test-suite no longer fail
@@ -105,8 +105,8 @@ public class DebugTask {
         failingOne = this.debugWithConfigurations(retryWOtherSeeds);
 
         if (failingOne != null) {
-            return failingOne.toArgLine() + "\nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
-                + failingOne.getDebugPath();
+            return String.format(failingOne.toArgLine() + "%nDEBUG RESULTS FOR " + failingOne.testName + " AT: "
+                                 + failingOne.getDebugPath());
         }
 
         return null;
