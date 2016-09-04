@@ -130,7 +130,7 @@ public class Configuration {
                                        ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
                                        ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId,
                                        "test=" + (this.testName == null ? "" : this.testName)};
-        return String.format(String.join("%n", props));
+        return String.join(String.format("%n"), props);
     }
 
     public static Configuration parseArgs() {
@@ -256,7 +256,7 @@ public class Configuration {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(failed))) {
             for (String test : failedTestsInExecution) {
-                bw.write(String.format(test + "%n"));
+                bw.write(test + String.format("%n"));
             }
         } catch (FileNotFoundException fne) {
             Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");
