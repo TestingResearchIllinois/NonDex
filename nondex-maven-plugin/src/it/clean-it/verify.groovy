@@ -1,5 +1,5 @@
 File nondexDirectory = new File( basedir, ".nondex" );
 
-sleep(1000)
+sleep(2000)
 
 assert ! nondexDirectory.exists();
