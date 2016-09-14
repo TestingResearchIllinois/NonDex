@@ -165,6 +165,28 @@ public class ControlNondeterminism {
         }
     }
 
+    private static String trimStackTrace(String stackstring) {
+        String[] lines = stackstring.split("\n");
+        StringBuilder prettyStackString = new StringBuilder();
+        boolean endOfStackTrace = false;
+        for (String line : lines) {
+            if (line.startsWith("TEST")
+                    || line.startsWith("java.lang.Thread.getStackTrace")
+                    || line.startsWith("edu.illinois.nondex.shuffling")) {
+                continue;
+            }
+            if (!endOfStackTrace) {
+                prettyStackString.append(line);
+                prettyStackString.append("\n");
+            }
+            if (line.startsWith(ControlNondeterminism.config.testName.replace("#", "."))) {
+                endOfStackTrace = true;
+            }
+
+        }
+        return prettyStackString.toString();
+    }
+
     private static void printStackTraceIfUniqueDebugPoint() {
         if (ControlNondeterminism.config.shouldPrintStackTrace && ControlNondeterminism.isDebuggingUniquePoint()) {
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
@@ -185,6 +207,8 @@ public class ControlNondeterminism {
             } finally {
                 ControlNondeterminism.shouldOutputTrace = true;
             }
+
+            Logger.getGlobal().log(Level.SEVERE, trimStackTrace(stackstring.toString()));
         }
     }
 
