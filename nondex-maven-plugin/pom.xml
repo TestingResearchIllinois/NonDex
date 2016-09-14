@@ -68,6 +68,11 @@
       <artifactId>nondex-instrumentation</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>edu.illinois</groupId>
+      <artifactId>nondex-annotations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

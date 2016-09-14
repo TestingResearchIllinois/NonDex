@@ -48,9 +48,10 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public class NonDexSurefireExecution extends CleanSurefireExecution {
 
-    private NonDexSurefireExecution(Plugin surefire, String originalArgLine,
-            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir) {
-        super(surefire, originalArgLine, Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager, nondexDir);
+    private NonDexSurefireExecution(Plugin surefire, String originalArgLine, MavenProject mavenProject,
+                                    MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir) {
+        super(surefire, originalArgLine, Utils.getFreshExecutionId(),
+                mavenProject, mavenSession, pluginManager, nondexDir);
     }
 
     public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
@@ -74,6 +75,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
     protected void setupArgline() {
         String localRepo = this.mavenSession.getSettings().getLocalRepository();
         String pathToNondex = this.getPathToNondexJar(localRepo);
+        String annotationsModuleName = "nondex-annotations";
         // Only modify test in configuration if not null, because that means is debugging
         Xpp3Dom configElement = (Xpp3Dom)this.surefire.getConfiguration();
         if (configElement != null) {
@@ -81,8 +83,10 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
         }
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
-                "" + "-Xbootclasspath/p:" + pathToNondex + " " + this.originalArgLine + " "
-                + this.configuration.toArgLine());
+                "" + "-Xbootclasspath/p:" + pathToNondex + ":" + Paths.get(mavenSession.getLocalRepository().getBasedir(),
+                        "edu/illinois/" + annotationsModuleName, ConfigurationDefaults.VERSION,
+                        annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
+                        + " " + this.originalArgLine + " " + this.configuration.toArgLine());
 
     }
 
