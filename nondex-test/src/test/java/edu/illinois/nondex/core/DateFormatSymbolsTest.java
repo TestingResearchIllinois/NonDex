@@ -50,10 +50,9 @@ public class DateFormatSymbolsTest {
         DateFormatSymbols dfs = new DateFormatSymbols();
         String[][] result = dfs.getZoneStrings();
         for (int i = 0; i < 10; i++) {
-            if (Arrays.deepEquals(result, dfs.getZoneStrings())) {
-                continue;
+            if (!Arrays.deepEquals(result, dfs.getZoneStrings())) {
+                return;
             }
-            return;
         }
         fail("getZoneStrings did not extend in 10 tries; something is likely fishy.");
     }
