@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -132,7 +133,9 @@ public class NonDex {
     }
 
     private String getInvocationElement() {
-        for (StackTraceElement el : Thread.currentThread().getStackTrace()) {
+        // We need to skip here the first element of the stack since that is in the Thread class 
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        for (StackTraceElement el : Arrays.asList(stack).subList(1, stack.length - 1)) {
             if (!el.getClassName().startsWith("edu.illinois.nondex")) {
                 Logger.getGlobal().log(Level.FINE, "The invocation element is: " + el.toString());
                 return el.toString();
