@@ -131,7 +131,7 @@ public class NonDex {
     }
 
     private String getInvocationElement() {
-        // We need to skip here the first element of the stack since that is in the Thread class 
+        // We need to skip here the first element of the stack since that is in the Thread class
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         for (StackTraceElement el : Arrays.asList(stack).subList(1, stack.length - 1)) {
             if (!el.getClassName().startsWith("edu.illinois.nondex")) {
