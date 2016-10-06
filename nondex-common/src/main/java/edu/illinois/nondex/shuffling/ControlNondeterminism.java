@@ -147,6 +147,7 @@ public class ControlNondeterminism {
             } catch (Throwable ex) {
                 Logger.getGlobal().log(Level.SEVERE,
                         "Some Exception when printing shuflling counts in shutdown hook.", ex);
+                throw ex;
             }
         }
     }
