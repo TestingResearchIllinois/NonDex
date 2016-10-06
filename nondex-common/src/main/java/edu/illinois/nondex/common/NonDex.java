@@ -37,8 +37,6 @@ import java.util.logging.Level;
 
 public class NonDex {
 
-    private static boolean shouldOutputTrace = true;
-
     private int opportunityCount;
     private int actualCount;
 
