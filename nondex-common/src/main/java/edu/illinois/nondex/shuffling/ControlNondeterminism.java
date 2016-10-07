@@ -143,10 +143,10 @@ public class ControlNondeterminism {
                         StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE,
-                        "IOException when printing shuflling counts in shutdown hook.", ioe);
+                        "IOException when printing shuffling counts in shutdown hook.", ioe);
             } catch (Throwable ex) {
                 Logger.getGlobal().log(Level.SEVERE,
-                        "Some Exception when printing shuflling counts in shutdown hook.", ex);
+                        "Some Exception when printing shuffling counts in shutdown hook.", ex);
                 throw ex;
             }
         }
