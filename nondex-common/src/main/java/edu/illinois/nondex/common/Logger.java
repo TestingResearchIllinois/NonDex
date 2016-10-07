@@ -37,7 +37,7 @@ public class Logger {
     private PrintStream out = System.out;
     private Level level = Level.CONFIG;
 
-    public void setLoggineLevel(Level level) {
+    public void setLoggingLevel(Level level) {
         this.level = level;
     }
 

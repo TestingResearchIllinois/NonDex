@@ -174,7 +174,7 @@ public class Configuration {
 
         final Level level = Level.parse(props.getProperty(
                 ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
-        Logger.getGlobal().setLoggineLevel(level);
+        Logger.getGlobal().setLoggingLevel(level);
 
         final String testName = props.getProperty("test", null);
 

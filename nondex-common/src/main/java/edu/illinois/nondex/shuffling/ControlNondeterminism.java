@@ -61,7 +61,7 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        return nondex.permutation(originalOrder);
+        return nondex.getPermutation(originalOrder);
     }
 
     public static <T> T[] shuffle(T[] originalOrder) {
@@ -71,7 +71,7 @@ public class ControlNondeterminism {
 
         List<T> newOrder = Arrays.asList(originalOrder);
 
-        newOrder = nondex.permutation(newOrder);
+        newOrder = nondex.getPermutation(newOrder);
 
         newOrder.toArray(originalOrder);
 
@@ -93,44 +93,13 @@ public class ControlNondeterminism {
 
     }
 
-    private static void printStackTraceIfUniqueDebugPoint() {
-        if (nondex.getConfig().shouldPrintStackTrace
-                && ControlNondeterminism.isDebuggingUniquePoint()) {
-            StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-            StringBuilder stackstring = new StringBuilder();
-            for (StackTraceElement traceElement : traces) {
-                stackstring.append(traceElement.toString() + String.format("%n"));
-            }
-            try {
-                // Writing to file invokes NonDex, so this flag is to prevent it from infinitely
-                // trying to write to file,
-                // and to prevent it from doing other things when all we want is to print out a
-                // stack trace
-                ControlNondeterminism.shouldOutputTrace = false;
-                Files.write(nondex.getConfig().getDebugPath(),
-                        ("TEST: " + nondex.getConfig().testName + String.format("%n")
-                                + stackstring.toString()).getBytes(),
-                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-            } catch (IOException ioe) {
-                Logger.getGlobal().log(Level.SEVERE, "Exception when printing debug info.", ioe);
-            } finally {
-                ControlNondeterminism.shouldOutputTrace = true;
-            }
-        }
-    }
-
-    private static boolean isDebuggingUniquePoint() {
-        return nondex.getConfig().start >= 0 && nondex.getConfig().end >= 0
-                && nondex.getConfig().start == nondex.getConfig().end
-                && nondex.getpossibleExplorations() == nondex.getConfig().start;
-    }
 
     private static class JVMShutdownHook extends Thread {
         @Override
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
             try {
-                int localCount = nondex.getpossibleExplorations();
+                int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();
                 Files.write(nondex.getConfig().getConfigPath(),
                         nondex.getConfig().toString().getBytes(), StandardOpenOption.CREATE,
