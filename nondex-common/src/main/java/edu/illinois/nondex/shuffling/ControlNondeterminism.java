@@ -46,8 +46,6 @@ public class ControlNondeterminism {
 
     private static JVMShutdownHook jvmShutdownHook = new JVMShutdownHook();
 
-    private static boolean shouldOutputTrace = true;
-
     private static NonDex nondex;
 
     static {

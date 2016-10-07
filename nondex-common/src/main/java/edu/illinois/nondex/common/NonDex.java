@@ -105,7 +105,7 @@ public class NonDex {
         if (this.shouldExplore()) {
             return newOrder;
         } else {
-            return new ArrayList<T>(originalOrder);
+            return originalOrder;
         }
     }
 
