@@ -88,8 +88,8 @@ public class CleanSurefireExecution {
         this.setupArgline();
         try {
             Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
-            Logger.getGlobal().log(Level.SEVERE, "Config node passed: " + domNode.toString());
-            Logger.getGlobal().log(Level.SEVERE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
+            Logger.getGlobal().log(Level.FINE, "Config node passed: " + domNode.toString());
+            Logger.getGlobal().log(Level.FINE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
                     domNode,
