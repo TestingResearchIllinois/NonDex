@@ -31,11 +31,8 @@ package edu.illinois.nondex.shuffling;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
