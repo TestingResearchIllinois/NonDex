@@ -87,9 +87,12 @@ public class CleanSurefireExecution {
     public void run() throws MojoExecutionException {
         this.setupArgline();
         try {
+            Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
+            Logger.getGlobal().log(Level.SEVERE, "Config node passed: " + domNode.toString());
+            Logger.getGlobal().log(Level.SEVERE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
-                    this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration()),
+                    domNode,
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
         } catch (MojoExecutionException mojoException) {
             Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
@@ -132,10 +135,12 @@ public class CleanSurefireExecution {
     private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
         for (Xpp3Dom config : configNode.getChildren()) {
             if ("excludedGroups".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
                 config.setValue(config.getValue() + "," + "edu.illinois.NonDexIgnore");
                 return configNode;
             }
         }
+        Logger.getGlobal().log(Level.INFO, "Adding excluded groups to newly created one");
         configNode.addChild(this.makeNode("excludedGroups", "edu.illinois.NonDexIgnore"));
         return configNode;
     }
