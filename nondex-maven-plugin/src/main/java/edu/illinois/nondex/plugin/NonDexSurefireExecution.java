@@ -59,7 +59,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             MavenSession mavenSession, BuildPluginManager pluginManager) {
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir);
         this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
-                this.executionId);
+                this.executionId, Logger.getGlobal().getLoggingLevel());
     }
 
     public NonDexSurefireExecution(Configuration config, long start, long end, boolean print, String test, Plugin surefire,
@@ -68,7 +68,8 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, config.nondexDir);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, config.nondexDir, config.nondexJarDir, test, this.executionId, print);
+                end, config.nondexDir, config.nondexJarDir, test, this.executionId,
+                Logger.getGlobal().getLoggingLevel(), print);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
         this.mavenProject.getProperties().setProperty("argLine",
                 "" + "-Xbootclasspath/p:" + pathToNondex + ":" + Paths.get(mavenSession.getLocalRepository().getBasedir(),
-                        "edu/illinois/" + annotationsModuleName, ConfigurationDefaults.VERSION,
+                        "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
                         annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
                         + " " + this.originalArgLine + " " + this.configuration.toArgLine());
 

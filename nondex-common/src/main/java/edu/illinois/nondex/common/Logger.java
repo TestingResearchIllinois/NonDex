@@ -41,6 +41,10 @@ public class Logger {
         this.level = level;
     }
 
+    public Level getLoggingLevel() {
+        return this.level;
+    }
+
     public static Logger getGlobal() {
         return Logger.INSTANCE;
     }

@@ -63,6 +63,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
+        Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
         MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
                 this.surefire, this.originalArgLine, this.mavenProject,

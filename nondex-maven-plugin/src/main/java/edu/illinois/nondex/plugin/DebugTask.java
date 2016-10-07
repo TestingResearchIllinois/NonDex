@@ -121,7 +121,8 @@ public class DebugTask {
                     Utils.computeIthSeed(i, false, newSeed),
                     someFailingConfig.filter, someFailingConfig.start, someFailingConfig.end,
                     someFailingConfig.nondexDir, someFailingConfig.nondexJarDir,
-                    someFailingConfig.testName, someFailingConfig.executionId);
+                    someFailingConfig.testName, someFailingConfig.executionId,
+                    someFailingConfig.loggingLevel);
             retryWOtherSeeds.add(newConfig);
         }
         return retryWOtherSeeds;
