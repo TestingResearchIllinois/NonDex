@@ -5,7 +5,7 @@ allprojects  {
 version = '1.1.2-SNAPSHOT'
 }
 
-subprojects {
+configure(subprojects - project(':nondex-core')) {
   apply plugin: 'java'
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
@@ -31,4 +31,15 @@ artifacts.archives packageSources
 }
 
   
+}
+
+configure(project(':nondex-core')) {
+	apply plugin: 'java'
+	sourceSets {
+		main {
+			java {
+				exclude '**'
+			}
+		}
+	}
 }
