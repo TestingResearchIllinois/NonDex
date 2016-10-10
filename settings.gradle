@@ -1,0 +1,14 @@
+rootProject.name = 'nondex'
+include ':nondex-instrumentation'
+include ':nondex-core'
+include ':nondex-test'
+include ':nondex-common'
+include ':nondex-maven-plugin'
+include ':nondex-annotations'
+
+project(':nondex-instrumentation').projectDir = "$rootDir/nondex-instrumentation" as File
+project(':nondex-core').projectDir = "$rootDir/nondex-core" as File
+project(':nondex-test').projectDir = "$rootDir/nondex-test" as File
+project(':nondex-common').projectDir = "$rootDir/nondex-common" as File
+project(':nondex-maven-plugin').projectDir = "$rootDir/nondex-maven-plugin" as File
+project(':nondex-annotations').projectDir = "$rootDir/nondex-annotations" as File
