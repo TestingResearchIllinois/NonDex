@@ -3,3 +3,12 @@ description = 'nondex-test'
 dependencies {
   compile project(':nondex-common')
 }
+
+apply plugin: 'checkstyle'
+
+checkstyle {
+	config = resources.text.fromFile("checkstyle.xml", "UTF-8")
+	showViolations = true
+	ignoreFailures = false
+	toolVersion = "6.17"
+}
