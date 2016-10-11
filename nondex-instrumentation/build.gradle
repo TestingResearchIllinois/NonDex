@@ -20,3 +20,16 @@ dependencies {
 shadowJar {
 	relocate 'org.objectweb.asm', 'edu.illinois.nondex.instr.org.objectweb.asm'
 }
+
+apply plugin: 'checkstyle'
+
+checkstyle {
+	config = resources.text.fromFile("checkstyle.xml", "UTF-8")
+	showViolations = true
+	ignoreFailures = false
+	toolVersion = "6.17"
+}
+
+tasks.withType(Checkstyle) {
+	exclude '**/*ASMDump.java'
+}
