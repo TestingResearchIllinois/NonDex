@@ -7,8 +7,8 @@ version = '1.1.2-SNAPSHOT'
 
 configure(subprojects - project(':nondex-core')) {
   apply plugin: 'java'
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  sourceCompatibility = 1.7
+  targetCompatibility = 1.7
   tasks.withType(JavaCompile) {
   	options.encoding = 'UTF-8'
   }
@@ -35,6 +35,8 @@ artifacts.archives packageSources
 
 configure(project(':nondex-core')) {
 	apply plugin: 'java'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 	sourceSets {
 		main {
 			java {
