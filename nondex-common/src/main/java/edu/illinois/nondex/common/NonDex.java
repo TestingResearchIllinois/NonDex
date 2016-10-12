@@ -48,7 +48,7 @@ public class NonDex {
 
     private boolean isOutputting;
     
-    private static final instance = new NonDex();
+    private static final NonDex instance = new NonDex();
 
     public static NonDex getInstance() {
         return instance;
