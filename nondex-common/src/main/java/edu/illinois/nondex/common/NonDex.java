@@ -47,13 +47,9 @@ public class NonDex {
     private final Random        randomNumber;
 
     private boolean isOutputting;
-    
+
     private static final NonDex instance = new NonDex();
 
-    public static NonDex getInstance() {
-        return instance;
-    }
-    
     public NonDex() {
         this(Configuration.parseArgs());
     }
@@ -66,6 +62,10 @@ public class NonDex {
         this.randomNumber = new Random(config.seed);
 
         this.isOutputting = false;
+    }
+
+    public static NonDex getInstance() {
+        return instance;
     }
 
     public boolean getBoolean() {
