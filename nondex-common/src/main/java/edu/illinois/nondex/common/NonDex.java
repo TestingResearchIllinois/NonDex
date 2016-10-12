@@ -47,7 +47,13 @@ public class NonDex {
     private final Random        randomNumber;
 
     private boolean isOutputting;
+    
+    private static final instance = new NonDex();
 
+    public static NonDex getInstance() {
+        return instance;
+    }
+    
     public NonDex() {
         this(Configuration.parseArgs());
     }
