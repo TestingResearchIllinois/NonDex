@@ -40,7 +40,7 @@ import java.util.logging.Level;
 
 public class NonDex {
 
-    private static final NonDex instance = new NonDex();
+    private static final NonDex globalInstance = new NonDex();
 
     private int opportunityCount;
     private int actualCount;
@@ -65,7 +65,7 @@ public class NonDex {
     }
 
     public static NonDex getInstance() {
-        return instance;
+        return globalInstance;
     }
 
     public boolean getBoolean() {
