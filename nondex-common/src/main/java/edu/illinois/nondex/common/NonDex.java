@@ -40,6 +40,8 @@ import java.util.logging.Level;
 
 public class NonDex {
 
+    private static final NonDex globalInstance = new NonDex();
+
     private int opportunityCount;
     private int actualCount;
 
@@ -60,6 +62,10 @@ public class NonDex {
         this.randomNumber = new Random(config.seed);
 
         this.isOutputting = false;
+    }
+
+    public static NonDex getInstance() {
+        return globalInstance;
     }
 
     public boolean getBoolean() {
