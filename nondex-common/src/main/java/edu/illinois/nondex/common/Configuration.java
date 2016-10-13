@@ -63,21 +63,23 @@ public class Configuration {
 
     public final String testName;
 
+    public final Level loggingLevel;
+
     private Integer invoCount = null;
     private Set<String> failedTests = null;
 
     protected Configuration(Mode mode, int seed, Pattern filter, String executionId) {
         this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_NONDEX_DIR,
-                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId);
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId, Level.CONFIG);
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String nondexJarDir, String testName, String executionId) {
-        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, false);
+            String nondexJarDir, String testName, String executionId, Level loggingLevel) {
+        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, loggingLevel, false);
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String nondexJarDir, String testName, String executionId, boolean printStackTrace) {
+            String nondexJarDir, String testName, String executionId, Level loggingLevel, boolean printStackTrace) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
@@ -88,6 +90,7 @@ public class Configuration {
         this.testName = testName;
         this.executionId = executionId;
         this.shouldPrintStackTrace = printStackTrace;
+        this.loggingLevel = loggingLevel;
         this.createExecutionDirIfNeeded();
     }
 
@@ -96,7 +99,7 @@ public class Configuration {
         this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
                 Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
                 nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
-                null, executionId);
+                null, executionId, Logger.getGlobal().getLoggingLevel());
     }
 
     public void createNondexDirIfNeeded() {
@@ -114,6 +117,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=\"" + this.nondexDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=\"" + this.nondexJarDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_LOGGING_LEVEL + "=" + this.loggingLevel);
         sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);
         return sb.toString();
     }
@@ -129,6 +133,7 @@ public class Configuration {
                                        ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir,
                                        ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
                                        ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId,
+                                       ConfigurationDefaults.PROPERTY_LOGGING_LEVEL + "=" + this.loggingLevel,
                                        "test=" + (this.testName == null ? "" : this.testName)};
         return String.join(String.format("%n"), props);
     }
@@ -169,12 +174,12 @@ public class Configuration {
 
         final Level level = Level.parse(props.getProperty(
                 ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
-        Logger.getGlobal().setLoggineLevel(level);
+        Logger.getGlobal().setLoggingLevel(level);
 
         final String testName = props.getProperty("test", null);
 
         return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName,
-                executionId, shouldPrintStacktrace);
+                executionId, level, shouldPrintStacktrace);
     }
 
     public void createExecutionDirIfNeeded() {

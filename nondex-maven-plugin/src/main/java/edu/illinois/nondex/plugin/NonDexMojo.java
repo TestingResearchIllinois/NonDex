@@ -63,13 +63,16 @@ public class NonDexMojo extends AbstractNonDexMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
+        Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
         MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
                 this.surefire, this.originalArgLine, this.mavenProject,
                     this.mavenSession, this.pluginManager,
                     Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
 
-        allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
+        // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
+        // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
+        this.executeSurefireExecution(allExceptions, cleanExec);
 
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =

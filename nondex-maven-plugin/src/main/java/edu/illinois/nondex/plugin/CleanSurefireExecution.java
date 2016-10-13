@@ -87,9 +87,12 @@ public class CleanSurefireExecution {
     public void run() throws MojoExecutionException {
         this.setupArgline();
         try {
+            Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
+            Logger.getGlobal().log(Level.FINE, "Config node passed: " + domNode.toString());
+            Logger.getGlobal().log(Level.FINE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
-                    this.setReportOutputDirectory((Xpp3Dom) this.surefire.getConfiguration()),
+                    domNode,
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
         } catch (MojoExecutionException mojoException) {
             Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
@@ -120,12 +123,29 @@ public class CleanSurefireExecution {
                 this.originalArgLine + " " + this.configuration.toArgLine());
     }
 
-    private Xpp3Dom setReportOutputDirectory(Xpp3Dom configuration) {
+    private Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
         Xpp3Dom configNode = configuration;
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
 
+        return setReportOutputDirectory(addExcludedGroups(configNode));
+    }
+
+    private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("excludedGroups".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
+                config.setValue(config.getValue() + "," + "edu.illinois.NonDexIgnore");
+                return configNode;
+            }
+        }
+        Logger.getGlobal().log(Level.INFO, "Adding excluded groups to newly created one");
+        configNode.addChild(this.makeNode("excludedGroups", "edu.illinois.NonDexIgnore"));
+        return configNode;
+    }
+
+    private Xpp3Dom setReportOutputDirectory(Xpp3Dom configNode) {
         configNode = this.addAttributeToConfig(configNode, "reportsDirectory",
                 this.configuration.getExecutionDir().toString());
         configNode = this.addAttributeToConfig(configNode, "disableXmlReport", "false");

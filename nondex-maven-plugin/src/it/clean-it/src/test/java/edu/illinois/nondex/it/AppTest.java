@@ -28,6 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.it;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertTrue;
 
 public class AppTest
@@ -35,5 +36,17 @@ public class AppTest
     @Test
     public void testHashSet() {
         assertTrue(true);
+    }
+
+    @Test
+    @Category(edu.illinois.NonDexIgnore.class)
+    public void testNondexExcludes() {
+        assertTrue(false);
+    }
+
+    @Test
+    @Category(edu.illinois.nondex.it.OtherIgnore.class)
+    public void testNoOverrideExcludeGroups () {
+        assertTrue(false);
     }
 }

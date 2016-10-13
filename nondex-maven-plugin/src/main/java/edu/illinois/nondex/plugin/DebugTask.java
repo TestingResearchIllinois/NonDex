@@ -54,8 +54,8 @@ public class DebugTask {
     private List<Configuration> failingConfigurations;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
-            MavenSession mavenSession, BuildPluginManager pluginManager,
-            List<Configuration> failingConfigurations) {
+                     MavenSession mavenSession, BuildPluginManager pluginManager,
+                     List<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
@@ -121,7 +121,8 @@ public class DebugTask {
                     Utils.computeIthSeed(i, false, newSeed),
                     someFailingConfig.filter, someFailingConfig.start, someFailingConfig.end,
                     someFailingConfig.nondexDir, someFailingConfig.nondexJarDir,
-                    someFailingConfig.testName, someFailingConfig.executionId);
+                    someFailingConfig.testName, someFailingConfig.executionId,
+                    someFailingConfig.loggingLevel);
             retryWOtherSeeds.add(newConfig);
         }
         return retryWOtherSeeds;
@@ -191,7 +192,8 @@ public class DebugTask {
             return null;
         }
         while (localStart < localEnd) {
-            Logger.getGlobal().log(Level.INFO, "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
+            Logger.getGlobal().log(Level.INFO,
+                    "Debugging linear for " + this.test + " " + localStart + " : " + localEnd);
 
             if ((failingConfiguration = this.failsWithConfig(config, localStart, localEnd - 1)) != null) {
                 localEnd = localEnd - 1;
@@ -213,8 +215,8 @@ public class DebugTask {
 
     private Configuration failsWithConfig(Configuration config, long start, long end, boolean print) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
-                    start, end, print, this.test, this.surefire, this.originalArgLine, this.mavenProject,
-                    this.mavenSession, this.pluginManager);
+                start, end, print, this.test, this.surefire, this.originalArgLine,
+                this.mavenProject, this.mavenSession, this.pluginManager);
         try {
             execution.run();
         } catch (Throwable thr) {

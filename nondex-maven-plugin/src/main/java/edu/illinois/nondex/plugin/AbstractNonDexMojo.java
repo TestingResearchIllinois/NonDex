@@ -159,7 +159,7 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Logger.getGlobal().setLoggineLevel(Level.parse(this.loggingLevel));
+        Logger.getGlobal().setLoggingLevel(Level.parse(this.loggingLevel));
         Path rtJarPath;
         rtJarPath = Utils.getRtJarLocation();
         if (rtJarPath == null) {
