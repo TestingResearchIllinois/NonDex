@@ -72,7 +72,7 @@ public class HashIteratorShufflerASMDump implements Opcodes {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn(GETFIELD, baseName + "$HashIterator$HashIteratorShuffler", "hashIter", "L" + baseName + "$HashIterator;");
             mv.visitInsn(ACONST_NULL);
-            if(baseName.equals("java/util/WeakHashMap")){
+            if("java/util/WeakHashMap".equals(baseName)){
                 mv.visitFieldInsn(PUTFIELD, baseName + "$HashIterator", "lastReturned", "L" + baseName + "$" + type + ";");
             } else {
                 mv.visitFieldInsn(PUTFIELD, baseName + "$HashIterator", "current", "L" + baseName + "$" + type + ";");
