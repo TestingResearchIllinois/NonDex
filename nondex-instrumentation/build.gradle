@@ -13,30 +13,35 @@ buildscript {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-  compile group: 'org.ow2.asm', name: 'asm-all', version:'5.1'
-  compile project(':nondex-common')
+    compile group: 'org.ow2.asm', name: 'asm-all', version:'5.1'
+    compile project(':nondex-common')
 }
 
 apply plugin: 'checkstyle'
 
 checkstyle {
-	config = resources.text.fromFile("checkstyle.xml", "UTF-8")
-	showViolations = true
-	ignoreFailures = false
-	toolVersion = "6.17"
+    config = resources.text.fromFile("checkstyle.xml", "UTF-8")
+    showViolations = true
+    ignoreFailures = false
+    toolVersion = "6.17"
 }
 
 shadowJar {
-	relocate 'org.objectweb.asm', 'edu.illinois.nondex.instr.org.objectweb.asm'
+    relocate 'org.objectweb.asm', 'edu.illinois.nondex.instr.org.objectweb.asm'
+    baseName = 'out'
+    classifier = null
+    version = null
+    destinationDir = file("$projectDir/resources/")
 }
 
 tasks.withType(Checkstyle) {
-	exclude '**/*ASMDump.java'
+    exclude '**/*ASMDump.java'
 }
 
 jar {
-	manifest {
-		attributes('Main-Class': 'edu.illinois.nondex.instr.Main')
-	}
-	from { configurations.compile.collect { zipTree it } }
+    manifest {
+        attributes('Main-Class': 'edu.illinois.nondex.instr.Main')
+    }
+    destinationDir
+    from { configurations.compile.collect { zipTree it } }
 }

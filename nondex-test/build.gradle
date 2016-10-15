@@ -2,6 +2,7 @@
 description = 'nondex-test'
 dependencies {
   compile project(':nondex-common')
+  testRuntime project(path: ':nondex-instrumentation', configuration: 'shadow')
 }
 
 apply plugin: 'checkstyle'
