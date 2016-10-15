@@ -1,47 +1,42 @@
 allprojects  {
-  apply plugin: 'maven'
+    apply plugin: 'maven'
 
-  group = 'edu.illinois'
-version = '1.1.2-SNAPSHOT'
+    group = 'edu.illinois'
+    version = '1.1.2-SNAPSHOT'
 }
 
 configure(subprojects - project(':nondex-core')) {
-  apply plugin: 'java'
-  sourceCompatibility = 1.7
-  targetCompatibility = 1.7
-  tasks.withType(JavaCompile) {
-  	options.encoding = 'UTF-8'
-  }
+    apply plugin: 'java'
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 
-  task packageSources(type: Jar) {
-classifier = 'sources'
-from sourceSets.main.allSource
+    task packageSources(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
 
-}
-artifacts.archives packageSources
-  repositories {
-    mavenLocal()
-    
-    maven { url "http://repo.maven.apache.org/maven2" }
-  }
+    }
+    artifacts.archives packageSources
+    repositories {
+        mavenCentral()
+    }
 
-  
-  dependencies {
-    testCompile group: 'junit', name: 'junit', version:'4.12'
-}
-
-  
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version:'4.12'
+    }
 }
 
 configure(project(':nondex-core')) {
-	apply plugin: 'java'
+    apply plugin: 'java'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-	sourceSets {
-		main {
-			java {
-				exclude '**'
-			}
-		}
-	}
+    sourceSets {
+        main {
+            java {
+                exclude '**'
+            }
+        }
+    }
 }
