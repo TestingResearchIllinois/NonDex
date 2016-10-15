@@ -2,12 +2,12 @@
 description = 'nondex-instrumentation'
 
 buildscript {
-	repositories {
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-	}
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -15,10 +15,6 @@ apply plugin: 'com.github.johnrengelman.shadow'
 dependencies {
   compile group: 'org.ow2.asm', name: 'asm-all', version:'5.1'
   compile project(':nondex-common')
-}
-
-shadowJar {
-	relocate 'org.objectweb.asm', 'edu.illinois.nondex.instr.org.objectweb.asm'
 }
 
 apply plugin: 'checkstyle'
@@ -30,6 +26,17 @@ checkstyle {
 	toolVersion = "6.17"
 }
 
+shadowJar {
+	relocate 'org.objectweb.asm', 'edu.illinois.nondex.instr.org.objectweb.asm'
+}
+
 tasks.withType(Checkstyle) {
 	exclude '**/*ASMDump.java'
+}
+
+jar {
+	manifest {
+		attributes('Main-Class': 'edu.illinois.nondex.instr.Main')
+	}
+	from { configurations.compile.collect { zipTree it } }
 }
