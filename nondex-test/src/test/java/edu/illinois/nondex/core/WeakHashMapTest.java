@@ -33,6 +33,8 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
 import org.junit.Test;
@@ -48,6 +50,17 @@ public class WeakHashMapTest {
             whm.put(i, i);
         }
 
-        assertThat("{0=0, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", not(equalTo(whm.toString())));
+        assertThat("{0=0, 1=1, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", not(equalTo(whm.toString())));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testRemoveBeforeNext() {
+        WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
+        for (int i = 0; i < 10; i++) {
+            whm.put(i, i);
+        }
+
+        Iterator<Entry<Integer, Integer>> itr = whm.entrySet().iterator();
+        itr.remove();
     }
 }

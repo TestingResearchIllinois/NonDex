@@ -123,7 +123,8 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        if ("java/util/WeakHashMap".equals(baseName) && ("expectedModCount".equals(name) || "entry".equals(name))) {
+        if ("java/util/WeakHashMap".equals(baseName)
+                && ("expectedModCount".equals(name) || "entry".equals(name) || "lastReturned".equals(name))) {
             return super.visitField(access - Opcodes.ACC_PRIVATE, name, desc, signature, value);
         }
         return super.visitField(access, name, desc, signature, value);
