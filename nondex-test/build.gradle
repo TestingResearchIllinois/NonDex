@@ -2,7 +2,7 @@
 description = 'nondex-test'
 dependencies {
   compile project(':nondex-common')
-  testRuntime project(path: ':nondex-instrumentation', configuration: 'shadow')
+  testRuntime project(path: ':nondex-instrumentation', configuration: 'outJar')
 }
 
 apply plugin: 'checkstyle'
@@ -12,4 +12,8 @@ checkstyle {
 	showViolations = true
 	ignoreFailures = false
 	toolVersion = "6.17"
+}
+
+test {
+	jvmArgs "-Xbootclasspath/p:" + project(":nondex-instrumentation").ext.nonDexOutputJar + ":" + project(":nondex-common").jar.archivePath
 }

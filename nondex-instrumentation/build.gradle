@@ -28,14 +28,22 @@ checkstyle {
 
 shadowJar {
     relocate 'org.objectweb.asm', 'edu.illinois.nondex.instr.org.objectweb.asm'
-    baseName = 'out'
+    baseName = 'nondex-instrumentation-all'
     classifier = null
     version = null
-    destinationDir = file("$projectDir/resources/")
+}
+
+ext {
+    nonDexOutputJar = shadowJar.archivePath
 }
 
 tasks.withType(Checkstyle) {
     exclude '**/*ASMDump.java'
+}
+
+task genOut(type: Exec, dependsOn: shadowJar) {
+    executable 'java'
+    args '-jar', "$shadowJar.archivePath", "$nonDexOutputJar"
 }
 
 jar {
@@ -44,4 +52,12 @@ jar {
     }
     destinationDir
     from { configurations.compile.collect { zipTree it } }
+}
+
+configurations {
+    outJar
+}
+
+artifacts {
+    outJar file: file(nonDexOutputJar), builtBy: genOut
 }
