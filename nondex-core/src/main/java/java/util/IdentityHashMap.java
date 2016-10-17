@@ -722,7 +722,27 @@ public class IdentityHashMap<K,V>
         boolean indexValid; // To avoid unnecessary next computation
         Object[] traversalTable = table; // reference to main table or copy
 
+        List<Integer> indicies;
+        Iterator<Integer> iter;
+
+        {
+            indicies = new ArrayList<Integer>();
+            while(original_hasNext()) {
+                indicies.add(Integer.valueOf(original_nextIndex()));
+            }
+            indicies = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(indicies);
+            iter = indicies.iterator();
+        }
+
+        protected int nextIndex() {
+            return iter.next().intValue();
+        }
+
         public boolean hasNext() {
+            return iter.hasNext();
+        }
+
+        public boolean original_hasNext() {
             Object[] tab = traversalTable;
             for (int i = index; i < tab.length; i+=2) {
                 Object key = tab[i];
@@ -735,7 +755,7 @@ public class IdentityHashMap<K,V>
             return false;
         }
 
-        protected int nextIndex() {
+        protected int original_nextIndex() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
             if (!indexValid && !hasNext())

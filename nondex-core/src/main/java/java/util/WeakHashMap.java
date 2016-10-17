@@ -762,6 +762,8 @@ public class WeakHashMap<K,V>
         private Entry<K,V> entry = null;
         private Entry<K,V> lastReturned = null;
         private int expectedModCount = modCount;
+        
+//        HashIteratorShuffler shuffler;
 
         /**
          * Strong reference needed to avoid disappearance of key
@@ -777,9 +779,18 @@ public class WeakHashMap<K,V>
 
         HashIterator() {
             index = isEmpty() ? 0 : table.length;
+//            shuffler = new HashIteratorShuffler(this);
         }
 
-        public boolean hasNext() {
+//        public boolean hasNext() {
+//            return shuffler.hasNext();
+//        }
+
+//        public Entry<K, V> nextEntry() {
+//            return shuffler.nextNode(modCount);
+//        }
+
+        public boolean orginial_hasNext() {
             Entry<K,V>[] t = table;
 
             while (nextKey == null) {
@@ -801,7 +812,7 @@ public class WeakHashMap<K,V>
         }
 
         /** The common parts of next() across different types of iterators */
-        protected Entry<K,V> nextEntry() {
+        protected Entry<K,V> original_nextEntry() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
             if (nextKey == null && !hasNext())
