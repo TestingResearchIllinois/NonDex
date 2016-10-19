@@ -38,9 +38,3 @@ buildNumber.properties
 .idea
 .idea/*
 *.iml
-
-nondex-common/.checkstyle
-
-nondex-instrumentation/.checkstyle
-
-nondex-maven-plugin/.checkstyle
