@@ -155,4 +155,13 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>> {
         String str = entrySet.toString();
         this.assertParameterized(map, entrySet, str);
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testRemoveBeforeNext() {
+        Map<Integer, Integer> map = this.createResizedDS();
+        Set<Entry<Integer, Integer>> entrySet = map.entrySet();
+
+        Iterator<Entry<Integer, Integer>> itr = entrySet.iterator();
+        itr.remove();
+    }
 }

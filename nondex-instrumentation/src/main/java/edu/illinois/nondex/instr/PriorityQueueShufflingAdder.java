@@ -59,28 +59,42 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
         fv.visitEnd();
     }
 
-    public void addIndex() {
-        FieldVisitor fv = super.visitField(0, "index", "I", null, null);
+    public void addIter() {
+        FieldVisitor fv = super.visitField(0, "iter", "Ljava/util/Iterator;", "Ljava/util/Iterator<TE;>;", null);
         fv.visitEnd();
     }
 
     public void addNext() {
         /*MethodVisitor mv = super.visitMethod(nextProp.access, nextProp.name,
                 nextProp.desc, nextProp.signature, nextProp.exceptions);*/
+
         MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "next", "()Ljava/lang/Object;", "()TE;", null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "expectedModCount", "I");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "this$0", "Ljava/util/PriorityQueue;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue", "modCount", "I");
+        Label l0 = new Label();
+        mv.visitJumpInsn(Opcodes.IF_ICMPEQ, l0);
+        mv.visitTypeInsn(Opcodes.NEW, "java/util/ConcurrentModificationException");
         mv.visitInsn(Opcodes.DUP);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitInsn(Opcodes.DUP_X1);
-        mv.visitInsn(Opcodes.ICONST_1);
-        mv.visitInsn(Opcodes.IADD);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "get", "(I)Ljava/lang/Object;", true);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ConcurrentModificationException", "<init>", "()V", false);
+        mv.visitInsn(Opcodes.ATHROW);
+        mv.visitLabel(l0);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "iter", "Ljava/util/Iterator;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;", true);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRetElt", "Ljava/lang/Object;");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ICONST_M1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRet", "I");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "lastRetElt", "Ljava/lang/Object;");
         mv.visitInsn(Opcodes.ARETURN);
-        mv.visitMaxs(5, 1);
+        mv.visitMaxs(2, 1);
         mv.visitEnd();
     }
 
@@ -88,30 +102,18 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
         /*MethodVisitor mv = super.visitMethod(hasNextProp.access, hasNextProp.name,
                 hasNextProp.desc, hasNextProp.signature, hasNextProp.exceptions);*/
         MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "hasNext", "()Z", null, null);
-
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "size", "()I", true);
-        Label l0 = new Label();
-        mv.visitJumpInsn(Opcodes.IF_ICMPGE, l0);
-        mv.visitInsn(Opcodes.ICONST_1);
-        Label l1 = new Label();
-        mv.visitJumpInsn(Opcodes.GOTO, l1);
-        mv.visitLabel(l0);
-        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitLabel(l1);
-        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[]{Opcodes.INTEGER});
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "iter", "Ljava/util/Iterator;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
         mv.visitInsn(Opcodes.IRETURN);
-        mv.visitMaxs(2, 1);
+        mv.visitMaxs(1, 1);
         mv.visitEnd();
+
     }
 
     public void addInit() {
-        MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Ljava/util/PriorityQueue;)V", null, null);
+        MethodVisitor mv = super.visitMethod(Opcodes.ACC_PRIVATE, "<init>", "(Ljava/util/PriorityQueue;)V", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
@@ -136,37 +138,46 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue", "modCount", "I");
         mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "expectedModCount", "I");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "index", "I");
         mv.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
         mv.visitInsn(Opcodes.DUP);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
-        mv.visitVarInsn(Opcodes.ASTORE, 2);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
         Label l0 = new Label();
         mv.visitLabel(l0);
-        mv.visitFrame(Opcodes.F_FULL, 3, new Object[]
-            {"java/util/PriorityQueue$Itr", "java/util/PriorityQueue",
-             "java/util/List"}, 0, new Object[]{});
+        mv.visitFrame(Opcodes.F_FULL, 2, new Object[] {"java/util/PriorityQueue$Itr", "java/util/PriorityQueue"},
+                0, new Object[] {});
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "hasNextOrig", "()Z", false);
         Label l1 = new Label();
         mv.visitJumpInsn(Opcodes.IFEQ, l1);
-        mv.visitVarInsn(Opcodes.ALOAD, 2);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "nextOrig",
-                "()Ljava/lang/Object;", false);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "nextOrig", "()Ljava/lang/Object;", false);
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
         mv.visitInsn(Opcodes.POP);
         mv.visitJumpInsn(Opcodes.GOTO, l0);
         mv.visitLabel(l1);
         mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
                 "(Ljava/util/List;)Ljava/util/List;", false);
         mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "iterator", "()Ljava/util/Iterator;", true);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "iter", "Ljava/util/Iterator;");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ICONST_M1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRet", "I");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRetElt", "Ljava/lang/Object;");
         mv.visitInsn(Opcodes.RETURN);
-        mv.visitMaxs(2, 3);
+        mv.visitMaxs(3, 2);
         mv.visitEnd();
     }
 
@@ -176,8 +187,7 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
         addNext();
         addHasNext();
         addElements();
-        addIndex();
-
+        addIter();
         super.visitEnd();
     }
 

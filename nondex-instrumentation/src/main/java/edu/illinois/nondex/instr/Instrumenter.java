@@ -137,7 +137,7 @@ public final class Instrumenter {
                 new Producer<byte[]>() {
                     @Override
                     public byte[] apply() {
-                        return HashIteratorShufflerASMDump.dump("Entry", "java/util/WeakHashMap", "entry");
+                        return HashIteratorShufflerASMDump.dump("Entry", "java/util/WeakHashMap", "lastReturned");
                     }
                 });
 

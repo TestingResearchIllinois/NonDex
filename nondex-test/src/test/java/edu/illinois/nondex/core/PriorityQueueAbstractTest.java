@@ -30,6 +30,7 @@ package edu.illinois.nondex.core;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import java.util.AbstractQueue;
@@ -79,5 +80,13 @@ public abstract class PriorityQueueAbstractTest {
         prq.toArray(list2);
 
         assertThat(list1, not(equalTo(list2)));
+    }
+
+    @Test
+    public void testRemove() {
+        Iterator<Integer> iter = prq.iterator();
+        Integer first = iter.next();
+        iter.remove();
+        assertFalse(prq.contains(first));
     }
 }
