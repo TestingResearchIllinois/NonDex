@@ -524,13 +524,40 @@ public class PriorityQueue<E> extends AbstractQueue<E>
          */
         private int expectedModCount = modCount;
 
+        List<E> elements;
+        Iterator<E> iter;
+        
+        {
+            elements = new ArrayList<E>();
+            while(hasNextOrig()) {
+                elements.add(nextOrig());
+            }
+            elements = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(elements);
+            iter = elements.iterator();
+            lastRet = -1;
+            lastRetElt = null;
+        }
+
+        public E next() {
+            if (expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            lastRetElt = iter.next();
+            lastRet = -1;
+            return lastRetElt;
+        }
+        
         public boolean hasNext() {
+            return iter.hasNext();
+        }
+
+        public boolean hasNextOrig() {
             return cursor < size ||
                 (forgetMeNot != null && !forgetMeNot.isEmpty());
         }
 
         @SuppressWarnings("unchecked")
-        public E next() {
+        public E nextOrig() {
             if (expectedModCount != modCount)
                 throw new ConcurrentModificationException();
             if (cursor < size)

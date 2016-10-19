@@ -7,7 +7,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 public class HashIteratorShufflerASMDump implements Opcodes {
 
-    public static byte[] dump (String type, String baseName, String varName, String idxVarName) {
+    public static byte[] dump (String type, String baseName, String varName) {
 
         ClassWriter cw = new ClassWriter(0);
         FieldVisitor fv;
@@ -72,7 +72,7 @@ public class HashIteratorShufflerASMDump implements Opcodes {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn(GETFIELD, baseName + "$HashIterator$HashIteratorShuffler", "hashIter", "L" + baseName + "$HashIterator;");
             mv.visitInsn(ACONST_NULL);
-            mv.visitFieldInsn(PUTFIELD, baseName + "$HashIterator", idxVarName, "L" + baseName + "$" + type + ";");            
+            mv.visitFieldInsn(PUTFIELD, baseName + "$HashIterator", varName, "L" + baseName + "$" + type + ";");            
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 3);
             mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "iterator", "()Ljava/util/Iterator;", true);
