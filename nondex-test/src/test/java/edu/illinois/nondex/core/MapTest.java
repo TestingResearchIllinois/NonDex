@@ -62,9 +62,9 @@ public class MapTest<K, V> {
     @Parameters
     public static Object[] data() {
         HashMap<Integer, Integer> hm = new HashMap<>();
-//        WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
-//        IdentityHashMap<Integer, Integer> ihm = new IdentityHashMap<>();
-//        ConcurrentHashMap<Integer, Integer> chm = new ConcurrentHashMap<>();
+        WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
+        IdentityHashMap<Integer, Integer> ihm = new IdentityHashMap<>();
+        ConcurrentHashMap<Integer, Integer> chm = new ConcurrentHashMap<>();
         return new Object[] {hm};
     }
 
