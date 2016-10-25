@@ -70,6 +70,10 @@ public class HashIteratorShufflerASMDump implements Opcodes {
             mv.visitMethodInsn(INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle", "(Ljava/util/List;)Ljava/util/List;", false);
             mv.visitVarInsn(ASTORE, 3);
             mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn(GETFIELD, baseName + "$HashIterator$HashIteratorShuffler", "hashIter", "L" + baseName + "$HashIterator;");
+            mv.visitInsn(ACONST_NULL);
+            mv.visitFieldInsn(PUTFIELD, baseName + "$HashIterator", varName, "L" + baseName + "$" + type + ";");
+            mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 3);
             mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "iterator", "()Ljava/util/Iterator;", true);
             mv.visitFieldInsn(PUTFIELD, baseName + "$HashIterator$HashIteratorShuffler", "iter", "Ljava/util/Iterator;");
