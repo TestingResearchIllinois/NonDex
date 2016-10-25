@@ -85,6 +85,26 @@ public class MapTest<K, V> {
         iter.remove();
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testRemoveWhenNotEmpty() {
+        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+        iter.remove();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testRemoveTwice() {
+        int size = map.size();
+        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+        assertTrue(iter.hasNext());
+        Entry<K, V> entry = iter.next();
+        K key = entry.getKey();
+        assertTrue(map.entrySet().contains(entry));
+        iter.remove();
+        assertEquals(size - 1, map.size());
+        assertFalse(map.containsKey(key));
+        iter.remove();
+    }
+
     @Test
     public void testHasNextWhenEmpty() {
         map.clear();
