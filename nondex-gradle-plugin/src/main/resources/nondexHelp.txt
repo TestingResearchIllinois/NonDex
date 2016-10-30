@@ -1,0 +1,9 @@
+A tool for finding strong assumptions on APIs with non-deterministic specifications.
+
+This plugin has 2 tasks:
+
+nondexTest
+    Run tests with nondex and find out the non-deterministic issue
+
+nondexHelp
+    Print this help message
