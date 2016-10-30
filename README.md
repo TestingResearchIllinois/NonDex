@@ -1,7 +1,4 @@
-[![Build Status](https://travis-ci.org/TestingResearchIllinois/NonDex.svg?branch=master)](https://travis-ci.org/TestingResearchIllinois/NonDex)
-[![Build status](https://ci.appveyor.com/api/projects/status/7cw58oph5346xvm0/branch/master?svg=true)](https://ci.appveyor.com/project/alexgyori/nondex/branch/master)
-[![Issue Count](https://codeclimate.com/github/TestingResearchIllinois/NonDex/badges/issue_count.svg)](https://codeclimate.com/github/TestingResearchIllinois/NonDex)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ef0b45fa77a4d58af5e23917c9bf5ae)](https://www.codacy.com/app/gyori/NonDex?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TestingResearchIllinois/NonDex&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/shiloh00/NonDex.svg?branch=master)](https://travis-ci.org/shiloh00/NonDex)
 
 NonDex is a tool for detecting and debugging wrong assumptions on under-determined Java APIs. An
 example of such an assumption is when code assumes the order of iterating
