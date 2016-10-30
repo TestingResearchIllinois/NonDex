@@ -5,7 +5,7 @@ allprojects  {
     version = '1.1.2-SNAPSHOT'
 }
 
-configure(subprojects - project(':nondex-core')) {
+configure(subprojects - project(':nondex-core') - project(':nondex-gradle-plugin')) {
     apply plugin: 'java'
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
