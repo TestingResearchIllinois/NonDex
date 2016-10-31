@@ -122,14 +122,6 @@ public class HashMapShufflingAdder extends ClassVisitor {
     }
 
     @Override
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        if ("java/util/WeakHashMap".equals(baseName) && ("expectedModCount".equals(name) || "entry".equals(name))) {
-            return super.visitField(access - Opcodes.ACC_PRIVATE, name, desc, signature, value);
-        }
-        return super.visitField(access, name, desc, signature, value);
-    }
-
-    @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
         if ("<init>".equals(name)) {
@@ -168,21 +160,7 @@ public class HashMapShufflingAdder extends ClassVisitor {
             nextTypeProp.signature = signature;
             nextTypeProp.exceptions = exceptions;
 
-            if (baseName.equals("java/util/WeakHashMap")) {
-                return new MethodVisitor(Opcodes.ASM5,
-                        super.visitMethod(access, "original_next" + type, desc, signature, exceptions)) {
-                    @Override
-                    public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-                        if ("hasNext".equals(name)) {
-                            super.visitMethodInsn(opcode, owner, "original_hasNext", desc, itf);
-                        } else {
-                            super.visitMethodInsn(opcode, owner, name, desc, itf);
-                        }
-                    }
-                };
-            } else {
-                return super.visitMethod(access, "original_next" + type, desc, signature, exceptions);
-            }
+            return super.visitMethod(access, "original_next" + type, desc, signature, exceptions);
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }
