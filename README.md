@@ -39,7 +39,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "gradle.plugin.edu.illinois:nondex-gradle-plugin:1.1.2-2"
+    classpath "gradle.plugin.edu.illinois:nondex-gradle-plugin:1.1.2-3"
   }
 }
 
