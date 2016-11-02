@@ -194,12 +194,10 @@ public class WeakHashMapShufflingAdder extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
         if ("hasNext".equals(name)) {
-            MethodVisitor original = super.visitMethod(access, "originalHasNext", desc, signature, exceptions);
-            return original;
+            return super.visitMethod(access, "originalHasNext", desc, signature, exceptions);
         }
         if ("nextEntry".equals(name)) {
-            MethodVisitor original = super.visitMethod(access, "originalNextEntry", desc, signature, exceptions);
-            return original;
+            return super.visitMethod(access, "originalNextEntry", desc, signature, exceptions);
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }

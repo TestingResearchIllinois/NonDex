@@ -120,7 +120,7 @@ public final class Instrumenter {
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
-                            return HashIteratorShufflerASMDump.dump("Node", "java/util/HashMap", "current");
+                            return HashIteratorShufflerASMDump.dump("Node");
                         }
                     });
         } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
@@ -128,7 +128,7 @@ public final class Instrumenter {
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
-                            return HashIteratorShufflerASMDump.dump("Entry", "java/util/HashMap", "current");
+                            return HashIteratorShufflerASMDump.dump("Entry");
                         }
                     });
         }
