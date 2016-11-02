@@ -763,7 +763,6 @@ public class WeakHashMap<K,V>
         private Entry<K,V> lastReturned = null;
         private int expectedModCount = modCount;
 
-
         /**
          * Strong reference needed to avoid disappearance of key
          * between hasNext and next
