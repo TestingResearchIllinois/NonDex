@@ -104,18 +104,25 @@ public class MapTest<K, V> {
         iter.remove();
     }
 
-    @Test
-    public void testHasNextWhenEmpty() {
-        map.clear();
-        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-        assertFalse(iter.hasNext());
-    }
-
     @Test(expected = NoSuchElementException.class)
     public void testNextWhenEmpty() {
         map.clear();
         Iterator<Entry<K, V>> iter = map.entrySet().iterator();
         iter.next();
+    }
+
+    @Test(expected = ConcurrentModificationException.class)
+    public void testModify() {
+        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+        map.clear();
+        iter.next();
+    }
+
+    @Test
+    public void testHasNextWhenEmpty() {
+        map.clear();
+        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+        assertFalse(iter.hasNext());
     }
 
     @Test
@@ -137,12 +144,5 @@ public class MapTest<K, V> {
     @Test
     public void testShuffling() {
         assertThat(map.toString(), not(equalTo(map.toString())));
-    }
-
-    @Test(expected = ConcurrentModificationException.class)
-    public void testModify() {
-        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-        map.clear();
-        iter.next();
     }
 }
