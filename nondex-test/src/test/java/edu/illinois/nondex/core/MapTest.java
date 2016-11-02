@@ -122,14 +122,16 @@ public class MapTest<K, V> {
     public void testRemove() {
         int size = map.size();
         Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-        assertTrue(iter.hasNext());
-        Entry<K, V> entry = iter.next();
-        K key = entry.getKey();
-        assertTrue(map.entrySet().contains(entry));
-        iter.remove();
-        assertEquals(size - 1, map.size());
-        assertFalse(map.containsKey(key));
-//        assertFalse(map.entrySet().contains(entry));
+        for (int i = 0; i < size; i++) {
+            assertTrue(iter.hasNext());
+            Entry<K, V> entry = iter.next();
+            K key = entry.getKey();
+            assertTrue(map.entrySet().contains(entry));
+            iter.remove();
+            assertEquals(size - i - 1, map.size());
+            assertFalse(map.containsKey(key));
+        }
+        assertEquals(0, map.size());
     }
 
     @Test
