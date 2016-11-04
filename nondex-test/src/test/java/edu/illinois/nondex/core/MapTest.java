@@ -65,10 +65,9 @@ public class MapTest<K, V> {
         WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
         IdentityHashMap<Integer, Integer> ihm = new IdentityHashMap<>();
         ConcurrentHashMap<Integer, Integer> chm = new ConcurrentHashMap<>();
-        whm.clear();
         ihm.clear();
         chm.clear();
-        return new Object[] {hm};
+        return new Object[] {hm, whm};
     }
 
     @Before
@@ -105,13 +104,6 @@ public class MapTest<K, V> {
         iter.remove();
     }
 
-    @Test
-    public void testHasNextWhenEmpty() {
-        map.clear();
-        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-        assertFalse(iter.hasNext());
-    }
-
     @Test(expected = NoSuchElementException.class)
     public void testNextWhenEmpty() {
         map.clear();
@@ -119,29 +111,38 @@ public class MapTest<K, V> {
         iter.next();
     }
 
-    @Test
-    public void testRemove() {
-        int size = map.size();
-        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-        assertTrue(iter.hasNext());
-        Entry<K, V> entry = iter.next();
-        K key = entry.getKey();
-        assertTrue(map.entrySet().contains(entry));
-        iter.remove();
-        assertEquals(size - 1, map.size());
-        assertFalse(map.containsKey(key));
-//        assertFalse(map.entrySet().contains(entry));
-    }
-
-    @Test
-    public void testShuffling() {
-        assertThat(map.toString(), not(equalTo(map.toString())));
-    }
-
     @Test(expected = ConcurrentModificationException.class)
     public void testModify() {
         Iterator<Entry<K, V>> iter = map.entrySet().iterator();
         map.clear();
         iter.next();
+    }
+
+    @Test
+    public void testHasNextWhenEmpty() {
+        map.clear();
+        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+        assertFalse(iter.hasNext());
+    }
+
+    @Test
+    public void testRemove() {
+        int size = map.size();
+        Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+        for (int i = 0; i < size; i++) {
+            assertTrue(iter.hasNext());
+            Entry<K, V> entry = iter.next();
+            K key = entry.getKey();
+            assertTrue(map.entrySet().contains(entry));
+            iter.remove();
+            assertEquals(size - i - 1, map.size());
+            assertFalse(map.containsKey(key));
+        }
+        assertEquals(0, map.size());
+    }
+
+    @Test
+    public void testShuffling() {
+        assertThat(map.toString(), not(equalTo(map.toString())));
     }
 }

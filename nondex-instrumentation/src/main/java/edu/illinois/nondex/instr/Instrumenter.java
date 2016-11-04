@@ -120,7 +120,7 @@ public final class Instrumenter {
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
-                            return HashIteratorShufflerASMDump.dump("Node", "java/util/HashMap", "current");
+                            return HashIteratorShufflerASMDump.dump("Node");
                         }
                     });
         } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
@@ -128,18 +128,10 @@ public final class Instrumenter {
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
-                            return HashIteratorShufflerASMDump.dump("Entry", "java/util/HashMap", "current");
+                            return HashIteratorShufflerASMDump.dump("Entry");
                         }
                     });
         }
-
-        this.addAsmDumpResultToZip(outZip, "java/util/WeakHashMap$HashIterator$HashIteratorShuffler.class",
-                new Producer<byte[]>() {
-                    @Override
-                    public byte[] apply() {
-                        return HashIteratorShufflerASMDump.dump("Entry", "java/util/WeakHashMap", "entry");
-                    }
-                });
 
         for (String clz : this.specialClassesToInstrument) {
             this.instrumentSpecialClass(rt, outZip, clz);

@@ -775,13 +775,33 @@ public class WeakHashMap<K,V>
          */
         private Object currentKey = null;
 
+        private Iterator<Entry<K,V>> iter = null;
+
         HashIterator() {
             index = isEmpty() ? 0 : table.length;
+            List<Entry<K,V>> order = new ArrayList<>();
+            while(originalHasNext()) {
+                order.add(originalNextEntry());
+            }
+            order = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(order);
+            iter = order.iterator();
+            lastReturned = null;
         }
 
         public boolean hasNext() {
-            Entry<K,V>[] t = table;
+            return iter.hasNext();
+        }
 
+        public Entry<K, V> nextEntry() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            lastReturned = iter.next();
+            currentKey = lastReturned.get();
+            return lastReturned;
+        }
+
+        public boolean originalHasNext() {
+            Entry<K,V>[] t = table;
             while (nextKey == null) {
                 Entry<K,V> e = entry;
                 int i = index;
@@ -801,7 +821,7 @@ public class WeakHashMap<K,V>
         }
 
         /** The common parts of next() across different types of iterators */
-        protected Entry<K,V> nextEntry() {
+        protected Entry<K,V> originalNextEntry() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
             if (nextKey == null && !hasNext())
