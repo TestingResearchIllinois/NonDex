@@ -34,7 +34,8 @@ shadowJar {
 }
 
 ext {
-    nonDexOutputJar = shadowJar.archivePath
+    nonDexInstrJar = shadowJar.archivePath
+    nonDexOutputJar = file(project.buildDir.absolutePath + '/out.jar')
 }
 
 tasks.withType(Checkstyle) {
