@@ -34,24 +34,22 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
 
 public class InstrumenterTest {
     @Test
-    public void emptyZipTest() {
-        try {
-            Instrumenter.instrument(Paths.get("resources", "empty.jar"), Paths.get("resources", "emptyOut.jar"));
-            fail("Expected an IOException to be thrown");
-        } catch (IOException exc) {
-            assertThat(exc.getMessage(), is("zip file is empty"));
-        }
+    public void emptyZipTest() throws NoSuchAlgorithmException, IOException {
+        Instrumenter.instrument(Paths.get("resources", "empty.jar").toString(),
+                                Paths.get("resources", "emptyOut.jar").toString());
     }
 
     @Test
-    public void nonexistantZipTest() {
+    public void nonexistantZipTest() throws NoSuchAlgorithmException {
         try {
-            Instrumenter.instrument(Paths.get("resources", "doesnotexist.jar").toString(), Paths.get("resources", "doesnotexistOut.jar").toString());
+            Instrumenter.instrument(Paths.get("resources", "doesnotexist.jar").toString(),
+                                    Paths.get("resources", "doesnotexistOut.jar").toString());
             fail("Expected an IOException to be thrown");
         } catch (IOException exc) {
             assertThat(exc.getMessage(), is("resources/doesnotexist.jar (No such file or directory)"));

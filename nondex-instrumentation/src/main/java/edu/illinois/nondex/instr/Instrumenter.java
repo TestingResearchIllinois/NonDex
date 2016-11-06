@@ -148,10 +148,15 @@ public final class Instrumenter {
 
     private void instrumentStandardClasses(ZipFile rt, ZipOutputStream outZip)
             throws IOException, NoSuchAlgorithmException {
+        System.err.println(this.standardClassesToInstrument);
         for (String cl : this.standardClassesToInstrument) {
             InputStream clInputStream = null;
             try {
-                clInputStream = rt.getInputStream(rt.getEntry(cl));
+                ZipEntry entry = rt.getEntry(cl);
+                if (entry == null) {
+                    continue;
+                }
+                clInputStream = rt.getInputStream(entry);
             } catch (IOException exc) {
                 Logger.getGlobal().log(Level.WARNING, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
                 Logger.getGlobal().log(Level.WARNING, "Continuing without insturmenting: " + cl);
