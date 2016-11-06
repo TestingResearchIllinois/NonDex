@@ -31,9 +31,13 @@ package edu.illinois.nondex.instr;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 
@@ -42,8 +46,10 @@ import org.junit.Test;
 public class InstrumenterTest {
     @Test
     public void emptyZipTest() throws NoSuchAlgorithmException, IOException {
+        Path outPath = Paths.get("resources", "emptyOut.jar");
         Instrumenter.instrument(Paths.get("resources", "empty.jar").toString(),
-                                Paths.get("resources", "emptyOut.jar").toString());
+                                outPath.toString());
+        assertTrue(Files.exists(outPath, LinkOption.NOFOLLOW_LINKS));
     }
 
     @Test
