@@ -28,7 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import static org.hamcrest.core.Is.is;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -52,7 +53,8 @@ public class InstrumenterTest {
                                     Paths.get("resources", "doesnotexistOut.jar").toString());
             fail("Expected an IOException to be thrown");
         } catch (IOException exc) {
-            assertThat(exc.getMessage(), is("resources/doesnotexist.jar (No such file or directory)"));
+            assertThat(exc.getMessage(),
+                       containsString(Paths.get("resources", "doesnotexist.jar").toString()));
         }
     }
 }
