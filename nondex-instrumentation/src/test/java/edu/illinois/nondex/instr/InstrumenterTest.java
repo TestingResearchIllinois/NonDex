@@ -50,7 +50,7 @@ public class InstrumenterTest {
     private Path outJar = Paths.get("resources", "emptyOut.jar");
 
     @Before
-    public void setUP() throws IOException {
+    public void setUp() throws IOException {
         Files.deleteIfExists(outJar);
     }
 
