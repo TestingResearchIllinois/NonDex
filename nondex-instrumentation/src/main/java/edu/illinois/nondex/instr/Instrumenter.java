@@ -151,8 +151,18 @@ public final class Instrumenter {
         for (String cl : this.standardClassesToInstrument) {
             InputStream clInputStream = null;
             try {
-                clInputStream = rt.getInputStream(rt.getEntry(cl));
+                ZipEntry entry = rt.getEntry(cl);
+                if (entry == null) {
+                    Logger.getGlobal().log(Level.WARNING, "Could not find " + cl + " in rt.jar");
+                    Logger.getGlobal().log(Level.WARNING, "Are you running java 8?");
+                    Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + cl);
+
+                    continue;
+                }
+                clInputStream = rt.getInputStream(entry);
             } catch (IOException exc) {
+                // I am not sure this code is reachable
+                // TODO(gyori): Test that this code is reachable;
                 Logger.getGlobal().log(Level.WARNING, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
                 Logger.getGlobal().log(Level.WARNING, "Continuing without insturmenting: " + cl);
                 continue;

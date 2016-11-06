@@ -28,33 +28,53 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import static org.hamcrest.core.Is.is;
+
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class InstrumenterTest {
-    @Test
-    public void emptyZipTest() {
-        try {
-            Instrumenter.instrument(Paths.get("resources", "empty.jar"), Paths.get("resources", "emptyOut.jar"));
-            fail("Expected an IOException to be thrown");
-        } catch (IOException exc) {
-            assertThat(exc.getMessage(), is("zip file is empty"));
-        }
+
+    private Path outJar = Paths.get("resources", "emptyOut.jar");
+
+    @Before
+    public void setUp() throws IOException {
+        Files.deleteIfExists(outJar);
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        Files.deleteIfExists(outJar);
     }
 
     @Test
-    public void nonexistantZipTest() {
+    public void emptyZipTest() throws NoSuchAlgorithmException, IOException {
+        Instrumenter.instrument(Paths.get("resources", "empty.jar").toString(),
+                                outJar.toString());
+        assertTrue(Files.exists(outJar, LinkOption.NOFOLLOW_LINKS));
+    }
+
+    @Test
+    public void nonexistantZipTest() throws NoSuchAlgorithmException {
         try {
-            Instrumenter.instrument(Paths.get("resources", "doesnotexist.jar").toString(), Paths.get("resources", "doesnotexistOut.jar").toString());
+            Instrumenter.instrument(Paths.get("resources", "doesnotexist.jar").toString(),
+                                    Paths.get("resources", "doesnotexistOut.jar").toString());
             fail("Expected an IOException to be thrown");
         } catch (IOException exc) {
-            assertThat(exc.getMessage(), is("resources/doesnotexist.jar (No such file or directory)"));
+            assertThat(exc.getMessage(),
+                       containsString(Paths.get("resources", "doesnotexist.jar").toString()));
         }
     }
 }
