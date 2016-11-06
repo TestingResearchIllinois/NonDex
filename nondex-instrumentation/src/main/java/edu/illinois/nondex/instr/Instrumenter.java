@@ -148,7 +148,6 @@ public final class Instrumenter {
 
     private void instrumentStandardClasses(ZipFile rt, ZipOutputStream outZip)
             throws IOException, NoSuchAlgorithmException {
-        System.err.println(this.standardClassesToInstrument);
         for (String cl : this.standardClassesToInstrument) {
             InputStream clInputStream = null;
             try {
