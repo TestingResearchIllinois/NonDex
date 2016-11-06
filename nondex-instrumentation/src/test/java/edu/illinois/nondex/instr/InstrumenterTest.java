@@ -41,15 +41,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class InstrumenterTest {
+
+    private Path outJar = Paths.get("resources", "emptyOut.jar");
+
+    @Before
+    public void setUP() throws IOException {
+        Files.deleteIfExists(outJar);
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        Files.deleteIfExists(outJar);
+    }
+
     @Test
     public void emptyZipTest() throws NoSuchAlgorithmException, IOException {
-        Path outPath = Paths.get("resources", "emptyOut.jar");
         Instrumenter.instrument(Paths.get("resources", "empty.jar").toString(),
-                                outPath.toString());
-        assertTrue(Files.exists(outPath, LinkOption.NOFOLLOW_LINKS));
+                                outJar.toString());
+        assertTrue(Files.exists(outJar, LinkOption.NOFOLLOW_LINKS));
     }
 
     @Test
