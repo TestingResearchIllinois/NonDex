@@ -56,7 +56,7 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        return nondex.getPermutation(originalOrder);
+        return nondex == null ? originalOrder : nondex.getPermutation(originalOrder);
     }
 
     public static <T> T[] shuffle(T[] originalOrder) {
@@ -94,6 +94,7 @@ public class ControlNondeterminism {
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
             try {
+                nondex.getSysRandom().endRun();
                 int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();
                 Files.write(nondex.getConfig().getConfigPath(),

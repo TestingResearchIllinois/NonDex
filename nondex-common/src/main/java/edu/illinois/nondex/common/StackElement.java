@@ -26,19 +26,29 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package edu.illinois.nondex.core;
+package edu.illinois.nondex.common;
 
-import java.util.PriorityQueue;
+public class StackElement {
 
-import org.junit.Before;
+    int last;
+    int max;
+    boolean explore;
 
-public class PriorityQueueTest extends PriorityQueueAbstractTest {
-    @Before
-    @Override
-    public void setUp() {
-        prq = new PriorityQueue<Integer>();
-        for (int ind = 0; ind < 10; ind++) {
-            prq.add(ind);
-        }
+    public StackElement(int last, int max, boolean explore) {
+        this.last = last;
+        this.max = max;
+        this.explore = explore;
+    }
+
+    public int getLast() {
+        return last;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public boolean getExplore() {
+        return explore;
     }
 }

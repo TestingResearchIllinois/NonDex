@@ -65,9 +65,7 @@ public class MapTest<K, V> {
         WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
         IdentityHashMap<Integer, Integer> ihm = new IdentityHashMap<>();
         ConcurrentHashMap<Integer, Integer> chm = new ConcurrentHashMap<>();
-        ihm.clear();
-        chm.clear();
-        return new Object[] {hm, whm};
+        return new Object[] {hm, whm, ihm, chm};
     }
 
     @Before
@@ -113,6 +111,12 @@ public class MapTest<K, V> {
 
     @Test(expected = ConcurrentModificationException.class)
     public void testModify() {
+        //Since concurrentHashMap should not throw the concurrentModificationException,
+        //here we throw the exception in order to skip this test case for concurrentHashMap
+        if (map instanceof ConcurrentHashMap<?,?>) {
+            throw new ConcurrentModificationException();
+        }
+
         Iterator<Entry<K, V>> iter = map.entrySet().iterator();
         map.clear();
         iter.next();
