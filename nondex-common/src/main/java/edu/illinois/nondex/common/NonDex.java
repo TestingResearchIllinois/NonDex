@@ -70,6 +70,10 @@ public class NonDex {
         return globalInstance;
     }
 
+    public SystematicRandom getSysRandom() {
+        return this.systematicRandom;
+    }
+
     public boolean getBoolean() {
 
         return this.getBoolean(false);

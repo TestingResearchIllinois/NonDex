@@ -95,7 +95,7 @@ public class ControlNondeterminism {
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
             try {
-                SystematicRandom.endRun();
+                nondex.getSysRandom().endRun();
                 int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();
                 Files.write(nondex.getConfig().getConfigPath(),
