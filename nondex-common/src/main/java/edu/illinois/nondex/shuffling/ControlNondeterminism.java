@@ -38,7 +38,6 @@ import java.util.logging.Level;
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.NonDex;
-import edu.illinois.nondex.common.SystematicRandom;
 
 public class ControlNondeterminism {
 

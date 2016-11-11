@@ -32,7 +32,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -52,26 +54,33 @@ public class SystematicRandom extends Random {
         logFileName = System.getenv("logFileName");
         if (logFileName != null) {
             File file = new File(this.logFileName);
+            System.err.println(file.exists());
             if (!file.exists()) {
                 choice = new Stack<int[]>();
                 replayIndex = 0;
             } else {
                 choice = new Stack<int[]>();
+                System.err.println(Paths.get(this.logFileName));
+                System.err.println("TESTTT");
                 try {
-                    lines = Files.readAllLines(Paths.get(this.logFileName));
+                    lines = Files.readAllLines(Paths.get(logFileName));
+                    System.err.println("TESTTT2");
                 } catch (IOException ioe) {
                     // TODO Auto-generated catch block
                     ioe.printStackTrace();
+                    System.err.println("TESTTT3");
                 }
                 int lineSize = lines.size();
                 String[] choiceValues = new String[2];
                 for (int count = 0; count < lineSize; count++) {
                     String delimit = "[ ]+";
-                    choiceValues = lines.get(count).split(delimit);
-                    int last = Integer.parseInt(choiceValues[0]);
-                    int max = Integer.parseInt(choiceValues[1]);
-                    int[] lastMax = { last, max };
-                    choice.push(lastMax);
+                    if (!lines.get(count).isEmpty()) {
+                        choiceValues = lines.get(count).split(delimit);
+                        int last = Integer.parseInt(choiceValues[0]);
+                        int max = Integer.parseInt(choiceValues[1]);
+                        int[] lastMax = { last, max };
+                        choice.push(lastMax);
+                    }
                 }
             }
         } else {
@@ -106,6 +115,7 @@ public class SystematicRandom extends Random {
     }
 
     public void endRun() throws IOException {
+        System.err.println("CALLEDDDDD");
         while (!choice.isEmpty()) {
             int[] lastMax = choice.pop();
             int last = lastMax[0];
@@ -115,17 +125,19 @@ public class SystematicRandom extends Random {
                 int[] lm = { last, max };
                 choice.push(lm);
                 replayIndex = 0;
-                File file = new File(this.logFileName);
-                if (file.exists()) {
-                    file.delete();
-                }
-                for (int count = 0; count < choice.size(); count++) {
+                for (int count = 1; count < choice.size(); count++) {
+                    File file = new File(this.logFileName);
+                    if (file.exists()) {
+                        file.delete();
+                    }
                     String last0 = new Integer(choice.get(count)[0]).toString();
                     String max0 = new Integer(choice.get(count)[1]).toString();
+                    String last1 = new Integer(choice.get(count - 1)[0]).toString();
+                    String max1 = new Integer(choice.get(count - 1)[1]).toString();
                     String lastMax0 = last0.concat(" ").concat(max0);
-                    List<String> lastAndMax = Arrays.asList(lastMax0);
-                    Files.write(Paths.get(this.logFileName), lastAndMax, utf8, StandardOpenOption.CREATE,
-                            StandardOpenOption.APPEND);
+                    String lastMax1 = last1.concat(" ").concat(max1);
+                    List<String> lastAndMax = Arrays.asList(lastMax1, lastMax0);
+                    Files.write(Paths.get(this.logFileName), lastAndMax, utf8, StandardOpenOption.CREATE);
                 }
                 return;
             }
