@@ -60,15 +60,11 @@ public class SystematicRandom extends Random {
                 replayIndex = 0;
             } else {
                 choice = new Stack<int[]>();
-                System.err.println(Paths.get(this.logFileName));
-                System.err.println("TESTTT");
                 try {
                     lines = Files.readAllLines(Paths.get(logFileName));
-                    System.err.println("TESTTT2");
                 } catch (IOException ioe) {
                     // TODO Auto-generated catch block
                     ioe.printStackTrace();
-                    System.err.println("TESTTT3");
                 }
                 int lineSize = lines.size();
                 String[] choiceValues = new String[2];
@@ -125,19 +121,17 @@ public class SystematicRandom extends Random {
                 int[] lm = { last, max };
                 choice.push(lm);
                 replayIndex = 0;
-                for (int count = 1; count < choice.size(); count++) {
-                    File file = new File(this.logFileName);
-                    if (file.exists()) {
-                        file.delete();
-                    }
+                File file = new File(this.logFileName);
+                if (file.exists()) {
+                    file.delete();
+                }
+                for (int count = 0; count < choice.size(); count++) {
                     String last0 = new Integer(choice.get(count)[0]).toString();
                     String max0 = new Integer(choice.get(count)[1]).toString();
-                    String last1 = new Integer(choice.get(count - 1)[0]).toString();
-                    String max1 = new Integer(choice.get(count - 1)[1]).toString();
                     String lastMax0 = last0.concat(" ").concat(max0);
-                    String lastMax1 = last1.concat(" ").concat(max1);
-                    List<String> lastAndMax = Arrays.asList(lastMax1, lastMax0);
-                    Files.write(Paths.get(this.logFileName), lastAndMax, utf8, StandardOpenOption.CREATE);
+                    List<String> lastAndMax = Arrays.asList(lastMax0);
+                    Files.write(Paths.get(this.logFileName), lastAndMax, utf8, StandardOpenOption.CREATE,
+                            StandardOpenOption.APPEND);
                 }
                 return;
             }

@@ -56,11 +56,6 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        if (nondex == null) {
-            System.err.println("NONDEX IS NULL");
-        } else {
-            System.err.println("NONDEX IS NOT NULL");
-        }
         return nondex == null ? originalOrder : nondex.getPermutation(originalOrder);
     }
 
