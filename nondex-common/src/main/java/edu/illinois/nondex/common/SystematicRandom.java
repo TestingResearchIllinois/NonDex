@@ -54,7 +54,6 @@ public class SystematicRandom extends Random {
         logFileName = System.getenv("logFileName");
         if (logFileName != null) {
             File file = new File(this.logFileName);
-            System.err.println(file.exists());
             if (!file.exists()) {
                 choice = new Stack<int[]>();
                 replayIndex = 0;
@@ -111,7 +110,6 @@ public class SystematicRandom extends Random {
     }
 
     public void endRun() throws IOException {
-        System.err.println("CALLEDDDDD");
         while (!choice.isEmpty()) {
             int[] lastMax = choice.pop();
             int last = lastMax[0];
