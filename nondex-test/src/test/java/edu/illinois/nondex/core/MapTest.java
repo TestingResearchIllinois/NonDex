@@ -132,7 +132,7 @@ public class MapTest<K, V> {
             assertTrue(iter.hasNext());
             Entry<K, V> entry = iter.next();
             K key = entry.getKey();
-            assertTrue("map:" + map.toString(), map.entrySet().contains(entry));
+            assertTrue(map.entrySet().contains(entry));
             iter.remove();
             assertEquals(size - i - 1, map.size());
             assertFalse(map.containsKey(key));
