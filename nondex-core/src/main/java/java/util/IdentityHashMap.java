@@ -721,8 +721,39 @@ public class IdentityHashMap<K,V>
         int lastReturnedIndex = -1;      // to allow remove()
         boolean indexValid; // To avoid unnecessary next computation
         Object[] traversalTable = table; // reference to main table or copy
+        List<Integer> order = new ArrayList<>();
+        List<Object> keys = new ArrayList<>();
+        int idx = 0;
+        {
+            while(hasNextO()) {
+                this.order.add(nextIndexO());
+            }
+            order = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(order);
+            for(Integer i : order) {
+                keys.add(table[i]);
+            }
+        }
 
         public boolean hasNext() {
+            return idx < order.size();
+        }
+
+        protected int nextIndex() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            if (!hasNext())
+                throw new NoSuchElementException();
+            Object k = keys.get(idx++);
+            for(int i = 0; i < table.length; i+=2) {
+                if (table[i] == k) {
+                    lastReturnedIndex = i;
+                    break;
+                }
+            }
+            return lastReturnedIndex;
+        }
+
+        public boolean hasNextO() {
             Object[] tab = traversalTable;
             for (int i = index; i < tab.length; i+=2) {
                 Object key = tab[i];
@@ -735,10 +766,10 @@ public class IdentityHashMap<K,V>
             return false;
         }
 
-        protected int nextIndex() {
+        protected int nextIndexO() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
-            if (!indexValid && !hasNext())
+            if (!indexValid && !hasNextO())
                 throw new NoSuchElementException();
 
             indexValid = false;

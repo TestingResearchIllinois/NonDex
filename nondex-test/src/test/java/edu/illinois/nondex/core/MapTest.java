@@ -65,9 +65,8 @@ public class MapTest<K, V> {
         WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
         IdentityHashMap<Integer, Integer> ihm = new IdentityHashMap<>();
         ConcurrentHashMap<Integer, Integer> chm = new ConcurrentHashMap<>();
-        ihm.clear();
         chm.clear();
-        return new Object[] {hm, whm};
+        return new Object[] {hm, whm, ihm};
     }
 
     @Before
@@ -133,7 +132,7 @@ public class MapTest<K, V> {
             assertTrue(iter.hasNext());
             Entry<K, V> entry = iter.next();
             K key = entry.getKey();
-            assertTrue(map.entrySet().contains(entry));
+            assertTrue("map:" + map.toString(), map.entrySet().contains(entry));
             iter.remove();
             assertEquals(size - i - 1, map.size());
             assertFalse(map.containsKey(key));
