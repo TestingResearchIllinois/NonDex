@@ -28,7 +28,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -36,19 +38,17 @@ import org.junit.Test;
 
 public class SystematicRandomTest {
 
-    @Test
-    public void test() {
-        NonDex nondex = new NonDex();
-        List<Integer> example = new ArrayList<Integer>();
-        example.add(2);
-        example.add(3);
-        example.add(4);
-        for (int num = 0; num < 4; num++) {
-            System.err.println("#$#$# before iteration #$#$#");
-            System.err.println(example);
-            System.err.println(" ");
-            System.err.println("#$#$# after iteration #$#$#");
-            example = nondex.getPermutation(example);
-        }
-    }
+//    @Test
+//    public void test() {
+//        SystematicRandom sysRan = new SystematicRandom();
+//        ArrayList<Integer> example = new ArrayList<Integer>();
+//        example.add(2);
+//        example.add(3);
+//        example.add(4);
+//        ArrayList<Integer> ex = example;
+//        System.err.println(example);
+//        Collections.shuffle(example, sysRan);
+//        System.err.println(example);
+//        System.err.println(example.equals(ex));
+//    }
 }
