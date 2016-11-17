@@ -28,6 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -123,14 +125,13 @@ public class SystematicRandom extends Random {
                 if (file.exists()) {
                     file.delete();
                 }
-                for (int count = 0; count < choice.size(); count++) {
-                    String last0 = new Integer(choice.get(count)[0]).toString();
-                    String max0 = new Integer(choice.get(count)[1]).toString();
-                    String lastMax0 = last0.concat(" ").concat(max0);
-                    List<String> lastAndMax = Arrays.asList(lastMax0);
-                    Files.write(Paths.get(logFileName), lastAndMax, utf8, StandardOpenOption.CREATE,
-                            StandardOpenOption.APPEND);
+                BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName));
+                for (int[] element : choice) {
+                    String lastAndMax = element[0] + " " + element[1];
+                    bufferedWriter.write(lastAndMax);
+                    bufferedWriter.newLine();
                 }
+                bufferedWriter.close();
                 return;
             }
         }
