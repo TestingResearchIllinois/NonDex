@@ -128,4 +128,9 @@ public class QueueTest {
         }
         assertEquals(0, queue.size());
     }
+
+    @Test
+    public void testToArray() {
+        assertThat(queue.toArray(), not(equalTo(queue.toArray())));
+    }
 }
