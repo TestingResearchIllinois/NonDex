@@ -35,39 +35,24 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class PriorityQueueShufflingAdder extends ClassVisitor {
-
-    private MethodProperties hasNextProp;
-    private MethodProperties nextProp;
-
-    private class MethodProperties {
-        private int access;
-        private String name;
-        private String desc;
-        private String signature;
-        private String[] exceptions;
-    }
-
+    
     public PriorityQueueShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
-
-        hasNextProp = new MethodProperties();
-        nextProp = new MethodProperties();
     }
 
     public void addElements() {
-        FieldVisitor fv = super.visitField(0, "elements", "Ljava/util/List;", "Ljava/util/List<TE;>;", null);
+        FieldVisitor fv = super.visitField(Opcodes.ACC_PRIVATE, "elements", "Ljava/util/List;", "Ljava/util/List<TE;>;",
+                null);
         fv.visitEnd();
     }
 
     public void addIter() {
-        FieldVisitor fv = super.visitField(0, "iter", "Ljava/util/Iterator;", "Ljava/util/Iterator<TE;>;", null);
+        FieldVisitor fv = super.visitField(Opcodes.ACC_PRIVATE, "iter", "Ljava/util/Iterator;",
+                "Ljava/util/Iterator<TE;>;", null);
         fv.visitEnd();
     }
 
     public void addNext() {
-        /*MethodVisitor mv = super.visitMethod(nextProp.access, nextProp.name,
-                nextProp.desc, nextProp.signature, nextProp.exceptions);*/
-
         MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "next", "()Ljava/lang/Object;", "()TE;", null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -195,26 +180,10 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
         if ("hasNext".equals(name)) {
-            hasNextProp.access = access;
-            hasNextProp.name = name;
-            hasNextProp.desc = desc;
-            hasNextProp.signature = signature;
-            hasNextProp.exceptions = exceptions;
-
-            MethodVisitor original = super.visitMethod(access, "hasNextOrig", desc, signature, exceptions);
-
-            return original;
+            return super.visitMethod(access, "hasNextOrig", desc, signature, exceptions);
         }
         if ("next".equals(name)) {
-            nextProp.access = access;
-            nextProp.name = name;
-            nextProp.desc = desc;
-            nextProp.signature = signature;
-            nextProp.exceptions = exceptions;
-
-            MethodVisitor original = super.visitMethod(access, "nextOrig", desc, signature, exceptions);
-
-            return original;
+            return super.visitMethod(access, "nextOrig", desc, signature, exceptions);
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }

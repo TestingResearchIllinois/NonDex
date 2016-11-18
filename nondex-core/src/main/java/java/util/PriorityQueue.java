@@ -524,8 +524,8 @@ public class PriorityQueue<E> extends AbstractQueue<E>
          */
         private int expectedModCount = modCount;
 
-        List<E> elements;
-        Iterator<E> iter;
+        private List<E> elements;
+        private Iterator<E> iter;
         
         {
             elements = new ArrayList<E>();
