@@ -73,7 +73,9 @@ public class NonDexMojo extends AbstractNonDexMojo {
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
         this.executeSurefireExecution(allExceptions, cleanExec);
-
+        if (this.mode.toString() == "SYSTEMATIC") {
+            numRuns = 1;
+        }
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
                     new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
