@@ -59,12 +59,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 public class NonDexMojo extends AbstractNonDexMojo {
 
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
+    private MojoExecutionException allExceptions = null;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
         Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
-        MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
                 this.surefire, this.originalArgLine, this.mavenProject,
                     this.mavenSession, this.pluginManager,
@@ -72,22 +72,18 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
-        this.executeSurefireExecution(allExceptions, cleanExec);
         if (this.mode.toString() == "SYSTEMATIC") {
-            numRuns = 1;
-        }
-        for (int i = 0; i < this.numRuns; i++) {
-            NonDexSurefireExecution execution =
-                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
-                            Pattern.compile(this.filter), this.start, this.end,
-                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
-                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
-                                .toString(),
-                            this.surefire, this.originalArgLine, this.mavenProject,
-                            this.mavenSession, this.pluginManager);
-            this.executions.add(execution);
-            allExceptions = this.executeSurefireExecution(allExceptions, execution);
-            this.writeCurrentRunInfo(execution);
+            this.executeSurefireExecution(allExceptions, cleanExec);
+            int num = 0;
+            while (num < 6) {
+                executeHelper(num);
+                num++;
+            }
+        } else {
+            this.executeSurefireExecution(allExceptions, cleanExec);
+            for (int i = 0; i < this.numRuns; i++) {
+                executeHelper(i);
+            }
         }
 
         this.writeCurrentRunInfo(cleanExec);
@@ -108,6 +104,20 @@ public class NonDexMojo extends AbstractNonDexMojo {
             throw allExceptions;
         }
 
+    }
+
+    private void executeHelper(int seedNum) {
+        NonDexSurefireExecution execution =
+                new NonDexSurefireExecution(this.mode, this.computeIthSeed(seedNum),
+                        Pattern.compile(this.filter), this.start, this.end,
+                        Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
+                        Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
+                            .toString(),
+                        this.surefire, this.originalArgLine, this.mavenProject,
+                        this.mavenSession, this.pluginManager);
+        this.executions.add(execution);
+        allExceptions = this.executeSurefireExecution(allExceptions, execution);
+        this.writeCurrentRunInfo(execution);
     }
 
     private void postProcessExecutions(CleanSurefireExecution cleanExec) {
