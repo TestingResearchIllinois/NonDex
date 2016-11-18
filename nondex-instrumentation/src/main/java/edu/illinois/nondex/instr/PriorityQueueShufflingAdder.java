@@ -35,7 +35,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class PriorityQueueShufflingAdder extends ClassVisitor {
-    
+
     public PriorityQueueShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
     }
