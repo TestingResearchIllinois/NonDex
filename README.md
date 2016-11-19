@@ -39,13 +39,17 @@ buildscript {
     }
   }
   dependencies {
-    classpath "gradle.plugin.edu.illinois:nondex-gradle-plugin:1.1.2-3"
+    classpath "gradle.plugin.edu.illinois:nondex-gradle-plugin:1.1.6"
   }
 }
 
 apply plugin: "edu.illinois.nondex"
 
 ```
+
+To find if you have flaky tests, run:
+
+    gradle nondexTest
 
 To get the help information of NonDex Gradle plugin, run:
 
