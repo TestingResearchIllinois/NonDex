@@ -28,6 +28,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
+import java.util.logging.Level;
+
+import edu.illinois.nondex.common.Logger;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -84,8 +88,6 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
     }
 
     public void addHasNext() {
-        /*MethodVisitor mv = super.visitMethod(hasNextProp.access, hasNextProp.name,
-                hasNextProp.desc, hasNextProp.signature, hasNextProp.exceptions);*/
         MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "hasNext", "()Z", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -132,13 +134,14 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
         mv.visitFrame(Opcodes.F_FULL, 2, new Object[] {"java/util/PriorityQueue$Itr", "java/util/PriorityQueue"},
                 0, new Object[] {});
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "hasNextOrig", "()Z", false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "originalHasNext", "()Z", false);
         Label l1 = new Label();
         mv.visitJumpInsn(Opcodes.IFEQ, l1);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "nextOrig", "()Ljava/lang/Object;", false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "originalNext", "()Ljava/lang/Object;",
+                false);
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
         mv.visitInsn(Opcodes.POP);
         mv.visitJumpInsn(Opcodes.GOTO, l0);
@@ -180,10 +183,13 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
         if ("hasNext".equals(name)) {
-            return super.visitMethod(access, "hasNextOrig", desc, signature, exceptions);
+            return super.visitMethod(access, "originalHasNext", desc, signature, exceptions);
         }
         if ("next".equals(name)) {
-            return super.visitMethod(access, "nextOrig", desc, signature, exceptions);
+            return super.visitMethod(access, "originalNext", desc, signature, exceptions);
+        }
+        if ("<init>".equals(name)) {
+            Logger.getGlobal().log(Level.SEVERE, "There is already an initializer. Instrumentation will likely fail.");
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }

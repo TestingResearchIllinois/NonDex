@@ -527,10 +527,10 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         private List<E> elements;
         private Iterator<E> iter;
         
-        {
+        private Itr() {
             elements = new ArrayList<E>();
-            while(hasNextOrig()) {
-                elements.add(nextOrig());
+            while(originalHasNext()) {
+                elements.add(originalNext());
             }
             elements = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(elements);
             iter = elements.iterator();
@@ -551,13 +551,13 @@ public class PriorityQueue<E> extends AbstractQueue<E>
             return iter.hasNext();
         }
 
-        public boolean hasNextOrig() {
+        public boolean originalHasNext() {
             return cursor < size ||
                 (forgetMeNot != null && !forgetMeNot.isEmpty());
         }
 
         @SuppressWarnings("unchecked")
-        public E nextOrig() {
+        public E originalNext() {
             if (expectedModCount != modCount)
                 throw new ConcurrentModificationException();
             if (cursor < size)
