@@ -47,7 +47,8 @@ import java.util.Stack;
 
 public class SystematicRandom extends Random {
     int replayIndex;
-    Stack<int[]> choice;
+    int count;
+    Stack<Object[]> choice;
     String logFileName;
     Charset utf8 = StandardCharsets.UTF_8;
     List<String> lines;
@@ -57,25 +58,26 @@ public class SystematicRandom extends Random {
         if (logFileName != null) {
             File file = new File(this.logFileName);
             if (!file.exists()) {
-                choice = new Stack<int[]>();
+                choice = new Stack<Object[]>();
                 replayIndex = 0;
+                count = 0;
             } else {
-                choice = new Stack<int[]>();
+                choice = new Stack<Object[]>();
                 try {
                     lines = Files.readAllLines(Paths.get(logFileName));
                 } catch (IOException ioe) {
                     // TODO Auto-generated catch block
                     ioe.printStackTrace();
                 }
-                int lineSize = lines.size();
-                String[] choiceValues = new String[2];
-                for (int count = 0; count < lineSize; count++) {
+                Object[] choiceValues = new Object[3];
+                for (String element: lines) {
                     String delimit = "[ ]+";
-                    if (!lines.get(count).isEmpty()) {
-                        choiceValues = lines.get(count).split(delimit);
-                        int last = Integer.parseInt(choiceValues[0]);
-                        int max = Integer.parseInt(choiceValues[1]);
-                        int[] lastMax = { last, max };
+                    if (!element.isEmpty()) {
+                        choiceValues = element.split(delimit);
+                        int last = Integer.parseInt(choiceValues[0].toString());
+                        int max = Integer.parseInt(choiceValues[1].toString());
+                        boolean explore = Boolean.parseBoolean((String) choiceValues[2]);
+                        Object[] lastMax = { last, max, explore };
                         choice.push(lastMax);
                     }
                 }
@@ -90,7 +92,7 @@ public class SystematicRandom extends Random {
         return replayIndex;
     }
 
-    public Stack<int[]> getChoice() {
+    public Stack<Object[]> getChoice() {
         return choice;
     }
 
@@ -100,11 +102,12 @@ public class SystematicRandom extends Random {
 
     public int nextInt(int max) {
         int num;
+        count++;
         if (replayIndex < choice.size()) {
-            num = choice.get(replayIndex)[0];
+            num = (int) choice.get(replayIndex)[0];
         } else {
             num = 0;
-            int[] choiceNums = { 0, max };
+            Object[] choiceNums = { 0, max, false };
             choice.push(choiceNums);
         }
         replayIndex++;
@@ -113,12 +116,13 @@ public class SystematicRandom extends Random {
 
     public void endRun() throws IOException {
         while (!choice.isEmpty()) {
-            int[] lastMax = choice.pop();
-            int last = lastMax[0];
-            int max = lastMax[1];
+            Object[] lastMax = choice.pop();
+            int last = (int) lastMax[0];
+            int max = (int) lastMax[1];
+            boolean explore = (boolean) lastMax[2];
             if (last < max - 1) {
                 last++;
-                int[] lm = { last, max };
+                Object[] lm = { last, max, true };
                 choice.push(lm);
                 replayIndex = 0;
                 File file = new File(logFileName);
@@ -126,8 +130,8 @@ public class SystematicRandom extends Random {
                     file.delete();
                 }
                 BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName));
-                for (int[] element : choice) {
-                    String lastAndMax = element[0] + " " + element[1];
+                for (Object[] element : choice) {
+                    String lastAndMax = element[0] + " " + element[1] + " " + element[2];
                     bufferedWriter.write(lastAndMax);
                     bufferedWriter.newLine();
                 }
@@ -135,7 +139,6 @@ public class SystematicRandom extends Random {
                 return;
             }
         }
-        File file = new File(this.logFileName);
-        file.delete();
+        Files.delete(Paths.get(logFileName));
     }
 }
