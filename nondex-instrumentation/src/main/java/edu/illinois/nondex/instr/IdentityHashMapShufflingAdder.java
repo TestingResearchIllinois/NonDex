@@ -130,6 +130,23 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         mv.visitJumpInsn(Opcodes.GOTO, l2);
         mv.visitLabel(l3);
         mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/common/Logger", "getGlobal",
+                "()Ledu/illinois/nondex/common/Logger;", false);
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/util/logging/Level", "SEVERE", "Ljava/util/logging/Level;");
+        mv.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
+        mv.visitLdcInsn("nextIndex called  idx: ");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "lastReturnedIndex",
+                "I");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;",
+                false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "edu/illinois/nondex/common/Logger", "log",
+                "(Ljava/util/logging/Level;Ljava/lang/String;)V", false);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "lastReturnedIndex",
                 "I");
@@ -141,6 +158,22 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
     public void addHasNext() {
         MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "hasNext", "()Z", null, null);
         mv.visitCode();
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/common/Logger", "getGlobal",
+                "()Ledu/illinois/nondex/common/Logger;", false);
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/util/logging/Level", "SEVERE", "Ljava/util/logging/Level;");
+        mv.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
+        mv.visitLdcInsn("hasNext called  idx: ");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "idx", "I");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;",
+                false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "edu/illinois/nondex/common/Logger", "log",
+                "(Ljava/util/logging/Level;Ljava/lang/String;)V", false);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "idx", "I");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -229,6 +262,12 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitInsn(Opcodes.ICONST_0);
         mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "idx", "I");
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/common/Logger", "getGlobal",
+                "()Ledu/illinois/nondex/common/Logger;", false);
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/util/logging/Level", "SEVERE", "Ljava/util/logging/Level;");
+        mv.visitLdcInsn("Executing init");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "edu/illinois/nondex/common/Logger", "log",
+                "(Ljava/util/logging/Level;Ljava/lang/String;)V", false);
         Label l2 = new Label();
         mv.visitLabel(l2);
         mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
@@ -288,6 +327,12 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         mv.visitJumpInsn(Opcodes.GOTO, l4);
         mv.visitLabel(l5);
         mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/common/Logger", "getGlobal",
+                "()Ledu/illinois/nondex/common/Logger;", false);
+        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/util/logging/Level", "SEVERE", "Ljava/util/logging/Level;");
+        mv.visitLdcInsn("init done");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "edu/illinois/nondex/common/Logger", "log",
+                "(Ljava/util/logging/Level;Ljava/lang/String;)V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(3, 4);
         mv.visitEnd();
