@@ -103,11 +103,17 @@ public class SystematicRandom extends Random {
     public int nextInt(int max) {
         int num;
         count++;
+        boolean explore;
         if (replayIndex < choice.size()) {
             num = (int) choice.get(replayIndex)[0];
         } else {
             num = 0;
-            Object[] choiceNums = { 0, max, false };
+            if (count > 58) {
+                explore = true;
+            } else {
+                explore = false;
+            }
+            Object[] choiceNums = { 0, max, explore };
             choice.push(choiceNums);
         }
         replayIndex++;
