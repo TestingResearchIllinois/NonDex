@@ -392,7 +392,7 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
                         super.visitLabel(l1);
                         super.visitFrame(Opcodes.F_FULL, 2,
                                 new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "java/util/IdentityHashMap" },
+                                    "java/util/IdentityHashMap" },
                                 2,
                                 new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator", Opcodes.INTEGER });
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
