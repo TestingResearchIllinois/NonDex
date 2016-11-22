@@ -357,6 +357,166 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         if ("nextIndex".equals(name)) {
             return super.visitMethod(access, "nextIndexO", desc, signature, exceptions);
         }
+        if ("<init>".equals(name)) {
+            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+                @Override
+                public void visitInsn(int opcode) {
+                    if (opcode == Opcodes.RETURN) {
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 1);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "this$0", "Ljava/util/IdentityHashMap;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "this$0", "Ljava/util/IdentityHashMap;");
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "size", "I");
+                        Label l0 = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, l0);
+                        super.visitInsn(Opcodes.ICONST_0);
+                        Label l1 = new Label();
+                        super.visitJumpInsn(Opcodes.GOTO, l1);
+                        super.visitLabel(l0);
+                        super.visitFrame(Opcodes.F_FULL, 2,
+                                new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                    "java/util/IdentityHashMap" },
+                            1, new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator" });
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "this$0", "Ljava/util/IdentityHashMap;");
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "table",
+                                "[Ljava/lang/Object;");
+                        super.visitInsn(Opcodes.ARRAYLENGTH);
+                        super.visitLabel(l1);
+                        super.visitFrame(Opcodes.F_FULL, 2,
+                                new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "java/util/IdentityHashMap" },
+                                2,
+                                new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator", Opcodes.INTEGER });
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "index", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "this$0", "Ljava/util/IdentityHashMap;");
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "modCount", "I");
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "expectedModCount", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ICONST_M1);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "lastReturnedIndex", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "this$0", "Ljava/util/IdentityHashMap;");
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "table",
+                                "[Ljava/lang/Object;");
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "traversalTable", "[Ljava/lang/Object;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
+                        super.visitInsn(Opcodes.DUP);
+                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "order", "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
+                        super.visitInsn(Opcodes.DUP);
+                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "keys", "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ICONST_0);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "idx", "I");
+                        super.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/common/Logger", "getGlobal",
+                                "()Ledu/illinois/nondex/common/Logger;", false);
+                        super.visitFieldInsn(Opcodes.GETSTATIC, "java/util/logging/Level", "SEVERE",
+                                "Ljava/util/logging/Level;");
+                        super.visitLdcInsn("Executing init");
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "edu/illinois/nondex/common/Logger", "log",
+                                "(Ljava/util/logging/Level;Ljava/lang/String;)V", false);
+                        Label l2 = new Label();
+                        super.visitLabel(l2);
+                        super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
+                                "java/util/IdentityHashMap$IdentityHashMapIterator", "hasNextO", "()Z", false);
+                        Label l3 = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, l3);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "order", "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
+                                "java/util/IdentityHashMap$IdentityHashMapIterator", "nextIndexO", "()I", false);
+                        super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf",
+                                "(I)Ljava/lang/Integer;", false);
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z",
+                                true);
+                        super.visitInsn(Opcodes.POP);
+                        super.visitJumpInsn(Opcodes.GOTO, l2);
+                        super.visitLabel(l3);
+                        super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "order", "Ljava/util/List;");
+                        super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
+                                "(Ljava/util/List;)Ljava/util/List;", false);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "order", "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "order", "Ljava/util/List;");
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "iterator",
+                                "()Ljava/util/Iterator;", true);
+                        super.visitVarInsn(Opcodes.ASTORE, 2);
+                        Label l4 = new Label();
+                        super.visitLabel(l4);
+                        super.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/util/Iterator" }, 0, null);
+                        super.visitVarInsn(Opcodes.ALOAD, 2);
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
+                        Label l5 = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, l5);
+                        super.visitVarInsn(Opcodes.ALOAD, 2);
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next",
+                                "()Ljava/lang/Object;", true);
+                        super.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Integer");
+                        super.visitVarInsn(Opcodes.ASTORE, 3);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "keys", "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
+                                "this$0", "Ljava/util/IdentityHashMap;");
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "table",
+                                "[Ljava/lang/Object;");
+                        super.visitVarInsn(Opcodes.ALOAD, 3);
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
+                        super.visitInsn(Opcodes.AALOAD);
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z",
+                                true);
+                        super.visitInsn(Opcodes.POP);
+                        super.visitJumpInsn(Opcodes.GOTO, l4);
+                        super.visitLabel(l5);
+                        super.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+                        super.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/common/Logger", "getGlobal",
+                                "()Ledu/illinois/nondex/common/Logger;", false);
+                        super.visitFieldInsn(Opcodes.GETSTATIC, "java/util/logging/Level", "SEVERE",
+                                "Ljava/util/logging/Level;");
+                        super.visitLdcInsn("init done");
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "edu/illinois/nondex/common/Logger", "log",
+                                "(Ljava/util/logging/Level;Ljava/lang/String;)V", false);
+                    }
+                    super.visitInsn(opcode);
+                }
+            };
+        }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }
 }
