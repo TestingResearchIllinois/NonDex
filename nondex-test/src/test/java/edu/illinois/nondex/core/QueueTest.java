@@ -87,7 +87,7 @@ public class QueueTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testRemoveProirToNext() {
+    public void testRemoveWithoutCallingNextBefore() {
         Iterator<Integer> iter = queue.iterator();
         iter.remove();
     }
