@@ -30,9 +30,6 @@ import java.lang.reflect.Array;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-
-import edu.illinois.nondex.common.Logger;
 
 /**
  * This class implements the <tt>Map</tt> interface with a hash table, using
@@ -728,19 +725,16 @@ public class IdentityHashMap<K,V>
         List<Object> keys = new ArrayList<>();
         int idx = 0;
         {
-        	edu.illinois.nondex.common.Logger.getGlobal().log(Level.SEVERE, "Executing init");
-            while(hasNextO()) {
-                this.order.add(nextIndexO());
+            while(originalHasNext()) {
+                this.order.add(originalNextIndex());
             }
             order = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(order);
             for(Integer i : order) {
                 keys.add(table[i]);
             }
-            edu.illinois.nondex.common.Logger.getGlobal().log(Level.SEVERE, "init done");
         }
 
         public boolean hasNext() {
-        	edu.illinois.nondex.common.Logger.getGlobal().log(Level.SEVERE, "hasNext called  idx: " + idx);
             return idx < order.size();
         }
 
@@ -756,11 +750,10 @@ public class IdentityHashMap<K,V>
                     break;
                 }
             }
-            edu.illinois.nondex.common.Logger.getGlobal().log(Level.SEVERE, "nextIndex called  idx: " + lastReturnedIndex);
             return lastReturnedIndex;
         }
 
-        public boolean hasNextO() {
+        public boolean originalHasNext() {
             Object[] tab = traversalTable;
             for (int i = index; i < tab.length; i+=2) {
                 Object key = tab[i];
@@ -773,10 +766,10 @@ public class IdentityHashMap<K,V>
             return false;
         }
 
-        protected int nextIndexO() {
+        protected int originalNextIndex() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
-            if (!indexValid && !hasNextO())
+            if (!indexValid && !originalHasNext())
                 throw new NoSuchElementException();
 
             indexValid = false;
