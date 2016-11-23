@@ -48,7 +48,7 @@ import java.util.Stack;
 public class SystematicRandom extends Random {
     int replayIndex;
     int count;
-    Stack<Object[]> choice;
+    Stack<StackElement> choice;
     String logFileName;
     Charset utf8 = StandardCharsets.UTF_8;
     List<String> lines;
@@ -58,11 +58,11 @@ public class SystematicRandom extends Random {
         if (logFileName != null) {
             File file = new File(this.logFileName);
             if (!file.exists()) {
-                choice = new Stack<Object[]>();
+                choice = new Stack<StackElement>();
                 replayIndex = 0;
                 count = 0;
             } else {
-                choice = new Stack<Object[]>();
+                choice = new Stack<StackElement>();
                 try {
                     lines = Files.readAllLines(Paths.get(logFileName));
                 } catch (IOException ioe) {
@@ -77,7 +77,7 @@ public class SystematicRandom extends Random {
                         int last = Integer.parseInt(choiceValues[0].toString());
                         int max = Integer.parseInt(choiceValues[1].toString());
                         boolean explore = Boolean.parseBoolean((String) choiceValues[2]);
-                        Object[] lastMax = { last, max, explore };
+                        StackElement lastMax = new StackElement( last, max, explore );
                         choice.push(lastMax);
                     }
                 }
@@ -92,7 +92,7 @@ public class SystematicRandom extends Random {
         return replayIndex;
     }
 
-    public Stack<Object[]> getChoice() {
+    public Stack<StackElement> getChoice() {
         return choice;
     }
 
@@ -105,7 +105,7 @@ public class SystematicRandom extends Random {
         count++;
         boolean explore;
         if (replayIndex < choice.size()) {
-            num = (int) choice.get(replayIndex)[0];
+            num = (int) choice.get(replayIndex).getLast();
         } else {
             num = 0;
             if (count > 58) {
@@ -113,7 +113,7 @@ public class SystematicRandom extends Random {
             } else {
                 explore = false;
             }
-            Object[] choiceNums = { 0, max, explore };
+            StackElement choiceNums = new StackElement(0, max, explore);
             choice.push(choiceNums);
         }
         replayIndex++;
@@ -122,22 +122,21 @@ public class SystematicRandom extends Random {
 
     public void endRun() throws IOException {
         while (!choice.isEmpty()) {
-            Object[] lastMax = choice.pop();
-            int last = (int) lastMax[0];
-            int max = (int) lastMax[1];
-            boolean explore = (boolean) lastMax[2];
+            StackElement lastMax = choice.pop();
+            int last = (int) lastMax.getLast();
+            int max = (int) lastMax.getMax();
+            boolean explore = (boolean) lastMax.getExplore();
             if (last < max - 1) {
                 last++;
-                Object[] lm = { last, max, true };
+                StackElement lm = new StackElement(last, max, true);
                 choice.push(lm);
                 replayIndex = 0;
-                File file = new File(logFileName);
-                if (file.exists()) {
-                    file.delete();
+                if (Files.exists(Paths.get(logFileName))) {
+                    Files.delete(Paths.get(logFileName));
                 }
                 BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName));
-                for (Object[] element : choice) {
-                    String lastAndMax = element[0] + " " + element[1] + " " + element[2];
+                for (StackElement element : choice) {
+                    String lastAndMax = element.getLast() + " " + element.getMax() + " " + element.getExplore();
                     bufferedWriter.write(lastAndMax);
                     bufferedWriter.newLine();
                 }
