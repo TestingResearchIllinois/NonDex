@@ -39,11 +39,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
-
 
 public class SystematicRandom extends Random {
     int replayIndex;
@@ -142,6 +142,13 @@ public class SystematicRandom extends Random {
                 }
                 bufferedWriter.close();
                 return;
+            }
+            ArrayList<Object> ex = new ArrayList<>();
+            for (StackElement ch: choice) {
+                ex.add(ch.getExplore());
+            }
+            if (!ex.contains(true)) {
+                break;
             }
         }
         Files.delete(Paths.get(logFileName));
