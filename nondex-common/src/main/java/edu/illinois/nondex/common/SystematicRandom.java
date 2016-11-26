@@ -122,13 +122,17 @@ public class SystematicRandom extends Random {
 
     public void endRun() throws IOException {
         while (!choice.isEmpty()) {
+            ArrayList<Object> ex = new ArrayList<>();
             StackElement lastMax = choice.pop();
             int last = (int) lastMax.getLast();
             int max = (int) lastMax.getMax();
-            boolean explore = (boolean) lastMax.getExplore();
+            boolean explore = false;
             if (last < max - 1) {
                 last++;
-                StackElement lm = new StackElement(last, max, true);
+                if (choice.size() > 58 && choice.size() < 61) {
+                    explore = true;
+                }
+                StackElement lm = new StackElement(last, max, explore);
                 choice.push(lm);
                 replayIndex = 0;
                 if (Files.exists(Paths.get(logFileName))) {
@@ -143,11 +147,11 @@ public class SystematicRandom extends Random {
                 bufferedWriter.close();
                 return;
             }
-            ArrayList<Object> ex = new ArrayList<>();
             for (StackElement ch: choice) {
                 ex.add(ch.getExplore());
             }
             if (!ex.contains(true)) {
+                System.err.println("#%#%#INSIDE ENDRUN:" + Files.exists(Paths.get(System.getenv("logFileName"))));
                 break;
             }
         }

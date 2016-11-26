@@ -72,10 +72,12 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
-        if (this.mode.toString() == "SYSTEMATIC") {
+        if (this.mode.toString().equals("SYSTEMATIC")) {
             do {
+                System.err.println("#%#%#B:" + Files.exists(Paths.get(System.getenv("logFileName"))));
                 executeHelper(1);
             } while (Files.exists(Paths.get(System.getenv("logFileName"))));
+            System.err.println("#%#%#A:" + Files.exists(Paths.get(System.getenv("logFileName"))));
         } else {
             this.executeSurefireExecution(allExceptions, cleanExec);
             for (int i = 0; i < this.numRuns; i++) {
@@ -104,6 +106,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
     }
 
     private void executeHelper(int seedNum) {
+        System.err.println("#%#%#: EXECUTE CALLED");
         NonDexSurefireExecution execution =
                 new NonDexSurefireExecution(this.mode, this.computeIthSeed(seedNum),
                         Pattern.compile(this.filter), this.start, this.end,
