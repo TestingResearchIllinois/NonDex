@@ -65,9 +65,8 @@ public class MapTest<K, V> {
         WeakHashMap<Integer, Integer> whm = new WeakHashMap<>();
         IdentityHashMap<Integer, Integer> ihm = new IdentityHashMap<>();
         ConcurrentHashMap<Integer, Integer> chm = new ConcurrentHashMap<>();
-        ihm.clear();
         chm.clear();
-        return new Object[] {hm, whm};
+        return new Object[] {hm, whm, ihm};
     }
 
     @Before
