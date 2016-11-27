@@ -108,7 +108,7 @@ public class SystematicRandom extends Random {
             num = (int) choice.get(replayIndex).getLast();
         } else {
             num = 0;
-            if (count > 58) {
+            if (count > 60) {
                 explore = true;
             } else {
                 explore = false;
@@ -129,7 +129,7 @@ public class SystematicRandom extends Random {
             boolean explore = false;
             if (last < max - 1) {
                 last++;
-                if (choice.size() > 58 && choice.size() < 61) {
+                if (choice.size() > 59) {
                     explore = true;
                 }
                 StackElement lm = new StackElement(last, max, explore);
