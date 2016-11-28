@@ -90,31 +90,31 @@ public class SystematicRandom extends Random {
     }
 
     public int nextInt(int max) {
-        int num;
+        int last;
         count++;
         boolean explore;
         if (replayIndex < choice.size()) {
-            num = (int) choice.get(replayIndex).getLast();
+            last =  choice.get(replayIndex).getLast();
         } else {
-            num = 0;
+            last = 0;
             if (count > STARTING_COUNT + 1) {
                 explore = true;
             } else {
                 explore = false;
             }
-            StackElement choiceNums = new StackElement(0, max, explore);
+            StackElement choiceNums = new StackElement(last, max, explore);
             choice.push(choiceNums);
         }
         replayIndex++;
-        return num;
+        return last;
     }
 
     public void endRun() throws IOException {
         while (!choice.isEmpty()) {
             ArrayList<Object> ex = new ArrayList<>();
             StackElement lastMax = choice.pop();
-            int last = (int) lastMax.getLast();
-            int max = (int) lastMax.getMax();
+            int last = lastMax.getLast();
+            int max = lastMax.getMax();
             boolean explore = false;
             if (last < max - 1) {
                 last++;
