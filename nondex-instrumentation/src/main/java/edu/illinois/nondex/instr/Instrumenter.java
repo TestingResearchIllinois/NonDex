@@ -60,6 +60,7 @@ public final class Instrumenter {
     public static final String concurrentHashMapName = "java/util/concurrent/ConcurrentHashMap$Traverser.class";
     public static final String methodName = "java/lang/reflect/Method.class";
     public static final String priorityQueueName = "java/util/PriorityQueue$Itr.class";
+    public static final String priorityBlockingQueueName = "java/util/concurrent/PriorityBlockingQueue.class";
 
     private final Set<String> standardClassesToInstrument = new HashSet<>();
     private final Set<String> specialClassesToInstrument = new HashSet<>();
@@ -78,7 +79,6 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/io/File.class");
         this.standardClassesToInstrument.add("java/text/DateFormatSymbols.class");
         this.standardClassesToInstrument.add("java/util/PriorityQueue.class");
-        this.standardClassesToInstrument.add("java/util/concurrent/PriorityBlockingQueue.class");
 
         this.specialClassesToInstrument.add(Instrumenter.hashMapName);
         this.specialClassesToInstrument.add(Instrumenter.weakHashMapName);
@@ -86,6 +86,7 @@ public final class Instrumenter {
         this.specialClassesToInstrument.add(Instrumenter.concurrentHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.methodName);
         this.specialClassesToInstrument.add(Instrumenter.priorityQueueName);
+        this.specialClassesToInstrument.add(Instrumenter.priorityBlockingQueueName);
     }
 
     public static final void instrument(String rtJar, String outJar)
