@@ -46,6 +46,7 @@ import java.util.Random;
 import java.util.Stack;
 
 public class SystematicRandom extends Random {
+    public static int STARTING_COUNT = 59;
     int replayIndex;
     int count;
     Stack<StackElement> choice;
@@ -88,18 +89,6 @@ public class SystematicRandom extends Random {
         }
     }
 
-    int getReplayIndex() {
-        return replayIndex;
-    }
-
-    public Stack<StackElement> getChoice() {
-        return choice;
-    }
-
-    String getLogFileName() {
-        return logFileName;
-    }
-
     public int nextInt(int max) {
         int num;
         count++;
@@ -108,7 +97,7 @@ public class SystematicRandom extends Random {
             num = (int) choice.get(replayIndex).getLast();
         } else {
             num = 0;
-            if (count > 60) {
+            if (count > STARTING_COUNT + 1) {
                 explore = true;
             } else {
                 explore = false;
@@ -129,7 +118,7 @@ public class SystematicRandom extends Random {
             boolean explore = false;
             if (last < max - 1) {
                 last++;
-                if (choice.size() > 59) {
+                if (choice.size() > STARTING_COUNT) {
                     explore = true;
                 }
                 StackElement lm = new StackElement(last, max, explore);
@@ -151,7 +140,6 @@ public class SystematicRandom extends Random {
                 ex.add(ch.getExplore());
             }
             if (!ex.contains(true)) {
-                System.err.println("#%#%#INSIDE ENDRUN:" + Files.exists(Paths.get(System.getenv("logFileName"))));
                 break;
             }
         }
