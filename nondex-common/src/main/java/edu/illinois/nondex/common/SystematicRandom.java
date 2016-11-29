@@ -28,19 +28,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -67,7 +62,6 @@ public class SystematicRandom extends Random {
                 try {
                     lines = Files.readAllLines(Paths.get(logFileName));
                 } catch (IOException ioe) {
-                    // TODO Auto-generated catch block
                     ioe.printStackTrace();
                 }
                 Object[] choiceValues = new Object[3];
@@ -77,7 +71,7 @@ public class SystematicRandom extends Random {
                         choiceValues = element.split(delimit);
                         int last = Integer.parseInt(choiceValues[0].toString());
                         int max = Integer.parseInt(choiceValues[1].toString());
-                        boolean explore = Boolean.parseBoolean((String) choiceValues[2]);
+                        boolean explore = Boolean.parseBoolean(choiceValues[2].toString());
                         StackElement lastMax = new StackElement( last, max, explore );
                         choice.push(lastMax);
                     }
