@@ -2,18 +2,18 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 buildscript {
-	repositories {
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath "com.gradle.publish:plugin-publish-plugin:0.9.6"
-	}
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.6"
+    }
 }
 apply plugin: "com.gradle.plugin-publish"
 repositories {
-	jcenter()
+    jcenter()
 }
 
 configurations {
@@ -21,23 +21,23 @@ configurations {
 }
 
 dependencies {
-	compile gradleApi()
-	compile localGroovy()
+    compile gradleApi()
+    compile localGroovy()
     compile 'edu.illinois:nondex-common:1.1.1'
     testCompile 'junit:junit:4.11'
 }
 
-version="1.1.29"
+version = "1.1.29"
 pluginBundle {
-	website = 'https://github.com/shiloh00/NonDex'
-	vcsUrl = 'https://github.com/shiloh00/NonDex'
-	description = 'NonDex plugin for Gradle'
-	tags = ['non-deterministic', 'test']
+    website = 'https://github.com/shiloh00/NonDex'
+    vcsUrl = 'https://github.com/shiloh00/NonDex'
+    description = 'NonDex plugin for Gradle'
+    tags = ['non-deterministic', 'test']
 
-	plugins {
-		nondexPlugin {
-			id = 'edu.illinois.nondex'
-			displayName = 'Nondex plugin for Gradle'
-		}
-	}
+    plugins {
+        nondexPlugin {
+            id = 'edu.illinois.nondex'
+            displayName = 'Nondex plugin for Gradle'
+        }
+    }
 }
