@@ -1,8 +1,8 @@
 package edu.illinois.nondex.gradle.plugin.tasks
 
-import edu.illinois.nondex.gradle.plugin.NonDexJavaPlugin
+import edu.illinois.nondex.common.ConfigurationDefaults
+import edu.illinois.nondex.common.Utils
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.testing.Test
 
 class NonDexTest extends Test {
@@ -16,8 +16,8 @@ class NonDexTest extends Test {
 
         doFirst {
             def args = "-Xbootclasspath/p:" + project.extensions.nondexTest.outPath + ":" + project.extensions.nondexTest.commonPath
-            println args
-            jvmArgs args
+            jvmArgs args, "-D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + Utils.getFreshExecutionId()
+            println getJvmArgs()
         }
     }
 }
