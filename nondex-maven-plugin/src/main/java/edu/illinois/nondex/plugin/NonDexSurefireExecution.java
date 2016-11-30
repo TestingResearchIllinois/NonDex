@@ -54,11 +54,11 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 mavenProject, mavenSession, pluginManager, nondexDir);
     }
 
-    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+    public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String log, String nondexDir,
             String nondexJarDir, Plugin surefire, String originalArgLine, MavenProject mavenProject,
             MavenSession mavenSession, BuildPluginManager pluginManager) {
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir);
-        this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
+        this.configuration = new Configuration(mode, seed, filter, start, end, log, nondexDir, nondexJarDir, null,
                 this.executionId, Logger.getGlobal().getLoggingLevel());
     }
 
@@ -68,7 +68,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, config.nondexDir);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, config.nondexDir, config.nondexJarDir, test, this.executionId,
+                end, config.log, config.nondexDir, config.nondexJarDir, test, this.executionId,
                 Logger.getGlobal().getLoggingLevel(), print);
     }
 

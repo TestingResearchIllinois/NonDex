@@ -50,36 +50,31 @@ public class SystematicRandom extends Random {
     List<String> lines;
 
     public SystematicRandom() {
-        logFileName = System.getenv("logFileName");
-        if (logFileName != null) {
-            File file = new File(this.logFileName);
-            if (!file.exists()) {
-                choice = new Stack<StackElement>();
-                replayIndex = 0;
-                count = 0;
-            } else {
-                choice = new Stack<StackElement>();
-                try {
-                    lines = Files.readAllLines(Paths.get(logFileName));
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                Object[] choiceValues = new Object[3];
-                for (String element: lines) {
-                    String delimit = "[ ]+";
-                    if (!element.isEmpty()) {
-                        choiceValues = element.split(delimit);
-                        int last = Integer.parseInt(choiceValues[0].toString());
-                        int max = Integer.parseInt(choiceValues[1].toString());
-                        boolean explore = Boolean.parseBoolean(choiceValues[2].toString());
-                        StackElement lastMax = new StackElement( last, max, explore );
-                        choice.push(lastMax);
-                    }
+        logFileName = ConfigurationDefaults.DEFAULT_LOG_STR;
+        File file = new File(logFileName);
+        if (!file.exists()) {
+            choice = new Stack<StackElement>();
+            replayIndex = 0;
+            count = 0;
+        } else {
+            choice = new Stack<StackElement>();
+            try {
+                lines = Files.readAllLines(Paths.get(logFileName));
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            Object[] choiceValues = new Object[3];
+            for (String element: lines) {
+                String delimit = "[ ]+";
+                if (!element.isEmpty()) {
+                    choiceValues = element.split(delimit);
+                    int last = Integer.parseInt(choiceValues[0].toString());
+                    int max = Integer.parseInt(choiceValues[1].toString());
+                    boolean explore = Boolean.parseBoolean(choiceValues[2].toString());
+                    StackElement lastMax = new StackElement(last, max, explore);
+                    choice.push(lastMax);
                 }
             }
-        } else {
-            System.err.println("The env variable does not exist. File could not be created");
-            System.exit(1);
         }
     }
 

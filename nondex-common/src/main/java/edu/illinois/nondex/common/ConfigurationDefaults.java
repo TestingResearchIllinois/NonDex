@@ -60,6 +60,9 @@ public class ConfigurationDefaults {
     public static final String DEFAULT_END_STR = "9223372036854775807";
     public static final long DEFAULT_END = new Long(ConfigurationDefaults.DEFAULT_END_STR);
 
+    public static final String PROPERTY_LOG = "logFile";
+    public static final String DEFAULT_LOG_STR = "log";
+
     public static final String PROPERTY_PRINT_STACK = "nondexPrintstack";
     public static final String DEFAULT_PRINT_STACK_STR = "false";
 
