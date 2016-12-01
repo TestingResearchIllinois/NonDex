@@ -43,7 +43,6 @@ import java.util.Stack;
 public class SystematicRandom extends Random {
     public static int STARTING_COUNT = 59;
     int replayIndex;
-    int count;
     Stack<StackElement> choice;
     String logFileName;
     Charset utf8 = StandardCharsets.UTF_8;
@@ -55,7 +54,6 @@ public class SystematicRandom extends Random {
         if (!file.exists()) {
             choice = new Stack<StackElement>();
             replayIndex = 0;
-            count = 0;
         } else {
             choice = new Stack<StackElement>();
             try {
@@ -80,13 +78,12 @@ public class SystematicRandom extends Random {
 
     public int nextInt(int max) {
         int last;
-        count++;
         boolean explore;
         if (replayIndex < choice.size()) {
             last =  choice.get(replayIndex).getLast();
         } else {
             last = 0;
-            if (count > STARTING_COUNT + 1) {
+            if (choice.size() > STARTING_COUNT) {
                 explore = true;
             } else {
                 explore = false;
