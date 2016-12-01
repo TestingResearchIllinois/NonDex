@@ -28,27 +28,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
-public class StackElement {
+public class ExplorationEntry {
 
-    int last;
-    int max;
-    boolean explore;
+    private int current;
+    private int maximum;
+    private boolean shouldExplore;
 
-    public StackElement(int last, int max, boolean explore) {
-        this.last = last;
-        this.max = max;
-        this.explore = explore;
+    public ExplorationEntry(int last, int max, boolean explore) {
+        this.current = last;
+        this.maximum = max;
+        this.shouldExplore = explore;
     }
 
-    public int getLast() {
-        return last;
+    public int getCurrent() {
+        return current;
     }
 
-    public int getMax() {
-        return max;
+    public int getMaximum() {
+        return maximum;
     }
 
-    public boolean getExplore() {
-        return explore;
+    public boolean getShouldExplore() {
+        return shouldExplore;
     }
 }

@@ -31,8 +31,6 @@ package edu.illinois.nondex.common;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -43,19 +41,18 @@ import java.util.Stack;
 public class SystematicRandom extends Random {
     public static int STARTING_COUNT = 59;
     int replayIndex;
-    Stack<StackElement> choice;
+    Stack<ExplorationEntry> choices;
     String logFileName;
-    Charset utf8 = StandardCharsets.UTF_8;
     List<String> lines;
 
     public SystematicRandom() {
         logFileName = ConfigurationDefaults.DEFAULT_LOG_STR;
         File file = new File(logFileName);
         if (!file.exists()) {
-            choice = new Stack<StackElement>();
+            choices = new Stack<ExplorationEntry>();
             replayIndex = 0;
         } else {
-            choice = new Stack<StackElement>();
+            choices = new Stack<ExplorationEntry>();
             try {
                 lines = Files.readAllLines(Paths.get(logFileName));
             } catch (IOException ioe) {
@@ -69,8 +66,8 @@ public class SystematicRandom extends Random {
                     int last = Integer.parseInt(choiceValues[0].toString());
                     int max = Integer.parseInt(choiceValues[1].toString());
                     boolean explore = Boolean.parseBoolean(choiceValues[2].toString());
-                    StackElement lastMax = new StackElement(last, max, explore);
-                    choice.push(lastMax);
+                    ExplorationEntry lastMax = new ExplorationEntry(last, max, explore);
+                    choices.push(lastMax);
                 }
             }
         }
@@ -79,51 +76,51 @@ public class SystematicRandom extends Random {
     public int nextInt(int max) {
         int last;
         boolean explore;
-        if (replayIndex < choice.size()) {
-            last =  choice.get(replayIndex).getLast();
+        if (replayIndex < choices.size()) {
+            last =  choices.get(replayIndex).getCurrent();
         } else {
             last = 0;
-            if (choice.size() > STARTING_COUNT) {
+            if (choices.size() > STARTING_COUNT) {
                 explore = true;
             } else {
                 explore = false;
             }
-            StackElement choiceNums = new StackElement(last, max, explore);
-            choice.push(choiceNums);
+            ExplorationEntry choiceNums = new ExplorationEntry(last, max, explore);
+            choices.push(choiceNums);
         }
         replayIndex++;
         return last;
     }
 
     public void endRun() throws IOException {
-        while (!choice.isEmpty()) {
+        while (!choices.isEmpty()) {
             ArrayList<Object> ex = new ArrayList<>();
-            StackElement lastMax = choice.pop();
-            int last = lastMax.getLast();
-            int max = lastMax.getMax();
+            ExplorationEntry lastMax = choices.pop();
+            int last = lastMax.getCurrent();
+            int max = lastMax.getMaximum();
             boolean explore = false;
             if (last < max - 1) {
                 last++;
-                if (choice.size() > STARTING_COUNT) {
+                if (choices.size() > STARTING_COUNT) {
                     explore = true;
                 }
-                StackElement lm = new StackElement(last, max, explore);
-                choice.push(lm);
+                ExplorationEntry lm = new ExplorationEntry(last, max, explore);
+                choices.push(lm);
                 replayIndex = 0;
                 if (Files.exists(Paths.get(logFileName))) {
                     Files.delete(Paths.get(logFileName));
                 }
                 BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName));
-                for (StackElement element : choice) {
-                    String lastAndMax = element.getLast() + " " + element.getMax() + " " + element.getExplore();
+                for (ExplorationEntry element : choices) {
+                    String lastAndMax = element.getCurrent() + " " + element.getMaximum() + " " + element.getShouldExplore();
                     bufferedWriter.write(lastAndMax);
                     bufferedWriter.newLine();
                 }
                 bufferedWriter.close();
                 return;
             }
-            for (StackElement ch: choice) {
-                ex.add(ch.getExplore());
+            for (ExplorationEntry ch: choices) {
+                ex.add(ch.getShouldExplore());
             }
             if (!ex.contains(true)) {
                 break;
