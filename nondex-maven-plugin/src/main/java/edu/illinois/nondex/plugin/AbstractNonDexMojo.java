@@ -98,7 +98,7 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
      * the nondex phase. If start and end have the same value, then only the
      * invocation at that value is shuffled.
      */
-    @Parameter(property = ConfigurationDefaults.PROPERTY_START, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
+    @Parameter(property = ConfigurationDefaults.PROPERTY_END, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
     protected long end;
 
 
