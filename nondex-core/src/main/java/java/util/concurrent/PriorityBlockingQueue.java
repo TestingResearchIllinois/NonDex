@@ -731,7 +731,7 @@ public class PriorityBlockingQueue<E> extends AbstractQueue<E>
         }
     }
 
-    public String toString() {
+    public String originalToString() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -742,6 +742,29 @@ public class PriorityBlockingQueue<E> extends AbstractQueue<E>
             sb.append('[');
             for (int i = 0; i < n; ++i) {
                 Object e = queue[i];
+                sb.append(e == this ? "(this Collection)" : e);
+                if (i != n - 1)
+                    sb.append(',').append(' ');
+            }
+            return sb.append(']').toString();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String toString() {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            int n = size;
+            if (n == 0)
+                return "[]";
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            Object[] copy = queue.clone();
+            copy = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(copy);
+            for (int i = 0; i < n; ++i) {
+                Object e = copy[i];
                 sb.append(e == this ? "(this Collection)" : e);
                 if (i != n - 1)
                     sb.append(',').append(' ');
