@@ -72,10 +72,6 @@ public class QueueTest {
 
     @Test
     public void testShuffling() {
-        // TODO(pzhao12): after toString for PriorityBlockingQueue is fixed, this if statement will be removed
-        if (queue instanceof PriorityBlockingQueue<?>) {
-            return;
-        }
         assertThat(queue.toString(), not(equalTo(queue.toString())));
     }
 
