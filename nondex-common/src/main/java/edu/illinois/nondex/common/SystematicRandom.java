@@ -92,7 +92,6 @@ public class SystematicRandom extends Random {
 
     public void endRun() throws IOException {
         while (!choices.isEmpty()) {
-            ArrayList<Object> exploreStorage = new ArrayList<>();
             ExplorationEntry currentMaximum = choices.pop();
             int current = currentMaximum.getCurrent();
             int maximum = currentMaximum.getMaximum();
@@ -117,10 +116,13 @@ public class SystematicRandom extends Random {
                 bufferedWriter.close();
                 return;
             }
+            boolean allFalse = true;
             for (ExplorationEntry ch: choices) {
-                exploreStorage.add(ch.getShouldExplore());
+                if (ch.getShouldExplore()) {
+                    allFalse = false;
+                }
             }
-            if (!exploreStorage.contains(true)) {
+            if (allFalse) {
                 break;
             }
         }
