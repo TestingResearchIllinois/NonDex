@@ -68,7 +68,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, config.nondexDir);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
-                end, config.log, config.nondexDir, config.nondexJarDir, test, this.executionId,
+                end, config.systematicLog, config.nondexDir, config.nondexJarDir, test, this.executionId,
                 Logger.getGlobal().getLoggingLevel(), print);
     }
 

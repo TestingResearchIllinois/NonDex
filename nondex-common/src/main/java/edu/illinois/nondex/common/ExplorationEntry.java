@@ -34,10 +34,10 @@ public class ExplorationEntry {
     private int maximum;
     private boolean shouldExplore;
 
-    public ExplorationEntry(int last, int max, boolean explore) {
-        this.current = last;
-        this.maximum = max;
-        this.shouldExplore = explore;
+    public ExplorationEntry(int current, int maximum, boolean shouldExplore) {
+        this.current = current;
+        this.maximum = maximum;
+        this.shouldExplore = shouldExplore;
     }
 
     public int getCurrent() {

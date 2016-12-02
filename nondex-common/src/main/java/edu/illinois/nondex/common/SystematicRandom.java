@@ -44,67 +44,65 @@ public class SystematicRandom extends Random {
     Stack<ExplorationEntry> choices;
     String logFileName;
     List<String> lines;
+    Configuration config = Configuration.parseArgs();
 
     public SystematicRandom() {
-        logFileName = ConfigurationDefaults.DEFAULT_LOG_STR;
+        logFileName = config.systematicLog;
+        choices = new Stack<ExplorationEntry>();
         File file = new File(logFileName);
-        if (!file.exists()) {
-            choices = new Stack<ExplorationEntry>();
-            replayIndex = 0;
-        } else {
-            choices = new Stack<ExplorationEntry>();
+        if (file.exists()) {
             try {
                 lines = Files.readAllLines(Paths.get(logFileName));
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-            Object[] choiceValues = new Object[3];
+            Object[] choiceValues;
             for (String element: lines) {
-                String delimit = "[ ]+";
+                String delimiter = "[ ]+";
                 if (!element.isEmpty()) {
-                    choiceValues = element.split(delimit);
-                    int last = Integer.parseInt(choiceValues[0].toString());
-                    int max = Integer.parseInt(choiceValues[1].toString());
-                    boolean explore = Boolean.parseBoolean(choiceValues[2].toString());
-                    ExplorationEntry lastMax = new ExplorationEntry(last, max, explore);
-                    choices.push(lastMax);
+                    choiceValues = element.split(delimiter);
+                    int current = Integer.parseInt(choiceValues[0].toString());
+                    int maximum = Integer.parseInt(choiceValues[1].toString());
+                    boolean shouldExplore = Boolean.parseBoolean(choiceValues[2].toString());
+                    ExplorationEntry currentMaximum = new ExplorationEntry(current, maximum, shouldExplore);
+                    choices.push(currentMaximum);
                 }
             }
         }
     }
 
-    public int nextInt(int max) {
-        int last;
+    public int nextInt(int maximum) {
+        int current;
         boolean explore;
         if (replayIndex < choices.size()) {
-            last =  choices.get(replayIndex).getCurrent();
+            current =  choices.get(replayIndex).getCurrent();
         } else {
-            last = 0;
+            current = 0;
             if (choices.size() > STARTING_COUNT) {
                 explore = true;
             } else {
                 explore = false;
             }
-            ExplorationEntry choiceNums = new ExplorationEntry(last, max, explore);
+            ExplorationEntry choiceNums = new ExplorationEntry(current, maximum, explore);
             choices.push(choiceNums);
         }
         replayIndex++;
-        return last;
+        return current;
     }
 
     public void endRun() throws IOException {
         while (!choices.isEmpty()) {
-            ArrayList<Object> ex = new ArrayList<>();
-            ExplorationEntry lastMax = choices.pop();
-            int last = lastMax.getCurrent();
-            int max = lastMax.getMaximum();
-            boolean explore = false;
-            if (last < max - 1) {
-                last++;
+            ArrayList<Object> exploreStorage = new ArrayList<>();
+            ExplorationEntry currentMaximum = choices.pop();
+            int current = currentMaximum.getCurrent();
+            int maximum = currentMaximum.getMaximum();
+            boolean shouldExplore = false;
+            if (current < maximum - 1) {
+                current++;
                 if (choices.size() > STARTING_COUNT) {
-                    explore = true;
+                    shouldExplore = true;
                 }
-                ExplorationEntry lm = new ExplorationEntry(last, max, explore);
+                ExplorationEntry lm = new ExplorationEntry(current, maximum, shouldExplore);
                 choices.push(lm);
                 replayIndex = 0;
                 if (Files.exists(Paths.get(logFileName))) {
@@ -120,9 +118,9 @@ public class SystematicRandom extends Random {
                 return;
             }
             for (ExplorationEntry ch: choices) {
-                ex.add(ch.getShouldExplore());
+                exploreStorage.add(ch.getShouldExplore());
             }
-            if (!ex.contains(true)) {
+            if (!exploreStorage.contains(true)) {
                 break;
             }
         }

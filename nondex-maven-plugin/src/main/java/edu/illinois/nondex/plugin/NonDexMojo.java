@@ -75,7 +75,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
         if (this.mode.toString().equals("SYSTEMATIC")) {
             do {
                 executeHelper(1);
-            } while (Files.exists(Paths.get(ConfigurationDefaults.DEFAULT_LOG_STR)));
+            } while (Files.exists(Paths.get(ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG)));
         } else {
             this.executeSurefireExecution(allExceptions, cleanExec);
             for (int i = 0; i < this.numRuns; i++) {
@@ -106,7 +106,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
     private void executeHelper(int seedNum) {
         NonDexSurefireExecution execution =
                 new NonDexSurefireExecution(this.mode, this.computeIthSeed(seedNum),
-                        Pattern.compile(this.filter), this.start, this.end, ConfigurationDefaults.DEFAULT_LOG_STR,
+                        Pattern.compile(this.filter), this.start, this.end, ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG,
                         Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
                         Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
                             .toString(),

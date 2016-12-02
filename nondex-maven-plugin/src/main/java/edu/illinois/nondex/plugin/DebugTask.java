@@ -120,7 +120,7 @@ public class DebugTask {
             Configuration newConfig = new Configuration(someFailingConfig.mode,
                     Utils.computeIthSeed(i, false, newSeed),
                     someFailingConfig.filter, someFailingConfig.start, someFailingConfig.end,
-                    someFailingConfig.log, someFailingConfig.nondexDir, someFailingConfig.nondexJarDir,
+                    someFailingConfig.systematicLog, someFailingConfig.nondexDir, someFailingConfig.nondexJarDir,
                     someFailingConfig.testName, someFailingConfig.executionId,
                     someFailingConfig.loggingLevel);
             retryWOtherSeeds.add(newConfig);

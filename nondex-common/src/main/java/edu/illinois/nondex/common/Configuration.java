@@ -55,7 +55,7 @@ public class Configuration {
 
     public final long start;
     public final long end;
-    public final String log;
+    public final String systematicLog;
 
     public final boolean shouldPrintStackTrace;
 
@@ -70,7 +70,7 @@ public class Configuration {
     private Set<String> failedTests = null;
 
     protected Configuration(Mode mode, int seed, Pattern filter, String executionId) {
-        this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_LOG_STR,
+        this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG,
                 ConfigurationDefaults.DEFAULT_NONDEX_DIR, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
                 null, executionId, Level.CONFIG);
     }
@@ -87,7 +87,7 @@ public class Configuration {
         this.filter = filter;
         this.start = start;
         this.end = end;
-        this.log = log;
+        this.systematicLog = log;
         this.nondexDir = nondexDir;
         this.nondexJarDir = nondexJarDir;
         this.testName = testName;
@@ -101,7 +101,7 @@ public class Configuration {
     public Configuration(String executionId, String nondexDir) {
         this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
                 Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
-                ConfigurationDefaults.DEFAULT_LOG_STR, nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG, nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
                 null, executionId, Logger.getGlobal().getLoggingLevel());
     }
 
@@ -116,7 +116,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
-        sb.append(" -D" + ConfigurationDefaults.PROPERTY_LOG + "=" + this.log);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG + "=" + this.systematicLog);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=\"" + this.nondexDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=\"" + this.nondexJarDir + "\"");
@@ -133,7 +133,7 @@ public class Configuration {
                                        ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed,
                                        ConfigurationDefaults.PROPERTY_START + "=" + this.start,
                                        ConfigurationDefaults.PROPERTY_END + "=" + this.end,
-                                       ConfigurationDefaults.PROPERTY_LOG + "=" + this.log,
+                                       ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG + "=" + this.systematicLog,
                                        ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace,
                                        ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir,
                                        ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
@@ -166,8 +166,8 @@ public class Configuration {
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
 
-        final String log = props.getProperty(ConfigurationDefaults.PROPERTY_LOG,
-                ConfigurationDefaults.DEFAULT_LOG_STR);
+        final String log = props.getProperty(ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG,
+                ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG);
 
         final boolean shouldPrintStacktrace = Boolean.parseBoolean(
                 props.getProperty(ConfigurationDefaults.PROPERTY_PRINT_STACK,
