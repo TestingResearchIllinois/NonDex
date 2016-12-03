@@ -39,12 +39,11 @@ import java.util.Stack;
 import java.util.logging.Level;
 
 public class SystematicRandom extends Random {
-    public static int STARTING_COUNT = 59;
-    private int replayIndex;
     private final Stack<ExplorationEntry> choices;
     private final String logFileName;
-    private List<String> lines;
     private final Configuration config = Configuration.parseArgs();
+    private List<String> lines;
+    private int replayIndex;
 
     public SystematicRandom() {
         logFileName = config.systematicLog;
@@ -83,7 +82,7 @@ public class SystematicRandom extends Random {
             current =  choices.get(replayIndex).getCurrent();
         } else {
             current = 0;
-            if (choices.size() > STARTING_COUNT) {
+            if (choices.size() > config.start) {
                 explore = true;
             } else {
                 explore = false;
@@ -103,12 +102,13 @@ public class SystematicRandom extends Random {
             boolean shouldExplore = false;
             if (current < maximum - 1) {
                 current++;
-                if (choices.size() > STARTING_COUNT) {
+                if (choices.size() > config.start) {
                     shouldExplore = true;
                 }
                 currentMaximum.setCurrent(current);
                 currentMaximum.setShouldExplore(shouldExplore);
                 choices.push(currentMaximum);
+                replayIndex = 0;
                 try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName))) {
                     for (ExplorationEntry element : choices) {
                         String lastAndMax = element.getCurrent() + " " + element.getMaximum()
