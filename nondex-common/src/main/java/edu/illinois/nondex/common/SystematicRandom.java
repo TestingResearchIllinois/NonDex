@@ -104,16 +104,14 @@ public class SystematicRandom extends Random {
                 ExplorationEntry lm = new ExplorationEntry(current, maximum, shouldExplore);
                 choices.push(lm);
                 replayIndex = 0;
-                if (Files.exists(Paths.get(logFileName))) {
-                    Files.delete(Paths.get(logFileName));
+                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName))) {
+                    for (ExplorationEntry element : choices) {
+                        String lastAndMax = element.getCurrent() + " " + element.getMaximum()
+                            + " " + element.getShouldExplore();
+                        bufferedWriter.write(lastAndMax);
+                        bufferedWriter.newLine();
+                    }
                 }
-                BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName));
-                for (ExplorationEntry element : choices) {
-                    String lastAndMax = element.getCurrent() + " " + element.getMaximum() + " " + element.getShouldExplore();
-                    bufferedWriter.write(lastAndMax);
-                    bufferedWriter.newLine();
-                }
-                bufferedWriter.close();
                 return;
             }
             boolean allFalse = true;
@@ -126,6 +124,8 @@ public class SystematicRandom extends Random {
                 break;
             }
         }
-        Files.delete(Paths.get(logFileName));
+        if (Files.exists(Paths.get(logFileName))) {
+            Files.delete(Paths.get(logFileName));
+        }
     }
 }
