@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
+import java.util.logging.Level;
 
 public class SystematicRandom extends Random {
     public static int STARTING_COUNT = 59;
@@ -54,18 +55,23 @@ public class SystematicRandom extends Random {
             try {
                 lines = Files.readAllLines(Paths.get(logFileName));
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                Logger.getGlobal().log(Level.SEVERE,"Could not read lines from systematic.log" ,ioe);
             }
             Object[] choiceValues;
             for (String element: lines) {
                 String delimiter = "[ ]+";
                 if (!element.isEmpty()) {
                     choiceValues = element.split(delimiter);
-                    int current = Integer.parseInt(choiceValues[0].toString());
-                    int maximum = Integer.parseInt(choiceValues[1].toString());
-                    boolean shouldExplore = Boolean.parseBoolean(choiceValues[2].toString());
-                    ExplorationEntry currentMaximum = new ExplorationEntry(current, maximum, shouldExplore);
-                    choices.push(currentMaximum);
+                    if (choiceValues.length == 3) {
+                        int current = Integer.parseInt(choiceValues[0].toString());
+                        int maximum = Integer.parseInt(choiceValues[1].toString());
+                        boolean shouldExplore = Boolean.parseBoolean(choiceValues[2].toString());
+                        ExplorationEntry currentMaximum = new ExplorationEntry(current, maximum, shouldExplore);
+                        choices.push(currentMaximum);
+                    } else {
+                        Logger.getGlobal().log(Level.WARNING, "The 3 ExplorationEntry variable were not stored properly");
+                    }
+
                 }
             }
         }
