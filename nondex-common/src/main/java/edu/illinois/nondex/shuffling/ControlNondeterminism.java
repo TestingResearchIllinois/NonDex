@@ -109,6 +109,10 @@ public class ControlNondeterminism {
                 Logger.getGlobal().log(Level.SEVERE,
                         "IOException when printing shuffling counts in shutdown hook.", ioe);
                 throw new RuntimeException(ioe);
+            } catch (Throwable ex) {
+                Logger.getGlobal().log(Level.SEVERE,
+                        "Some Exception when printing shuffling counts in shutdown hook.", ex);
+                throw ex;
             }
         }
     }
