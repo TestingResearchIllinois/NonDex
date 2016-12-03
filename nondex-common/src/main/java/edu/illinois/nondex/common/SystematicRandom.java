@@ -109,7 +109,6 @@ public class SystematicRandom extends Random {
                 currentMaximum.setCurrent(current);
                 currentMaximum.setShouldExplore(shouldExplore);
                 choices.push(currentMaximum);
-                replayIndex = 0;
                 try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName))) {
                     for (ExplorationEntry element : choices) {
                         String lastAndMax = element.getCurrent() + " " + element.getMaximum()

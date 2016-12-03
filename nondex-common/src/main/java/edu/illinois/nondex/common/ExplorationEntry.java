@@ -34,7 +34,7 @@ public class ExplorationEntry {
     private int maximum;
     private boolean shouldExplore;
 
-    public ExplorationEntry(int current, int maximum, boolean shouldExplore) {
+    public ExplorationEntry(final int current, final int maximum, final boolean shouldExplore) {
         this.current = current;
         this.maximum = maximum;
         this.shouldExplore = shouldExplore;
@@ -52,15 +52,15 @@ public class ExplorationEntry {
         return shouldExplore;
     }
 
-    public void setCurrent(int current) {
+    public void setCurrent(final int current) {
         this.current = current;
     }
 
-    public void setMaximum(int maximum) {
+    public void setMaximum(final int maximum) {
         this.maximum = maximum;
     }
 
-    public void setShouldExplore(boolean shouldExplore) {
+    public void setShouldExplore(final boolean shouldExplore) {
         this.shouldExplore = shouldExplore;
     }
 }
