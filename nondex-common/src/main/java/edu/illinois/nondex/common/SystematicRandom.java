@@ -41,10 +41,10 @@ import java.util.logging.Level;
 public class SystematicRandom extends Random {
     public static int STARTING_COUNT = 59;
     private int replayIndex;
-    private Stack<ExplorationEntry> choices;
-    private String logFileName;
+    private final Stack<ExplorationEntry> choices;
+    private final String logFileName;
     private List<String> lines;
-    private Configuration config = Configuration.parseArgs();
+    private final Configuration config = Configuration.parseArgs();
 
     public SystematicRandom() {
         logFileName = config.systematicLog;
@@ -106,8 +106,9 @@ public class SystematicRandom extends Random {
                 if (choices.size() > STARTING_COUNT) {
                     shouldExplore = true;
                 }
-                ExplorationEntry lm = new ExplorationEntry(current, maximum, shouldExplore);
-                choices.push(lm);
+                currentMaximum.setCurrent(current);
+                currentMaximum.setShouldExplore(shouldExplore);
+                choices.push(currentMaximum);
                 replayIndex = 0;
                 try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName))) {
                     for (ExplorationEntry element : choices) {
