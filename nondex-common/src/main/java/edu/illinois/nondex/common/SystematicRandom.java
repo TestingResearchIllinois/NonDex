@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -41,11 +40,11 @@ import java.util.logging.Level;
 
 public class SystematicRandom extends Random {
     public static int STARTING_COUNT = 59;
-    int replayIndex;
-    Stack<ExplorationEntry> choices;
-    String logFileName;
-    List<String> lines;
-    Configuration config = Configuration.parseArgs();
+    private int replayIndex;
+    private Stack<ExplorationEntry> choices;
+    private String logFileName;
+    private List<String> lines;
+    private Configuration config = Configuration.parseArgs();
 
     public SystematicRandom() {
         logFileName = config.systematicLog;
@@ -77,7 +76,7 @@ public class SystematicRandom extends Random {
         }
     }
 
-    public int nextInt(int maximum) {
+    public int nextInt(final int maximum) {
         int current;
         boolean explore;
         if (replayIndex < choices.size()) {
@@ -122,6 +121,7 @@ public class SystematicRandom extends Random {
                 }
                 return;
             }
+
             boolean allFalse = true;
             for (ExplorationEntry ch: choices) {
                 if (ch.getShouldExplore()) {
@@ -132,6 +132,7 @@ public class SystematicRandom extends Random {
                 break;
             }
         }
+
         if (Files.exists(Paths.get(logFileName))) {
             try {
                 Files.delete(Paths.get(logFileName));
