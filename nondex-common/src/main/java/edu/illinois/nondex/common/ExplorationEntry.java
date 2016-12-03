@@ -51,4 +51,16 @@ public class ExplorationEntry {
     public boolean getShouldExplore() {
         return shouldExplore;
     }
+
+    public void setCurrent(int current) {
+        this.current = current;
+    }
+
+    public void setMaximum(int maximum) {
+        this.maximum = maximum;
+    }
+
+    public void setShouldExplore(boolean shouldExplore) {
+        this.shouldExplore = shouldExplore;
+    }
 }

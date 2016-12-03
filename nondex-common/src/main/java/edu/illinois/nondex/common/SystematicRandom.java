@@ -69,7 +69,7 @@ public class SystematicRandom extends Random {
                         ExplorationEntry currentMaximum = new ExplorationEntry(current, maximum, shouldExplore);
                         choices.push(currentMaximum);
                     } else {
-                        Logger.getGlobal().log(Level.WARNING, "The 3 ExplorationEntry variable were not stored properly");
+                        Logger.getGlobal().log(Level.SEVERE, "The 3 ExplorationEntry variable were not stored properly");
                     }
 
                 }
@@ -96,7 +96,7 @@ public class SystematicRandom extends Random {
         return current;
     }
 
-    public void endRun() throws IOException {
+    public void endRun() {
         while (!choices.isEmpty()) {
             ExplorationEntry currentMaximum = choices.pop();
             int current = currentMaximum.getCurrent();
@@ -117,6 +117,8 @@ public class SystematicRandom extends Random {
                         bufferedWriter.write(lastAndMax);
                         bufferedWriter.newLine();
                     }
+                } catch (IOException ioe) {
+                    Logger.getGlobal().log(Level.SEVERE,"Could not write systematic.log file" ,ioe);
                 }
                 return;
             }
@@ -131,7 +133,11 @@ public class SystematicRandom extends Random {
             }
         }
         if (Files.exists(Paths.get(logFileName))) {
-            Files.delete(Paths.get(logFileName));
+            try {
+                Files.delete(Paths.get(logFileName));
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.WARNING,"Could not delete systematic.log file" ,ioe);
+            }
         }
     }
 }
