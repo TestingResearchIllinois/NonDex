@@ -60,6 +60,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
     private MojoExecutionException allExceptions = null;
+    private int runNum = 0;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -73,8 +74,14 @@ public class NonDexMojo extends AbstractNonDexMojo {
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
         if (this.mode.toString().equals("SYSTEMATIC")) {
+            // In certain environments calls made to nextInt() from NonDex itself start at 59, if the user wants to change
+            // this variable they can use the DnondexStart argument
+            if (this.start == 0) {
+                this.start = 59;
+            }
             do {
                 executeHelper(1);
+                runNum++;
             } while (Files.exists(Paths.get(ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG)));
         } else {
             this.executeSurefireExecution(allExceptions, cleanExec);
@@ -101,6 +108,10 @@ public class NonDexMojo extends AbstractNonDexMojo {
             throw allExceptions;
         }
 
+    }
+
+    public int getRunNum() {
+        return runNum;
     }
 
     private void executeHelper(int seedNum) {
