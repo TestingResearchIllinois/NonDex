@@ -60,7 +60,6 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
     private MojoExecutionException allExceptions = null;
-    private int runNum = 0;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -81,7 +80,6 @@ public class NonDexMojo extends AbstractNonDexMojo {
             }
             do {
                 executeHelper(1);
-                runNum++;
             } while (Files.exists(Paths.get(ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG)));
         } else {
             this.executeSurefireExecution(allExceptions, cleanExec);
@@ -108,10 +106,6 @@ public class NonDexMojo extends AbstractNonDexMojo {
             throw allExceptions;
         }
 
-    }
-
-    public int getRunNum() {
-        return runNum;
     }
 
     private void executeHelper(int seedNum) {

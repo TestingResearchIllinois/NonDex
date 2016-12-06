@@ -25,7 +25,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.it;
 
-import edu.illinois.nondex.plugin;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
