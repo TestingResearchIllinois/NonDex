@@ -46,7 +46,6 @@ public class SysteamticTest {
         s.add(2);
         s.add(3);
 	s.add(4);
-        int num = s.iterator().next();
-        assertEquals(num, 3);
+        System.out.println(s);
     }
 }
