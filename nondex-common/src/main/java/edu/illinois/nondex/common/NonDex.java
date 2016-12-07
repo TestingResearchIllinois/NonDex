@@ -61,7 +61,7 @@ public class NonDex {
 
         this.config = config;
         this.randomNumber = new Random(config.seed);
-        this.systematicRandom = new SystematicRandom();
+        this.systematicRandom = new SystematicRandom(config);
 
         this.isOutputting = false;
     }

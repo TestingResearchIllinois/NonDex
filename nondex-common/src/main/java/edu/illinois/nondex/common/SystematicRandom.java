@@ -32,7 +32,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -40,32 +39,30 @@ import java.util.logging.Level;
 
 public class SystematicRandom extends Random {
     private final Stack<ExplorationEntry> choices;
-    private final String logFileName;
-    private final Configuration config = Configuration.parseArgs();
-    private List<String> lines;
+    private final Configuration config;
     private int replayIndex;
 
-    public SystematicRandom() {
-        logFileName = config.systematicLog;
-        choices = new Stack<ExplorationEntry>();
-        File file = new File(logFileName);
+    public SystematicRandom(Configuration config) {
+        this.config = config;
+        this.choices = new Stack<ExplorationEntry>();
+        List<String> lines = null;
+        File file = new File(config.systematicLog);
         if (file.exists()) {
             try {
-                lines = Files.readAllLines(Paths.get(logFileName));
+                lines = Files.readAllLines(config.getSystematicLogPath());
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE,"Could not read lines from systematic.log" ,ioe);
             }
-            Object[] choiceValues;
+            String[] choiceValues;
             for (String element: lines) {
                 String delimiter = "[ ]+";
                 if (!element.isEmpty()) {
                     choiceValues = element.split(delimiter);
                     if (choiceValues.length == 3) {
-                        int current = Integer.parseInt(choiceValues[0].toString());
-                        int maximum = Integer.parseInt(choiceValues[1].toString());
-                        boolean shouldExplore = Boolean.parseBoolean(choiceValues[2].toString());
-                        ExplorationEntry currentMaximum = new ExplorationEntry(current, maximum, shouldExplore);
-                        choices.push(currentMaximum);
+                        int current = Integer.parseInt(choiceValues[0]);
+                        int maximum = Integer.parseInt(choiceValues[1]);
+                        boolean shouldExplore = Boolean.parseBoolean(choiceValues[2]);
+                        choices.push(new ExplorationEntry(current, maximum, shouldExplore));
                     } else {
                         Logger.getGlobal().log(Level.SEVERE, "The 3 ExplorationEntry variable were not stored properly");
                     }
@@ -109,7 +106,7 @@ public class SystematicRandom extends Random {
                 currentMaximum.setShouldExplore(shouldExplore);
                 choices.push(currentMaximum);
                 replayIndex = 0;
-                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName))) {
+                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(config.getSystematicLogPath())) {
                     for (ExplorationEntry element : choices) {
                         String lastAndMax = element.getCurrent() + " " + element.getMaximum()
                             + " " + element.getShouldExplore();
@@ -133,9 +130,9 @@ public class SystematicRandom extends Random {
             }
         }
 
-        if (Files.exists(Paths.get(logFileName))) {
+        if (Files.exists(config.getSystematicLogPath())) {
             try {
-                Files.delete(Paths.get(logFileName));
+                Files.delete(config.getSystematicLogPath());
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.WARNING,"Could not delete systematic.log file" ,ioe);
             }

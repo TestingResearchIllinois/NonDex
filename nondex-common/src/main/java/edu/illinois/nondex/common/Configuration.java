@@ -166,7 +166,7 @@ public class Configuration {
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
 
-        final String log = props.getProperty(ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG,
+        final String systematicLog = props.getProperty(ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG,
                 ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG);
 
         final boolean shouldPrintStacktrace = Boolean.parseBoolean(
@@ -186,7 +186,7 @@ public class Configuration {
 
         final String testName = props.getProperty("test", null);
 
-        return new Configuration(nonDetKind, seed, filter, start, end, log, nondexDir, nondexJarDir, testName,
+        return new Configuration(nonDetKind, seed, filter, start, end, systematicLog, nondexDir, nondexJarDir, testName,
                 executionId, level, shouldPrintStacktrace);
     }
 
@@ -224,6 +224,10 @@ public class Configuration {
 
     public Path getLatestRunFilePath() {
         return Paths.get(this.nondexDir, ConfigurationDefaults.LATEST_RUN_ID);
+    }
+
+    public Path getSystematicLogPath() {
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG);
     }
 
     public Path getPathToJar() {
