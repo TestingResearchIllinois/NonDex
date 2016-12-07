@@ -32,6 +32,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -39,17 +40,19 @@ import java.util.logging.Level;
 
 public class SystematicRandom extends Random {
     private final Stack<ExplorationEntry> choices;
+    private final String logFileName;
     private final Configuration config;
     private int replayIndex;
 
     public SystematicRandom(Configuration config) {
         this.config = config;
+        this.logFileName = config.systematicLog;
         this.choices = new Stack<ExplorationEntry>();
-        List<String> lines = null;
-        File file = new File(config.systematicLog);
+        File file = new File(logFileName);
         if (file.exists()) {
+            List<String> lines = null;
             try {
-                lines = Files.readAllLines(config.getSystematicLogPath());
+                lines = Files.readAllLines(Paths.get(logFileName));
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE,"Could not read lines from systematic.log" ,ioe);
             }
@@ -106,7 +109,7 @@ public class SystematicRandom extends Random {
                 currentMaximum.setShouldExplore(shouldExplore);
                 choices.push(currentMaximum);
                 replayIndex = 0;
-                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(config.getSystematicLogPath())) {
+                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(logFileName))) {
                     for (ExplorationEntry element : choices) {
                         String lastAndMax = element.getCurrent() + " " + element.getMaximum()
                             + " " + element.getShouldExplore();
@@ -130,12 +133,10 @@ public class SystematicRandom extends Random {
             }
         }
 
-        if (Files.exists(config.getSystematicLogPath())) {
-            try {
-                Files.delete(config.getSystematicLogPath());
-            } catch (IOException ioe) {
-                Logger.getGlobal().log(Level.WARNING,"Could not delete systematic.log file" ,ioe);
-            }
+        if (Files.exists(Paths.get(logFileName))) {
+            File file = new File(logFileName);
+            File newFile = new File("archives.log");
+            file.renameTo(newFile);
         }
     }
 }

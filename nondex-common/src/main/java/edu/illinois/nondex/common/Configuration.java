@@ -227,7 +227,7 @@ public class Configuration {
     }
 
     public Path getSystematicLogPath() {
-        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG);
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG);
     }
 
     public Path getPathToJar() {

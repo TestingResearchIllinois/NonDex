@@ -70,7 +70,7 @@ public class NonDex {
         return globalInstance;
     }
 
-    public SystematicRandom getSysRandom() {
+    public SystematicRandom getSystematicRandom() {
         return this.systematicRandom;
     }
 
