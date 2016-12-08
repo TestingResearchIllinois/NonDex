@@ -27,7 +27,7 @@ dependencies {
     testCompile 'junit:junit:4.11'
 }
 
-version = "1.2"
+version = "1.2.1"
 pluginBundle {
     website = 'https://github.com/shiloh00/NonDex'
     vcsUrl = 'https://github.com/shiloh00/NonDex'

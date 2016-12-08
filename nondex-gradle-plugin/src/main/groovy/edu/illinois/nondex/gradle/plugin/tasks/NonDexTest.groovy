@@ -14,6 +14,9 @@ class NonDexTest extends Test {
         project.extensions.nondexTest.outPath = project.buildDir.absolutePath + "/out.jar"
         dependsOn "genOutJar"
 
+        testLogging {
+	    exceptionFormat = 'full'
+	}
         doFirst {
             def args = "-Xbootclasspath/p:" + project.extensions.nondexTest.outPath + ":" + project.extensions.nondexTest.commonPath
             jvmArgs args, "-D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + Utils.getFreshExecutionId()
