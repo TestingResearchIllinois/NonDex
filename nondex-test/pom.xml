@@ -113,7 +113,7 @@
       <artifactId>commons-collections4</artifactId>
       <version>4.1</version>
       <scope>system</scope>
-      <systemPath>/Users/kaku/Desktop/commons-collections4-4.1.jar</systemPath>
+      <systemPath>${basedir}/resources/commons-collections4-4.1.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
