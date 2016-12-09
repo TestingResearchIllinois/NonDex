@@ -33,7 +33,10 @@ import edu.illinois.nondex.common.Utils;
 public class Main {
     public static void main(String...args) throws Exception {
         if (args.length == 1) {
-            Instrumenter.instrument(Utils.getRtJarLocation().toString(), args[0]);
+            //Instrumenter.instrument(Utils.getRtJarLocation().toString(), args[0]);
+            // only for testing instrumentation of commons collections
+            Instrumenter.instrument("/Users/kaku/Desktop/commons-collections4-4.1.jar",
+                args[0]);
         } else if (args.length == 2) {
             Instrumenter.instrument(args[0], args[1]);
         } else {
