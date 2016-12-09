@@ -58,6 +58,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class NonDexMojo extends AbstractNonDexMojo {
 
+    public static int runNum = 0;
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
     private MojoExecutionException allExceptions = null;
 
@@ -80,6 +81,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
             }
             do {
                 executeHelper(1);
+                runNum++;
             } while (Files.exists(Paths.get(ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG)));
         } else {
             this.executeSurefireExecution(allExceptions, cleanExec);
@@ -106,6 +108,10 @@ public class NonDexMojo extends AbstractNonDexMojo {
             throw allExceptions;
         }
 
+    }
+
+    public static int getRunNum() {
+        return runNum;
     }
 
     private void executeHelper(int seedNum) {
