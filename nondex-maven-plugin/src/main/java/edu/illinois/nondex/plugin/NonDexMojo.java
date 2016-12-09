@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Mode;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -73,7 +74,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
-        if (this.mode.toString().equals("SYSTEMATIC")) {
+        if (this.mode == Mode.SYSTEMATIC) {
             // In certain environments calls made to nextInt() from NonDex itself start at 59, if the user wants to change
             // this variable they can use the DnondexStart argument
             if (this.start == 0) {

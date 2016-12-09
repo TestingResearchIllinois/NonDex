@@ -75,19 +75,20 @@ public class Configuration {
                 null, executionId, Level.CONFIG);
     }
 
-    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String log, String nondexDir,
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String systematicLog, String nondexDir,
             String nondexJarDir, String testName, String executionId, Level loggingLevel) {
-        this(mode, seed, filter, start, end, log, nondexDir, nondexJarDir, testName, executionId, loggingLevel, false);
+        this(mode, seed, filter, start, end, systematicLog, nondexDir, nondexJarDir, testName,
+                executionId, loggingLevel, false);
     }
 
-    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String log, String nondexDir,
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String systematicLog, String nondexDir,
             String nondexJarDir, String testName, String executionId, Level loggingLevel, boolean printStackTrace) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
         this.start = start;
         this.end = end;
-        this.systematicLog = log;
+        this.systematicLog = systematicLog;
         this.nondexDir = nondexDir;
         this.nondexJarDir = nondexJarDir;
         this.testName = testName;

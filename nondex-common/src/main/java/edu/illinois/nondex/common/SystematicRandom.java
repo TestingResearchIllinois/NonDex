@@ -77,17 +77,17 @@ public class SystematicRandom extends Random {
 
     public int nextInt(final int maximum) {
         int current;
-        boolean explore;
+        boolean shouldExplore;
         if (replayIndex < choices.size()) {
             current =  choices.get(replayIndex).getCurrent();
         } else {
             current = 0;
             if (choices.size() > config.start) {
-                explore = true;
+                shouldExplore = true;
             } else {
-                explore = false;
+                shouldExplore = false;
             }
-            ExplorationEntry choiceNums = new ExplorationEntry(current, maximum, explore);
+            ExplorationEntry choiceNums = new ExplorationEntry(current, maximum, shouldExplore);
             choices.push(choiceNums);
         }
         replayIndex++;

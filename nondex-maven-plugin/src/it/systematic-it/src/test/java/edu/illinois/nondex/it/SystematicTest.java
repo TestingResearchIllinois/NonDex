@@ -45,7 +45,8 @@ public class SystematicTest {
         Set<Integer> s = new HashSet<Integer>();
         s.add(2);
         s.add(3);
-	s.add(4);
+        s.add(4);
+        assertEquals(s.size(), 3);
         System.out.println(s);
     }
 }
