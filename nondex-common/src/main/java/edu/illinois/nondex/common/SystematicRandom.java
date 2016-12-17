@@ -82,7 +82,7 @@ public class SystematicRandom extends Random {
             current =  choices.get(replayIndex).getCurrent();
         } else {
             current = 0;
-            if (choices.size() > config.start) {
+            if (choices.size() > 103) {
                 shouldExplore = true;
             } else {
                 shouldExplore = false;
@@ -102,7 +102,7 @@ public class SystematicRandom extends Random {
             boolean shouldExplore = false;
             if (current < maximum - 1) {
                 current++;
-                if (choices.size() > config.start) {
+                if (choices.size() > 103) {
                     shouldExplore = true;
                 }
                 currentMaximum.setCurrent(current);

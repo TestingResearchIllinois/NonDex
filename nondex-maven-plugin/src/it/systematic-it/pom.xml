@@ -12,7 +12,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <nondexMode> SYSTEMATIC </nondexMode>
-    <nondexStart> 102 </nondexStart>
+    <nondexStart>95</nondexStart>
+    <nondexLogging>FINEST</nondexLogging>
   </properties>
 
   <build>

@@ -112,7 +112,7 @@ public class NonDex {
 
         List<T> newOrder = new ArrayList<T>(originalOrder);
         Collections.shuffle(newOrder, this.getRandom());
-        if (config.mode == Mode.SYSTEMATIC || this.shouldExplore()) {
+        if (this.shouldExplore()) {
             return newOrder;
         } else {
             return originalOrder;
