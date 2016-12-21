@@ -91,6 +91,24 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
     }
 
+    @Override
+    protected Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
+        return addExcludedGroups(super.applyNonDexConfig(configuration));
+    }
+
+    private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("excludedGroups".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
+                config.setValue(config.getValue() + "," + "edu.illinois.NonDexIgnore");
+                return configNode;
+            }
+        }
+        Logger.getGlobal().log(Level.INFO, "Adding excluded groups to newly created one");
+        configNode.addChild(this.makeNode("excludedGroups", "edu.illinois.NonDexIgnore"));
+        return configNode;
+    }
+
     private String getPathToNondexJar(String localRepo) {
         String result = Paths.get(this.configuration.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR)
             + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
