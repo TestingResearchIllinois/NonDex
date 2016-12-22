@@ -115,7 +115,6 @@ public class CleanSurefireExecution {
             }
             throw mojoException;
         } catch (Throwable tr) {
-            tr.printStackTrace();
             Logger.getGlobal().log(Level.SEVERE, "Some exception that is highly unexpected: ", tr);
             throw tr;
         }
