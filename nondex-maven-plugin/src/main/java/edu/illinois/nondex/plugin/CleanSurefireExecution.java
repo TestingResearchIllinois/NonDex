@@ -114,6 +114,10 @@ public class CleanSurefireExecution {
                 throw new MojoExecutionException("Failed to parse mvn reports!");
             }
             throw mojoException;
+        } catch (Throwable tr) {
+            tr.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, "Some exception that is highly unexpected: ", tr);
+            throw tr;
         }
     }
 

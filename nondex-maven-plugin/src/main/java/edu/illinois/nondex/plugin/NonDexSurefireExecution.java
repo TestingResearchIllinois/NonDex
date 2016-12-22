@@ -100,7 +100,17 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
         for (Xpp3Dom config : configNode.getChildren()) {
             if ("excludedGroups".equals(config.getName())) {
                 Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
-                config.setValue(config.getValue() + "," + "edu.illinois.NonDexIgnore");
+                String current = config.getValue();
+                current = "," + current;
+                // It seems there is an error if you have the variable
+                // in the excludedGroups string concatenated (in any
+                // position) to the concrete class we are adding to
+                // the excludedGroups
+                // ${excludedGroups} appears when
+                // there is no excludedGroups specified in the pom
+                // and potentially in other situations
+                current = current.replace(",${excludedGroups}", "");
+                config.setValue("edu.illinois.NonDexIgnore" + current);
                 return configNode;
             }
         }
