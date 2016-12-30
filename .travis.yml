@@ -10,3 +10,4 @@ before_install:
 
 
 before_script: cat nondex-maven-plugin/target/it/excluded-groups-it/build.log;
+after_failure: cat nondex-maven-plugin/target/it/excluded-groups-it/build.log;
