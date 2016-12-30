@@ -9,5 +9,4 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
 
 
-after_script:
-    - cat nondex-maven-plugin/target/it/excluded-groups-it/build.log
+after_script: cat nondex-maven-plugin/target/it/excluded-groups-it/build.log;
