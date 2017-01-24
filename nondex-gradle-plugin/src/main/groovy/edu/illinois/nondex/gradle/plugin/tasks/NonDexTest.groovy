@@ -12,7 +12,7 @@ class NonDexTest extends Test {
     void init(Configuration config) {
         project.extensions.create("nondexTest", NonDexTestExtension)
         project.extensions.nondexTest.outPath = project.buildDir.absolutePath + "/out.jar"
-        dependsOn "genOutJar"
+        dependsOn "generateOutputJar"
 
         testLogging {
 	    exceptionFormat = 'full'

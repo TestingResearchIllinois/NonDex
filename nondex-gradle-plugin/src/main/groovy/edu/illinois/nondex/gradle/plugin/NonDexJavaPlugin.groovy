@@ -33,7 +33,7 @@ class NonDexJavaPlugin implements Plugin<Project> {
 
         project.tasks.create('nondexPrepare', NonDexPrepare).init()
 
-        project.tasks.create('genOutJar', GenOutJar).init()
+        project.tasks.create('generateOutputJar', GenOutJar).init()
 
         NonDexTest nonDexTest = project.tasks.create(NonDexTest.NAME, NonDexTest)
         nonDexTest.group = NonDexPlugin.NONDEX_GROUP
