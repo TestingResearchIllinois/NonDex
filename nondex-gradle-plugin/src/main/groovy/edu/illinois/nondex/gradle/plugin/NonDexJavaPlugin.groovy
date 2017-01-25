@@ -1,6 +1,6 @@
 package edu.illinois.nondex.gradle.plugin
 
-import edu.illinois.nondex.gradle.plugin.tasks.GenOutJar
+import edu.illinois.nondex.gradle.plugin.tasks.GenerateOutputJar
 import edu.illinois.nondex.gradle.plugin.tasks.NonDexPrepare
 import edu.illinois.nondex.gradle.plugin.tasks.NonDexTest
 import org.gradle.api.Plugin
