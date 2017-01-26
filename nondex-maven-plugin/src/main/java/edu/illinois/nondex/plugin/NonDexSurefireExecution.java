@@ -91,34 +91,6 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
     }
 
-    @Override
-    protected Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
-        return addExcludedGroups(super.applyNonDexConfig(configuration));
-    }
-
-    private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
-        for (Xpp3Dom config : configNode.getChildren()) {
-            if ("excludedGroups".equals(config.getName())) {
-                Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
-                String current = config.getValue();
-                current = "," + current;
-                // It seems there is an error if you have the variable
-                // in the excludedGroups string concatenated (in any
-                // position) to the concrete class we are adding to
-                // the excludedGroups
-                // ${excludedGroups} appears when
-                // there is no excludedGroups specified in the pom
-                // and potentially in other situations
-                current = current.replace(",${excludedGroups}", "");
-                config.setValue("edu.illinois.NonDexIgnore" + current);
-                return configNode;
-            }
-        }
-        Logger.getGlobal().log(Level.INFO, "Adding excluded groups to newly created one");
-        configNode.addChild(this.makeNode("excludedGroups", "edu.illinois.NonDexIgnore"));
-        return configNode;
-    }
-
     private String getPathToNondexJar(String localRepo) {
         String result = Paths.get(this.configuration.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR)
             + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
