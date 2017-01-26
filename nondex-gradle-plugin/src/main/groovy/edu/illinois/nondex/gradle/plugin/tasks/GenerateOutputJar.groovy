@@ -6,7 +6,7 @@ class GenerateOutputJar extends Exec {
     void init() {
         dependsOn "nondexPrepare"
         doFirst {
-            commandLine 'java', '-jar', project.extensions.nondexTest.instrumentationPath, project.extensions.nondexTest.outPath
+			edu.illinois.nondex.instr.Main.main([project.extensions.nondexTest.instrumentationPath, project.extensions.nondexTest.outPath])
         }
     }
 }
