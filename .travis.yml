@@ -10,7 +10,7 @@ before_install:
 
 
 env:
-    - CMD="mvn verify"
+    - CMD="mvn verify -B"
     - CMD="gradle build"
 
 
