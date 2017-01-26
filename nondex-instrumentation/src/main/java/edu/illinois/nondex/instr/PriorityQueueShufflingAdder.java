@@ -36,175 +36,169 @@ import org.objectweb.asm.Opcodes;
 
 public class PriorityQueueShufflingAdder extends ClassVisitor {
 
-    private MethodProperties hasNextProp;
-    private MethodProperties nextProp;
-
-    private class MethodProperties {
-        private int access;
-        private String name;
-        private String desc;
-        private String signature;
-        private String[] exceptions;
-    }
-
     public PriorityQueueShufflingAdder(ClassVisitor ca) {
         super(Opcodes.ASM5, ca);
-
-        hasNextProp = new MethodProperties();
-        nextProp = new MethodProperties();
     }
 
     public void addElements() {
-        FieldVisitor fv = super.visitField(0, "elements", "Ljava/util/List;", "Ljava/util/List<TE;>;", null);
+        FieldVisitor fv = super.visitField(Opcodes.ACC_PRIVATE, "elements", "Ljava/util/List;", "Ljava/util/List<TE;>;",
+                null);
         fv.visitEnd();
     }
 
-    public void addIndex() {
-        FieldVisitor fv = super.visitField(0, "index", "I", null, null);
+    public void addIter() {
+        FieldVisitor fv = super.visitField(Opcodes.ACC_PRIVATE, "iter", "Ljava/util/Iterator;",
+                "Ljava/util/Iterator<TE;>;", null);
         fv.visitEnd();
     }
 
     public void addNext() {
-        /*MethodVisitor mv = super.visitMethod(nextProp.access, nextProp.name,
-                nextProp.desc, nextProp.signature, nextProp.exceptions);*/
         MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "next", "()Ljava/lang/Object;", "()TE;", null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "expectedModCount", "I");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.DUP);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitInsn(Opcodes.DUP_X1);
-        mv.visitInsn(Opcodes.ICONST_1);
-        mv.visitInsn(Opcodes.IADD);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "get", "(I)Ljava/lang/Object;", true);
-        mv.visitInsn(Opcodes.ARETURN);
-        mv.visitMaxs(5, 1);
-        mv.visitEnd();
-    }
-
-    public void addHasNext() {
-        /*MethodVisitor mv = super.visitMethod(hasNextProp.access, hasNextProp.name,
-                hasNextProp.desc, hasNextProp.signature, hasNextProp.exceptions);*/
-        MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "hasNext", "()Z", null, null);
-
-        mv.visitCode();
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "size", "()I", true);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "this$0", "Ljava/util/PriorityQueue;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue", "modCount", "I");
         Label l0 = new Label();
-        mv.visitJumpInsn(Opcodes.IF_ICMPGE, l0);
-        mv.visitInsn(Opcodes.ICONST_1);
-        Label l1 = new Label();
-        mv.visitJumpInsn(Opcodes.GOTO, l1);
+        mv.visitJumpInsn(Opcodes.IF_ICMPEQ, l0);
+        mv.visitTypeInsn(Opcodes.NEW, "java/util/ConcurrentModificationException");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ConcurrentModificationException", "<init>", "()V", false);
+        mv.visitInsn(Opcodes.ATHROW);
         mv.visitLabel(l0);
         mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitLabel(l1);
-        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[]{Opcodes.INTEGER});
-        mv.visitInsn(Opcodes.IRETURN);
-        mv.visitMaxs(2, 1);
-        mv.visitEnd();
-    }
-
-    public void addInit() {
-        MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Ljava/util/PriorityQueue;)V", null, null);
-        mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "this$0", "Ljava/util/PriorityQueue;");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "cursor", "I");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "iter", "Ljava/util/Iterator;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;", true);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRetElt", "Ljava/lang/Object;");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitInsn(Opcodes.ICONST_M1);
         mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRet", "I");
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.ACONST_NULL);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "forgetMeNot", "Ljava/util/ArrayDeque;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "lastRetElt", "Ljava/lang/Object;");
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(2, 1);
+        mv.visitEnd();
+    }
+
+    public void addHasNext() {
+        MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "hasNext", "()Z", null, null);
+        mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.ACONST_NULL);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRetElt", "Ljava/lang/Object;");
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "this$0", "Ljava/util/PriorityQueue;");
-        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue", "modCount", "I");
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "expectedModCount", "I");
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "index", "I");
-        mv.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
-        mv.visitInsn(Opcodes.DUP);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
-        mv.visitVarInsn(Opcodes.ASTORE, 2);
-        Label l0 = new Label();
-        mv.visitLabel(l0);
-        mv.visitFrame(Opcodes.F_FULL, 3, new Object[]
-            {"java/util/PriorityQueue$Itr", "java/util/PriorityQueue",
-             "java/util/List"}, 0, new Object[]{});
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "hasNextOrig", "()Z", false);
-        Label l1 = new Label();
-        mv.visitJumpInsn(Opcodes.IFEQ, l1);
-        mv.visitVarInsn(Opcodes.ALOAD, 2);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "nextOrig",
-                "()Ljava/lang/Object;", false);
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
-        mv.visitInsn(Opcodes.POP);
-        mv.visitJumpInsn(Opcodes.GOTO, l0);
-        mv.visitLabel(l1);
-        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitVarInsn(Opcodes.ALOAD, 2);
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
-                "(Ljava/util/List;)Ljava/util/List;", false);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "elements", "Ljava/util/List;");
-        mv.visitInsn(Opcodes.RETURN);
-        mv.visitMaxs(2, 3);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "iter", "Ljava/util/Iterator;");
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
+        mv.visitInsn(Opcodes.IRETURN);
+        mv.visitMaxs(1, 1);
         mv.visitEnd();
     }
 
     @Override
     public void visitEnd() {
-        addInit();
+        addElements();
+        addIter();
         addNext();
         addHasNext();
-        addElements();
-        addIndex();
-
         super.visitEnd();
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String desc,
-                                     String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if ("hasNext".equals(name)) {
-            hasNextProp.access = access;
-            hasNextProp.name = name;
-            hasNextProp.desc = desc;
-            hasNextProp.signature = signature;
-            hasNextProp.exceptions = exceptions;
-
-            MethodVisitor original = super.visitMethod(access, "hasNextOrig", desc, signature, exceptions);
-
-            return original;
+            return super.visitMethod(access, "originalHasNext", desc, signature, exceptions);
         }
         if ("next".equals(name)) {
-            nextProp.access = access;
-            nextProp.name = name;
-            nextProp.desc = desc;
-            nextProp.signature = signature;
-            nextProp.exceptions = exceptions;
-
-            MethodVisitor original = super.visitMethod(access, "nextOrig", desc, signature, exceptions);
-
-            return original;
+            return super.visitMethod(access, "originalNext", desc, signature, exceptions);
+        }
+        if ("<init>".equals(name)) {
+            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+                @Override
+                public void visitInsn(int opcode) {
+                    if (opcode == Opcodes.RETURN) {
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 1);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "this$0",
+                                "Ljava/util/PriorityQueue;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ICONST_0);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "cursor", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ICONST_M1);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRet", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ACONST_NULL);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "forgetMeNot",
+                                "Ljava/util/ArrayDeque;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ACONST_NULL);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRetElt",
+                                "Ljava/lang/Object;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "this$0",
+                                "Ljava/util/PriorityQueue;");
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue", "modCount", "I");
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "expectedModCount", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
+                        super.visitInsn(Opcodes.DUP);
+                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "elements",
+                                "Ljava/util/List;");
+                        Label l0 = new Label();
+                        super.visitLabel(l0);
+                        super.visitFrame(Opcodes.F_FULL, 2,
+                                new Object[] { "java/util/PriorityQueue$Itr", "java/util/PriorityQueue" }, 0,
+                                new Object[] {});
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "originalHasNext",
+                                "()Z", false);
+                        Label l1 = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, l1);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements",
+                                "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/PriorityQueue$Itr", "originalNext",
+                                "()Ljava/lang/Object;", false);
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z",
+                                true);
+                        super.visitInsn(Opcodes.POP);
+                        super.visitJumpInsn(Opcodes.GOTO, l0);
+                        super.visitLabel(l1);
+                        super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements",
+                                "Ljava/util/List;");
+                        super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
+                                "(Ljava/util/List;)Ljava/util/List;", false);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "elements",
+                                "Ljava/util/List;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/PriorityQueue$Itr", "elements",
+                                "Ljava/util/List;");
+                        super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "iterator",
+                                "()Ljava/util/Iterator;", true);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "iter",
+                                "Ljava/util/Iterator;");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ICONST_M1);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRet", "I");
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitInsn(Opcodes.ACONST_NULL);
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/PriorityQueue$Itr", "lastRetElt",
+                                "Ljava/lang/Object;");
+                    }
+                    super.visitInsn(opcode);
+                }
+            };
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }

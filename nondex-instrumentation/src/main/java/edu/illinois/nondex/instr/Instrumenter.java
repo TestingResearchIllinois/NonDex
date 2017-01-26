@@ -56,10 +56,11 @@ import org.objectweb.asm.util.CheckClassAdapter;
 public final class Instrumenter {
     public static final String hashMapName = "java/util/HashMap$HashIterator.class";
     public static final String weakHashMapName = "java/util/WeakHashMap$HashIterator.class";
-    public static final String identityHashMapName = "java/util/IdentityHashMap.class";
+    public static final String identityHashMapName = "java/util/IdentityHashMap$IdentityHashMapIterator.class";
     public static final String concurrentHashMapName = "java/util/concurrent/ConcurrentHashMap$Traverser.class";
     public static final String methodName = "java/lang/reflect/Method.class";
     public static final String priorityQueueName = "java/util/PriorityQueue$Itr.class";
+    public static final String priorityBlockingQueueName = "java/util/concurrent/PriorityBlockingQueue.class";
 
     private final Set<String> standardClassesToInstrument = new HashSet<>();
     private final Set<String> specialClassesToInstrument = new HashSet<>();
@@ -78,7 +79,6 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/io/File.class");
         this.standardClassesToInstrument.add("java/text/DateFormatSymbols.class");
         this.standardClassesToInstrument.add("java/util/PriorityQueue.class");
-        this.standardClassesToInstrument.add("java/util/concurrent/PriorityBlockingQueue.class");
 
         this.specialClassesToInstrument.add(Instrumenter.hashMapName);
         this.specialClassesToInstrument.add(Instrumenter.weakHashMapName);
@@ -86,6 +86,7 @@ public final class Instrumenter {
         this.specialClassesToInstrument.add(Instrumenter.concurrentHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.methodName);
         this.specialClassesToInstrument.add(Instrumenter.priorityQueueName);
+        this.specialClassesToInstrument.add(Instrumenter.priorityBlockingQueueName);
     }
 
     public static final void instrument(String rtJar, String outJar)
@@ -120,7 +121,7 @@ public final class Instrumenter {
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
-                            return HashIteratorShufflerASMDump.dump("Node", "java/util/HashMap", "current");
+                            return HashIteratorShufflerASMDump.dump("Node");
                         }
                     });
         } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
@@ -128,18 +129,10 @@ public final class Instrumenter {
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
-                            return HashIteratorShufflerASMDump.dump("Entry", "java/util/HashMap", "current");
+                            return HashIteratorShufflerASMDump.dump("Entry");
                         }
                     });
         }
-
-        this.addAsmDumpResultToZip(outZip, "java/util/WeakHashMap$HashIterator$HashIteratorShuffler.class",
-                new Producer<byte[]>() {
-                    @Override
-                    public byte[] apply() {
-                        return HashIteratorShufflerASMDump.dump("Entry", "java/util/WeakHashMap", "entry");
-                    }
-                });
 
         for (String clz : this.specialClassesToInstrument) {
             this.instrumentSpecialClass(rt, outZip, clz);
@@ -159,8 +152,18 @@ public final class Instrumenter {
         for (String cl : this.standardClassesToInstrument) {
             InputStream clInputStream = null;
             try {
-                clInputStream = rt.getInputStream(rt.getEntry(cl));
+                ZipEntry entry = rt.getEntry(cl);
+                if (entry == null) {
+                    Logger.getGlobal().log(Level.WARNING, "Could not find " + cl + " in rt.jar");
+                    Logger.getGlobal().log(Level.WARNING, "Are you running java 8?");
+                    Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + cl);
+
+                    continue;
+                }
+                clInputStream = rt.getInputStream(entry);
             } catch (IOException exc) {
+                // I am not sure this code is reachable
+                // TODO(gyori): Test that this code is reachable;
                 Logger.getGlobal().log(Level.WARNING, "Cannot find " + cl + " are you sure this is a valid rt.jar?");
                 Logger.getGlobal().log(Level.WARNING, "Continuing without insturmenting: " + cl);
                 continue;

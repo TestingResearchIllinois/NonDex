@@ -43,18 +43,20 @@ public class CVFactory {
             return new ConcurrentHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.hashMapName)) {
             if (rt.getEntry("java/util/HashMap$Node.class") != null) {
-                return new HashMapShufflingAdder(cv, "Node", "java/util/HashMap");
+                return new HashMapShufflingAdder(cv, "Node");
             } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
-                return new HashMapShufflingAdder(cv, "Entry", "java/util/HashMap");
+                return new HashMapShufflingAdder(cv, "Entry");
             }
         } else if (clzToInstrument.equals(Instrumenter.weakHashMapName)) {
-            return new HashMapShufflingAdder(cv, "Entry", "java/util/WeakHashMap");
+            return new WeakHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.identityHashMapName)) {
             return new IdentityHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.methodName)) {
             return new MethodShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.priorityQueueName)) {
             return new PriorityQueueShufflingAdder(cv);
+        } else if (clzToInstrument.equals(Instrumenter.priorityBlockingQueueName)) {
+            return new PriorityBlockingQueueShufflingAdder(cv);
         } else {
             Logger.getGlobal().log(Level.CONFIG, "Trying to construct CV for " + clzToInstrument);
             throw new NoSuchAlgorithmException();
