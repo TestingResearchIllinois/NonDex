@@ -8,3 +8,13 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap caskroom/cask; brew install Caskroom/cask/java; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
 
+
+matrix:
+    - env:
+      - CMD="mvn verify"
+
+    - env:
+      - CMD="gradle build"
+
+
+script: eval $CMD
