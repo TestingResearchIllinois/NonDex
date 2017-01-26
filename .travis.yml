@@ -9,11 +9,8 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
 
 
-matrix:
-    - env:
+- env:
       - CMD="mvn verify"
-
-    - env:
       - CMD="gradle build"
 
 
