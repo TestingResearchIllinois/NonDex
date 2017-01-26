@@ -126,29 +126,16 @@ public class CleanSurefireExecution {
                 this.originalArgLine + " " + this.configuration.toArgLine());
     }
 
-    private Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
+    protected Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
         Xpp3Dom configNode = configuration;
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
 
-        return setReportOutputDirectory(addExcludedGroups(configNode));
+        return setReportOutputDirectory(configNode);
     }
 
-    private Xpp3Dom addExcludedGroups(Xpp3Dom configNode) {
-        for (Xpp3Dom config : configNode.getChildren()) {
-            if ("excludedGroups".equals(config.getName())) {
-                Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
-                config.setValue(config.getValue() + "," + "edu.illinois.NonDexIgnore");
-                return configNode;
-            }
-        }
-        Logger.getGlobal().log(Level.INFO, "Adding excluded groups to newly created one");
-        configNode.addChild(this.makeNode("excludedGroups", "edu.illinois.NonDexIgnore"));
-        return configNode;
-    }
-
-    private Xpp3Dom setReportOutputDirectory(Xpp3Dom configNode) {
+    protected Xpp3Dom setReportOutputDirectory(Xpp3Dom configNode) {
         configNode = this.addAttributeToConfig(configNode, "reportsDirectory",
                 this.configuration.getExecutionDir().toString());
         configNode = this.addAttributeToConfig(configNode, "disableXmlReport", "false");
@@ -167,7 +154,7 @@ public class CleanSurefireExecution {
         return configNode;
     }
 
-    private Xpp3Dom makeNode(String nodeName, String value) {
+    protected Xpp3Dom makeNode(String nodeName, String value) {
         Xpp3Dom node = new Xpp3Dom(nodeName);
         node.setValue(value);
         return node;
