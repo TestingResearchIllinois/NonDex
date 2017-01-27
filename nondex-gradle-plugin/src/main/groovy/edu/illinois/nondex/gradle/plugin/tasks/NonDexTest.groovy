@@ -18,7 +18,7 @@ class NonDexTest extends Test {
 	    exceptionFormat = 'full'
 	}
         doFirst {
-            def args = "-Xbootclasspath/p:" + project.extensions.nondexTest.outPath + ":" + project.extensions.nondexTest.commonPath
+            def args = "-Xbootclasspath/p:" + project.extensions.nondexTest.outPath + File.pathSeparator + project.extensions.nondexTest.commonPath
             jvmArgs args, "-D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + Utils.getFreshExecutionId()
             println getJvmArgs()
         }
