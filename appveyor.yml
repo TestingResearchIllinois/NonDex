@@ -24,4 +24,4 @@ build_script:
   - mvn -version
   - mvn clean package --batch-mode -DskipTests
 test_script:
-  - mvn clean test
+  - mvn clean verify
