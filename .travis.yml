@@ -10,9 +10,8 @@ before_install:
 
 
 env:
-    - CMD="mvn verify -B"; INSTALL="mvn install -DskipTests=true -B"
-    - CMD="./gradlew check"; INSTALL="cd nondex-gradle-plugin"
+    - CMD="mvn verify -B"
+    - CMD="cd  nondex-gradle-plugin; ./gradlew check";
 
 
 script: eval $CMD
-install: eval $INSTALL
