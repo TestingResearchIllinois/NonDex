@@ -6,11 +6,14 @@ import org.gradle.api.tasks.TaskAction
 
 class NonDexHelp extends DefaultTask {
     static final String NAME = "nondexHelp";
-    static final String DESC = "Help for NonDex";
 
-    @TaskAction
-    def help() {
-        println "\nNonDex Gradle Plugin"
-        println ReflectionUtils.getCallingClass(0).getResourceAsStream("/nondexHelp.txt").text
+    void init() {
+    	setDescription("NonDexHelp Description")
+        setGroup("NonDex")
+
+    	doFirst {
+    		println "\nNonDex Gradle Plugin"
+        	println ReflectionUtils.getCallingClass(0).getResourceAsStream("/nondexHelp.txt").text
+    	}
     }
 }

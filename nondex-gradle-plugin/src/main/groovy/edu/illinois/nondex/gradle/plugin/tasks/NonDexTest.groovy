@@ -1,25 +1,27 @@
 package edu.illinois.nondex.gradle.plugin.tasks
 
-import edu.illinois.nondex.common.ConfigurationDefaults
-import edu.illinois.nondex.common.Utils
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.testing.Test
 
 class NonDexTest extends Test {
     static final String NAME = "nondexTest"
-    static final String DESC = "Test with NonDex"
 
-    void init(Configuration config) {
-        project.extensions.create("nondexTest", NonDexTestExtension)
-        project.extensions.nondexTest.outPath = project.buildDir.absolutePath + File.separator + "out.jar"
-        dependsOn "generateOutputJar"
+    void init() {
+        setDescription("NonDexTest Description")
+        setGroup("NonDex")
 
         testLogging {
-	    exceptionFormat = 'full'
-	}
+	       exceptionFormat 'full'
+        }
+
         doFirst {
-            def args = "-Xbootclasspath/p:" + project.extensions.nondexTest.outPath + File.pathSeparator + project.extensions.nondexTest.commonPath
-            jvmArgs args, "-D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + Utils.getFreshExecutionId()
+            String commonPath = project.configurations.nondexJava.resolve().find {it.name.startsWith("nondex-common")}.absolutePath
+            String outPath = project.buildDir.absolutePath + File.separator + "out.jar"
+
+            edu.illinois.nondex.instr.Main.main(outPath)
+
+            def args = "-Xbootclasspath/p:" + outPath + File.pathSeparator + commonPath
+            jvmArgs args, "-D" + edu.illinois.nondex.common.ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + edu.illinois.nondex.common.Utils.getFreshExecutionId()
             println getJvmArgs()
         }
     }

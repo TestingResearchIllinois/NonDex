@@ -17,15 +17,6 @@ class NonDexPluginTest {
         project.pluginManager.apply 'edu.illinois.nondex'
 
         assertTrue(project.tasks.nondexHelp instanceof NonDexHelp)
-    }
-
-    @Test
-    public void testWithJavaPlugin() {
-        Project project = ProjectBuilder.builder().build()
-        project.pluginManager.apply 'edu.illinois.nondex'
-        project.pluginManager.apply 'java'
-
-        assertTrue(project.tasks.nondexHelp instanceof NonDexHelp)
         assertTrue(project.tasks.nondexTest instanceof NonDexTest)
 
         assertNotNull(project.configurations.getByName("nondexJava"))
