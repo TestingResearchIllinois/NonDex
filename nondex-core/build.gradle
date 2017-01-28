@@ -1,5 +1,0 @@
-
-description = 'nondex-core'
-dependencies {
-  compile project(':nondex-common')
-}
