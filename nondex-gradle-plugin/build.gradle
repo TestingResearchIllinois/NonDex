@@ -6,31 +6,30 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+
     }
     dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.9.6"
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.7"
     }
 }
 apply plugin: "com.gradle.plugin-publish"
 repositories {
     jcenter()
-}
-
-configurations {
-    nondexDependencies
+    mavenLocal()
 }
 
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'edu.illinois:nondex-common:1.1.1'
-    testCompile 'junit:junit:4.11'
+    compile 'edu.illinois:nondex-common:1.1.2-SNAPSHOT'
+    compile 'edu.illinois:nondex-instrumentation:1.1.2-SNAPSHOT'
+    testCompile 'junit:junit:4.12'
 }
 
 version = "1.2.1"
 pluginBundle {
-    website = 'https://github.com/shiloh00/NonDex'
-    vcsUrl = 'https://github.com/shiloh00/NonDex'
+    website = 'https://github.com/TestingResearchIllinois/NonDex'
+    vcsUrl = 'https://github.com/TestingResearchIllinois/NonDex'
     description = 'NonDex plugin for Gradle'
     tags = ['non-deterministic', 'test']
 
