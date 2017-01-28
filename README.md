@@ -24,40 +24,6 @@ Prerequisites:
     - Java 8 (Oracle JDK, OpenJDK).
     - Surefire present in the POM.
 
-Build (Gradle):
-======
-
-    gradle build
-
-Use (Gradle):
-============
-
-To use NonDex in Gradle, add the following content into your build.gradle:
-
-```groovy
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "gradle.plugin.edu.illinois:nondex-gradle-plugin:1.2.1"
-  }
-}
-
-apply plugin: "edu.illinois.nondex"
-
-```
-
-To find if you have flaky tests, run:
-
-    gradle nondexTest
-
-To get the help information of NonDex Gradle plugin, run:
-
-    gradle nondexHelp
-
 
 Build (Maven):
 ======
@@ -97,6 +63,36 @@ To debug, run:
 The NonDex Maven plugin also offers additional options; to see them all, run:
 
     mvn nondex:help
+
+
+Use (Gradle):
+============
+
+To use NonDex in Gradle, add the following content into your build.gradle:
+
+```groovy
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.edu.illinois:nondex-gradle-plugin:1.2.1"
+  }
+}
+
+apply plugin: "edu.illinois.nondex"
+
+```
+
+To find if you have flaky tests, run:
+
+    gradle nondexTest
+
+To get the help information of NonDex Gradle plugin, run:
+
+    gradle nondexHelp
 
 
 Use (Command-line):
