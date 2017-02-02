@@ -8,7 +8,7 @@ class NonDexHelp extends DefaultTask {
     static final String NAME = "nondexHelp";
 
     void init() {
-    	setDescription("NonDexHelp Description")
+    	setDescription("Display NonDex Help")
         setGroup("NonDex")
 
     	doFirst {

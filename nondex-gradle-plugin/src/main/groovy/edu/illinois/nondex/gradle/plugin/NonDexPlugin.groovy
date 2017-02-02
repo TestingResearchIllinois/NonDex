@@ -1,24 +1,21 @@
 package edu.illinois.nondex.gradle.plugin
 
+import edu.illinois.nondex.common.ConfigurationDefaults
 import edu.illinois.nondex.gradle.plugin.tasks.NonDexHelp
 import edu.illinois.nondex.gradle.plugin.tasks.NonDexTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPlugin
 
 class NonDexPlugin implements Plugin<Project> {
-    public static final String NONDEX_JAVA_CONFIGURATION_NAME = 'nondexJava'
-    public static final String NONDEX_JAVA_VERSION = edu.illinois.nondex.common.ConfigurationDefaults.VERSION;
-
     @Override
     void apply(Project project) {
-        project.configurations.create(NONDEX_JAVA_CONFIGURATION_NAME)
-                .setVisible(false)
+        project.configurations.create('nondexJava')
+                .setVisible(true)
                 .setTransitive(true)
                 .setDescription('The nondex library to be used for this project')
                 .defaultDependencies { dependencies ->
-            dependencies.add(project.dependencies.create('edu.illinois:nondex-common:' + NONDEX_JAVA_VERSION))
-            dependencies.add(project.dependencies.create('edu.illinois:nondex-instrumentation:' + NONDEX_JAVA_VERSION))
+            dependencies.add(project.dependencies.create('edu.illinois:nondex-common:' + ConfigurationDefaults.VERSION))
+            dependencies.add(project.dependencies.create('edu.illinois:nondex-instrumentation:' + ConfigurationDefaults.VERSION))
         }
 
         project.afterEvaluate {
