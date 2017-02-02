@@ -18,7 +18,5 @@ class NonDexPluginTest {
 
         assertTrue(project.tasks.nondexHelp instanceof NonDexHelp)
         assertTrue(project.tasks.nondexTest instanceof NonDexTest)
-
-        assertNotNull(project.configurations.getByName("nondexJava"))
     }
 }
