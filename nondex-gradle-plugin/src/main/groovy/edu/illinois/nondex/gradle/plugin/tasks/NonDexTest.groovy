@@ -18,14 +18,14 @@ class NonDexTest extends Test {
         }
 
         doFirst {
-            String commonPath = project.configurations.nondexJava.resolve().find {it.name.startsWith("nondex-common")}.absolutePath
+            String commonPath = project.buildscript.configurations.classpath.find {it.name.startsWith("nondex-common")}.absolutePath
             String outPath = project.buildDir.absolutePath + File.separator + "out.jar"
 
             Main.main(outPath)
 
             def args = "-Xbootclasspath/p:" + outPath + File.pathSeparator + commonPath
             jvmArgs args, "-D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + Utils.getFreshExecutionId()
-            println getJvmArgs()
+            println "Running with arguments: " + getJvmArgs()
         }
     }
 }
