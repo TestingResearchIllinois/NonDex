@@ -9,5 +9,9 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
 
 
-before_script: cat nondex-maven-plugin/target/it/excluded-groups-it/build.log;
-after_failure: cat nondex-maven-plugin/target/it/excluded-groups-it/build.log;
+env:
+    - CMD="mvn verify -B"
+    - CMD="cd  nondex-gradle-plugin; ./gradlew check";
+
+
+script: eval $CMD
