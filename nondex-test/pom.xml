@@ -108,5 +108,12 @@
       <artifactId>nondex-common</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>4.1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/resources/commons-collections4-4.1.jar</systemPath>
+    </dependency>
   </dependencies>
 </project>

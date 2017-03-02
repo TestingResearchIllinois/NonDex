@@ -61,6 +61,7 @@ public final class Instrumenter {
     public static final String methodName = "java/lang/reflect/Method.class";
     public static final String priorityQueueName = "java/util/PriorityQueue$Itr.class";
     public static final String priorityBlockingQueueName = "java/util/concurrent/PriorityBlockingQueue.class";
+    public static final String hashedMapName = "org/apache/commons/collections4/map/AbstractHashedMap$HashIterator.class";
 
     private final Set<String> standardClassesToInstrument = new HashSet<>();
     private final Set<String> specialClassesToInstrument = new HashSet<>();
@@ -87,6 +88,7 @@ public final class Instrumenter {
         this.specialClassesToInstrument.add(Instrumenter.methodName);
         this.specialClassesToInstrument.add(Instrumenter.priorityQueueName);
         this.specialClassesToInstrument.add(Instrumenter.priorityBlockingQueueName);
+        this.specialClassesToInstrument.add(Instrumenter.hashedMapName);
     }
 
     public static final void instrument(String rtJar, String outJar)
@@ -95,6 +97,7 @@ public final class Instrumenter {
         new Instrumenter().process(rtJar, outJar);
     }
 
+    // TODO: change the method to accept a list of strings (jar paths of standard library and other libraries)
     private void process(String rtJar, String outJar)
             throws IOException, NoSuchAlgorithmException, FileNotFoundException {
         ZipFile rt = null;
@@ -130,6 +133,19 @@ public final class Instrumenter {
                         @Override
                         public byte[] apply() {
                             return HashIteratorShufflerASMDump.dump("Entry");
+                        }
+                    });
+        }
+
+
+        if (rt.getEntry("org/apache/commons/collections4/map/AbstractHashedMap$HashEntry.class") != null) {
+            Logger.getGlobal().log(Level.WARNING, "FOUND HashedMapEntry");
+            this.addAsmDumpResultToZip(outZip,
+                "org/apache/commons/collections4/map/AbstractHashedMap$HashIterator$HashedMapIteratorShuffler.class",
+                    new Producer<byte[]>() {
+                        @Override
+                        public byte[] apply() {
+                            return HashedMapIteratorShufflerDump.dump();
                         }
                     });
         }
@@ -293,13 +309,18 @@ public final class Instrumenter {
 
     private <T extends CVFactory> void instrumentSpecialClass(final ZipFile rt, ZipOutputStream outZip, final String clz)
             throws IOException, NoSuchAlgorithmException {
+
         ZipEntry entry = rt.getEntry(clz);
+
+        Logger.getGlobal().log(Level.WARNING, "Instrumenting: " + clz);
+
         if (entry == null) {
             Logger.getGlobal().log(Level.WARNING, "Could not find " + clz + " in rt.jar");
             Logger.getGlobal().log(Level.WARNING, "Are you sure you're running java 8?");
             Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + clz);
             return;
         }
+
         this.writeMd5(rt.getInputStream(rt.getEntry(clz)), clz + ".md5", outZip);
         this.instrumentClass(clz,
                 new Function<ClassVisitor, ClassVisitor>() {
