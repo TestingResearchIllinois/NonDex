@@ -6,11 +6,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import java.util.HashSet;
 
-public class ExcludedGroupsTest {
+public class SimpleTest {
 
     @Test
-    @Category(edu.illinois.NonDexIgnore.class)
-    public void testNonDexIgnore() {
-        assertFalse(true);
+    public void testSimple() {
     }
 }

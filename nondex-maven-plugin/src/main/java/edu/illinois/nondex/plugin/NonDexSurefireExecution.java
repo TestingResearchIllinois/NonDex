@@ -73,7 +73,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
     }
 
     @Override
-    protected void setupArgline() {
+    protected void setupArgline(Xpp3Dom configNode) {
         String localRepo = this.mavenSession.getSettings().getLocalRepository();
         String pathToNondex = this.getPathToNondexJar(localRepo);
         String annotationsModuleName = "nondex-annotations";
@@ -82,14 +82,30 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
         if (configElement != null) {
             configElement.getChild("test").setValue(this.configuration.testName);
         }
-        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
-        this.mavenProject.getProperties().setProperty("argLine",
-                "" + "-Xbootclasspath/p:" + pathToNondex + File.pathSeparator
+        String argLineToSet = "" + "-Xbootclasspath/p:" + pathToNondex + File.pathSeparator
                 + Paths.get(mavenSession.getLocalRepository().getBasedir(),
                         "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
                         annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
-                        + " " + this.originalArgLine + " " + this.configuration.toArgLine());
+                + " " + this.originalArgLine + " " + this.configuration.toArgLine();
 
+        Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
+        this.mavenProject.getProperties().setProperty("argLine", argLineToSet);
+        Logger.getGlobal().log(Level.FINE, "ArgLine being set to: " + argLineToSet);
+        boolean added = false;
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("argLine".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding argLine to existing one");
+                String current = config.getValue();
+
+                config.setValue(argLineToSet + " " + current);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            Logger.getGlobal().log(Level.INFO, "Adding argline to newly created one");
+            configNode.addChild(this.makeNode("argLine", argLineToSet));
+        }
     }
 
     @Override
@@ -102,6 +118,10 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             if ("excludedGroups".equals(config.getName())) {
                 Logger.getGlobal().log(Level.INFO, "Adding excluded groups to existing ones");
                 String current = config.getValue();
+                // Should not add duplicate entry for NonDexIgnore
+                if (current.contains("edu.illinois.NonDexIgnore")) {
+                    return configNode;
+                }
                 current = "," + current;
                 // It seems there is an error if you have the variable
                 // in the excludedGroups string concatenated (in any
@@ -125,6 +145,6 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
                               "nondex-common-" + ConfigurationDefaults.VERSION + ".jar");
         Logger.getGlobal().log(Level.FINE, "The nondex path is: " + result);
-        return "\"" + result + "\"";
+        return result.replace(" ", "\\ ");
     }
 }

@@ -85,12 +85,16 @@ public class CleanSurefireExecution {
     }
 
     public void run() throws MojoExecutionException {
-        this.setupArgline();
         try {
             Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
+            this.setupArgline(domNode);
             Logger.getGlobal().log(Level.FINE, "Config node passed: " + domNode.toString());
             Logger.getGlobal().log(Level.FINE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
+            Logger.getGlobal().log(Level.FINE, "Surefire config: " + this.surefire + "  " + MojoExecutor.goal("test")
+                                   + " " + domNode + " "
+                                   + MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession,
+                                                                       this.pluginManager));
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
                     domNode,
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
@@ -120,10 +124,26 @@ public class CleanSurefireExecution {
         }
     }
 
-    protected void setupArgline() {
-        Logger.getGlobal().log(Level.FINE, "Running clean surefire.");
+    protected void setupArgline(Xpp3Dom configNode) {
+        String argLineToSet =  this.configuration.toArgLine();
+        boolean added = false;
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("argLine".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding argLine to existing one");
+                String current = config.getValue();
+
+                config.setValue(argLineToSet + " " + current);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            Logger.getGlobal().log(Level.INFO, "Adding argline to newly created one");
+            configNode.addChild(this.makeNode("argLine", argLineToSet));
+        }
+
         this.mavenProject.getProperties().setProperty("argLine",
-                this.originalArgLine + " " + this.configuration.toArgLine());
+                this.originalArgLine + " " + argLineToSet);
     }
 
     protected Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
