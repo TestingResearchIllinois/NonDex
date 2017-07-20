@@ -125,7 +125,7 @@ public class CleanSurefireExecution {
     }
 
     protected void setupArgline(Xpp3Dom configNode) {
-        // create the argLine for surefire based on the current configuration
+        // create the NonDex argLine for surefire based on the current configuration
         // this adds things like where to save test reports, what directory NonDex
         // should store results in, what seed and mode should be used.
         String argLineToSet =  this.configuration.toArgLine();

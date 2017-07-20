@@ -146,7 +146,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
                               "nondex-common-" + ConfigurationDefaults.VERSION + ".jar");
         Logger.getGlobal().log(Level.FINE, "The nondex path is: " + result);
-        // Escaping spaces doesn't work on windows so we need to just quote the strings
+        // Escaping spaces doesn't work on Windows so we need to just quote the strings
         return "\"" + result + "\"";
     }
 }
