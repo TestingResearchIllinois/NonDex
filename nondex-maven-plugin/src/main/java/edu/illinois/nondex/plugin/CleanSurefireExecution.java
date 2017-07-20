@@ -33,6 +33,8 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Logger;
@@ -67,7 +69,7 @@ public class CleanSurefireExecution {
             String nondexDir) {
         this.executionId = executionId;
         this.surefire = surefire;
-        this.originalArgLine = originalArgLine;
+        this.originalArgLine = sanitizeAndRemoveEnvironmentVars(originalArgLine);
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
@@ -133,7 +135,7 @@ public class CleanSurefireExecution {
         for (Xpp3Dom config : configNode.getChildren()) {
             if ("argLine".equals(config.getName())) {
                 Logger.getGlobal().log(Level.INFO, "Adding NonDex argLine to existing argLine specified by the project");
-                String current = config.getValue();
+                String current = sanitizeAndRemoveEnvironmentVars(config.getValue());
 
                 config.setValue(argLineToSet + " " + current);
                 added = true;
@@ -183,5 +185,16 @@ public class CleanSurefireExecution {
         Xpp3Dom node = new Xpp3Dom(nodeName);
         node.setValue(value);
         return node;
+    }
+
+    protected static String sanitizeAndRemoveEnvironmentVars(String toSanitize) {
+        String pattern = "\\$\\{([A-Za-z0-9\\.\\-]+)\\}";
+        Pattern expr = Pattern.compile(pattern);
+        Matcher matcher = expr.matcher(toSanitize);
+        while (matcher.find()) {
+            Pattern subexpr = Pattern.compile(Pattern.quote(matcher.group(0)));
+            toSanitize = subexpr.matcher(toSanitize).replaceAll("");
+        }
+        return toSanitize.trim();
     }
 }

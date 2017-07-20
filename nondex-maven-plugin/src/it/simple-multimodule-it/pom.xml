@@ -30,12 +30,11 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.20</version>
           <configuration>
-	    <argLine>-Xmx512m</argLine>
+	    <argLine>-DmyArgumentForTesting=1219</argLine>
             <rerunFailingTestsCount>2</rerunFailingTestsCount>
           </configuration>
 	</plugin>
       </plugins>
-
     </build>
     
     <dependencies>
