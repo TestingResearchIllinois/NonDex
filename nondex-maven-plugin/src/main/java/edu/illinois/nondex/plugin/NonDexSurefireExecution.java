@@ -89,12 +89,13 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 + " " + this.originalArgLine + " " + this.configuration.toArgLine();
 
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
-        this.mavenProject.getProperties().setProperty("argLine", argLineToSet);
+        this.mavenProject.getProperties().setProperty("argLine", this.originalArgLine + " " + argLineToSet);
         Logger.getGlobal().log(Level.FINE, "ArgLine being set to: " + argLineToSet);
         boolean added = false;
         for (Xpp3Dom config : configNode.getChildren()) {
             if ("argLine".equals(config.getName())) {
-                Logger.getGlobal().log(Level.INFO, "Adding argLine to existing one");
+                Logger.getGlobal().log(Level.INFO, "Adding NonDex argLine to existing "
+                                      + "argLine specified by the project");
                 String current = config.getValue();
 
                 config.setValue(argLineToSet + " " + current);
@@ -103,7 +104,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             }
         }
         if (!added) {
-            Logger.getGlobal().log(Level.INFO, "Adding argline to newly created one");
+            Logger.getGlobal().log(Level.INFO, "Creating new argline for Surefire");
             configNode.addChild(this.makeNode("argLine", argLineToSet));
         }
     }
@@ -145,7 +146,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             + File.pathSeparator + Paths.get(localRepo, "edu", "illinois", "nondex-common", ConfigurationDefaults.VERSION,
                               "nondex-common-" + ConfigurationDefaults.VERSION + ".jar");
         Logger.getGlobal().log(Level.FINE, "The nondex path is: " + result);
-        // Escaping spaces doesn't work for windows so we need to just quote the strings
+        // Escaping spaces doesn't work on windows so we need to just quote the strings
         return "\"" + result + "\"";
     }
 }

@@ -7,7 +7,7 @@
   <artifactId>simple-it</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <description>A simple IT verifying the basic use of clean Mojo.</description>
+  <description>A simple IT verifying the basic use of clean Mojo when the path to the project contains whitespaces.</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
