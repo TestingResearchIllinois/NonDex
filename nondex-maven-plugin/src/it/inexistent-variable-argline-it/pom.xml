@@ -11,6 +11,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <some.existing>-DthroughProperty=3423</some.existing>
   </properties>
 
   <build>
@@ -25,7 +26,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.20</version>
 	<configuration>
-	  <argLine>${some-nonexistent-argline} -DmyArgumentForTesting=1219 ${some.stuff} ${An0ther-st.uff} </argLine>
+	  <argLine>${some-nonexistent-argline} -DmyArgumentForTesting=1219 ${some.stuff} ${some.existing} ${An0ther-st.uff}</argLine>
 	</configuration>
       </plugin>
     </plugins>
