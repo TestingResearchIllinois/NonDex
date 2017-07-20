@@ -27,4 +27,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.it;
 
-public interface OtherIgnore {}
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import static org.junit.Assert.assertTrue;
+
+public class AppTest
+{
+    @Test
+    public void testHashSet() {
+        assertTrue(true);
+    }
+}

@@ -85,12 +85,16 @@ public class CleanSurefireExecution {
     }
 
     public void run() throws MojoExecutionException {
-        this.setupArgline();
         try {
             Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
+            this.setupArgline(domNode);
             Logger.getGlobal().log(Level.FINE, "Config node passed: " + domNode.toString());
             Logger.getGlobal().log(Level.FINE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
+            Logger.getGlobal().log(Level.FINE, "Surefire config: " + this.surefire + "  " + MojoExecutor.goal("test")
+                                   + " " + domNode + " "
+                                   + MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession,
+                                                                       this.pluginManager));
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
                     domNode,
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
@@ -120,10 +124,31 @@ public class CleanSurefireExecution {
         }
     }
 
-    protected void setupArgline() {
-        Logger.getGlobal().log(Level.FINE, "Running clean surefire.");
+    protected void setupArgline(Xpp3Dom configNode) {
+        // create the NonDex argLine for surefire based on the current configuration
+        // this adds things like where to save test reports, what directory NonDex
+        // should store results in, what seed and mode should be used.
+        String argLineToSet =  this.configuration.toArgLine();
+        boolean added = false;
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("argLine".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding NonDex argLine to existing argLine specified by the project");
+                String current = config.getValue();
+
+                config.setValue(argLineToSet + " " + current);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            Logger.getGlobal().log(Level.INFO, "Creating new argline for Surefire");
+            configNode.addChild(this.makeNode("argLine", argLineToSet));
+        }
+
+        // originalArgLine is the argLine set from Maven, not through the surefire config
+        // if such an argLine exists, we modify that one also
         this.mavenProject.getProperties().setProperty("argLine",
-                this.originalArgLine + " " + this.configuration.toArgLine());
+                this.originalArgLine + " " + argLineToSet);
     }
 
     protected Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {

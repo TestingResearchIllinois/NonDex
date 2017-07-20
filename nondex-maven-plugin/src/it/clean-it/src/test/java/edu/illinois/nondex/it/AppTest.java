@@ -37,16 +37,4 @@ public class AppTest
     public void testHashSet() {
         assertTrue(true);
     }
-
-    @Test
-    @Category(edu.illinois.NonDexIgnore.class)
-    public void testNondexExcludes() {
-        assertTrue(false);
-    }
-
-    @Test
-    @Category(edu.illinois.nondex.it.OtherIgnore.class)
-    public void testNoOverrideExcludeGroups () {
-        assertTrue(false);
-    }
 }
