@@ -116,7 +116,7 @@ public class ControlNondeterminism {
                         ("SHUFFLES:" + localShufflesCount + String.format("%n")).getBytes(),
                         StandardOpenOption.APPEND);
                 Files.write(nondex.getConfig().getInvocationsPath(),
-                            ("LENGTHS: " + ControlNondeterminism.lengths).getBytes(),
+                            ("LENGTHS: " + ControlNondeterminism.lengths + String.format("%n")).getBytes(),
                             StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE,
