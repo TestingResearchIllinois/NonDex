@@ -96,9 +96,10 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             if ("argLine".equals(config.getName())) {
                 Logger.getGlobal().log(Level.INFO, "Adding NonDex argLine to existing "
                                       + "argLine specified by the project");
-                String current = config.getValue();
+                String current = sanitizeAndRemoveEnvironmentVars(config.getValue());
 
                 config.setValue(argLineToSet + " " + current);
+                Logger.getGlobal().log(Level.FINE, "Set argline to: " + argLineToSet + " " + current);
                 added = true;
                 break;
             }
