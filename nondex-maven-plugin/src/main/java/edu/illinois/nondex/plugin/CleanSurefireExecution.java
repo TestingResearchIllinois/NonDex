@@ -187,6 +187,9 @@ public class CleanSurefireExecution {
         return node;
     }
 
+    // removes all substring matching the format of a maven property
+    // when this method is invoked Maven should have resolved all properties that are defined
+    // if any property is present it means it couldn't be resolved so this will remove it
     protected static String sanitizeAndRemoveEnvironmentVars(String toSanitize) {
         String pattern = "\\$\\{([A-Za-z0-9\\.\\-]+)\\}";
         Pattern expr = Pattern.compile(pattern);
