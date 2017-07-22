@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Mode;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -58,13 +59,14 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class NonDexMojo extends AbstractNonDexMojo {
 
+    public static int runNum = 0;
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
+    private MojoExecutionException allExceptions = null;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
         Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
-        MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
                 this.surefire, this.originalArgLine, this.mavenProject,
                     this.mavenSession, this.pluginManager,
@@ -72,20 +74,21 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
-        this.executeSurefireExecution(allExceptions, cleanExec);
-
-        for (int i = 0; i < this.numRuns; i++) {
-            NonDexSurefireExecution execution =
-                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
-                            Pattern.compile(this.filter), this.start, this.end,
-                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
-                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
-                                .toString(),
-                            this.surefire, this.originalArgLine, this.mavenProject,
-                            this.mavenSession, this.pluginManager);
-            this.executions.add(execution);
-            allExceptions = this.executeSurefireExecution(allExceptions, execution);
-            this.writeCurrentRunInfo(execution);
+        if (this.mode == Mode.SYSTEMATIC) {
+            // In certain environments calls made to nextInt() from NonDex itself start at 59, if the user wants to change
+            // this variable they can use the DnondexStart argument
+            if (this.start == 0) {
+                this.start = 59;
+            }
+            do {
+                executeHelper(1);
+                runNum++;
+            } while (Files.exists(Paths.get(ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG)));
+        } else {
+            this.executeSurefireExecution(allExceptions, cleanExec);
+            for (int i = 0; i < this.numRuns; i++) {
+                executeHelper(i);
+            }
         }
 
         this.writeCurrentRunInfo(cleanExec);
@@ -106,6 +109,24 @@ public class NonDexMojo extends AbstractNonDexMojo {
             throw allExceptions;
         }
 
+    }
+
+    public static int getRunNum() {
+        return runNum;
+    }
+
+    private void executeHelper(int seedNum) {
+        NonDexSurefireExecution execution =
+                new NonDexSurefireExecution(this.mode, this.computeIthSeed(seedNum),
+                        Pattern.compile(this.filter), this.start, this.end, ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG,
+                        Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
+                        Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
+                            .toString(),
+                        this.surefire, this.originalArgLine, this.mavenProject,
+                        this.mavenSession, this.pluginManager);
+        this.executions.add(execution);
+        allExceptions = this.executeSurefireExecution(allExceptions, execution);
+        this.writeCurrentRunInfo(execution);
     }
 
     private void postProcessExecutions(CleanSurefireExecution cleanExec) {

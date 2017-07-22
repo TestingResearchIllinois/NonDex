@@ -55,6 +55,7 @@ public class Configuration {
 
     public final long start;
     public final long end;
+    public final String systematicLog;
 
     public final boolean shouldPrintStackTrace;
 
@@ -69,22 +70,25 @@ public class Configuration {
     private Set<String> failedTests = null;
 
     protected Configuration(Mode mode, int seed, Pattern filter, String executionId) {
-        this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_NONDEX_DIR,
-                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId, Level.CONFIG);
+        this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG,
+                ConfigurationDefaults.DEFAULT_NONDEX_DIR, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                null, executionId, Level.CONFIG);
     }
 
-    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String systematicLog, String nondexDir,
             String nondexJarDir, String testName, String executionId, Level loggingLevel) {
-        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, loggingLevel, false);
+        this(mode, seed, filter, start, end, systematicLog, nondexDir, nondexJarDir, testName,
+                executionId, loggingLevel, false);
     }
 
-    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String systematicLog, String nondexDir,
             String nondexJarDir, String testName, String executionId, Level loggingLevel, boolean printStackTrace) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
         this.start = start;
         this.end = end;
+        this.systematicLog = systematicLog;
         this.nondexDir = nondexDir;
         this.nondexJarDir = nondexJarDir;
         this.testName = testName;
@@ -98,7 +102,7 @@ public class Configuration {
     public Configuration(String executionId, String nondexDir) {
         this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
                 Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
-                nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG, nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
                 null, executionId, Logger.getGlobal().getLoggingLevel());
     }
 
@@ -113,6 +117,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG + "=" + this.systematicLog);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=\"" + this.nondexDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=\"" + this.nondexJarDir + "\"");
@@ -129,6 +134,7 @@ public class Configuration {
                                        ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed,
                                        ConfigurationDefaults.PROPERTY_START + "=" + this.start,
                                        ConfigurationDefaults.PROPERTY_END + "=" + this.end,
+                                       ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG + "=" + this.systematicLog,
                                        ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace,
                                        ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir,
                                        ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
@@ -161,6 +167,9 @@ public class Configuration {
         final long end = Long.parseLong(
                 props.getProperty(ConfigurationDefaults.PROPERTY_END, ConfigurationDefaults.DEFAULT_END_STR));
 
+        final String systematicLog = props.getProperty(ConfigurationDefaults.PROPERTY_SYSTEMATIC_LOG,
+                ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG);
+
         final boolean shouldPrintStacktrace = Boolean.parseBoolean(
                 props.getProperty(ConfigurationDefaults.PROPERTY_PRINT_STACK,
                         ConfigurationDefaults.DEFAULT_PRINT_STACK_STR));
@@ -178,7 +187,7 @@ public class Configuration {
 
         final String testName = props.getProperty("test", null);
 
-        return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName,
+        return new Configuration(nonDetKind, seed, filter, start, end, systematicLog, nondexDir, nondexJarDir, testName,
                 executionId, level, shouldPrintStacktrace);
     }
 
@@ -216,6 +225,10 @@ public class Configuration {
 
     public Path getLatestRunFilePath() {
         return Paths.get(this.nondexDir, ConfigurationDefaults.LATEST_RUN_ID);
+    }
+
+    public Path getSystematicLogPath() {
+        return Paths.get(this.nondexDir, this.executionId, ConfigurationDefaults.DEFAULT_SYSTEMATIC_LOG);
     }
 
     public Path getPathToJar() {

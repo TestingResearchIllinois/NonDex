@@ -28,6 +28,39 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
-public enum Mode {
-    FULL, ONE, SYSTEMATIC
+public class ExplorationEntry {
+
+    private int current;
+    private int maximum;
+    private boolean shouldExplore;
+
+    public ExplorationEntry(final int current, final int maximum, final boolean shouldExplore) {
+        this.current = current;
+        this.maximum = maximum;
+        this.shouldExplore = shouldExplore;
+    }
+
+    public int getCurrent() {
+        return current;
+    }
+
+    public int getMaximum() {
+        return maximum;
+    }
+
+    public boolean getShouldExplore() {
+        return shouldExplore;
+    }
+
+    public void setCurrent(final int current) {
+        this.current = current;
+    }
+
+    public void setMaximum(final int maximum) {
+        this.maximum = maximum;
+    }
+
+    public void setShouldExplore(final boolean shouldExplore) {
+        this.shouldExplore = shouldExplore;
+    }
 }

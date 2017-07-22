@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Mode;
 import edu.illinois.nondex.common.NonDex;
 
 public class ControlNondeterminism {
@@ -56,7 +57,7 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        return nondex.getPermutation(originalOrder);
+        return nondex == null ? originalOrder : nondex.getPermutation(originalOrder);
     }
 
     public static <T> T[] shuffle(T[] originalOrder) {
@@ -94,6 +95,9 @@ public class ControlNondeterminism {
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
             try {
+                if (nondex.getConfig().mode == Mode.SYSTEMATIC) {
+                    nondex.getSystematicRandom().endRun();
+                }
                 int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();
                 Files.write(nondex.getConfig().getConfigPath(),

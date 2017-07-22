@@ -56,6 +56,11 @@
       <organization>University of Illinois at Urbana-Champaign</organization>
       <organizationUrl>http://mir.cs.illinois.edu/~awshi2</organizationUrl>
     </developer>
+    <developer>
+      <name>Souhayl Maronesy</name>
+      <email>marones2@illinois.edu</email>
+      <organization>University of Illinois at Urbana-Champaign</organization>
+    </developer>
   </developers>
   
   <modules>

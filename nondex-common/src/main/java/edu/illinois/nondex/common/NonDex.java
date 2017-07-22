@@ -47,6 +47,7 @@ public class NonDex {
 
     private final Configuration config;
     private final Random        randomNumber;
+    private final SystematicRandom systematicRandom;
 
     private boolean isOutputting;
 
@@ -60,12 +61,17 @@ public class NonDex {
 
         this.config = config;
         this.randomNumber = new Random(config.seed);
+        this.systematicRandom = new SystematicRandom(config);
 
         this.isOutputting = false;
     }
 
     public static NonDex getInstance() {
         return globalInstance;
+    }
+
+    public SystematicRandom getSystematicRandom() {
+        return this.systematicRandom;
     }
 
     public boolean getBoolean() {
@@ -121,6 +127,8 @@ public class NonDex {
                 return this.randomNumber;
             case ONE:
                 return new Random(this.config.seed);
+            case SYSTEMATIC:
+                return this.systematicRandom;
             default:
                 Logger.getGlobal().log(Level.SEVERE,
                     "Unrecognized option for shuffle kind. Not shuffling.");
