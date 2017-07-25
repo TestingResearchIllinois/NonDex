@@ -1,14 +1,13 @@
 package edu.illinois.nondex.it;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import java.util.HashSet;
+import static org.junit.Assert.assertEquals;
 
 public class SimpleTest {
 
     @Test
     public void testSimple() {
+        String varValue = System.getProperty("myArgumentForTesting");
+        assertEquals("1219", varValue);
     }
 }

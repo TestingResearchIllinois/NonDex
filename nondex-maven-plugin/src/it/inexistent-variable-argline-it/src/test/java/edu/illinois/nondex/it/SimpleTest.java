@@ -9,5 +9,7 @@ public class SimpleTest {
     public void testSimple() {
         String varValue = System.getProperty("myArgumentForTesting");
         assertEquals("1219", varValue);
+        varValue = System.getProperty("throughProperty");
+        assertEquals("3423", varValue);
     }
 }
