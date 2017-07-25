@@ -103,14 +103,13 @@ public class NonDex {
         if (originalOrder == null) {
             throw new IllegalArgumentException("originalOrder is null");
         }
-
-        List<T> newOrder = new ArrayList<T>(originalOrder);
-        Collections.shuffle(newOrder, this.getRandom());
         if (this.shouldExplore()) {
-            return newOrder;
+            Collections.shuffle(originalOrder, this.getRandom());
         } else {
-            return originalOrder;
+            // shuffle just to advance the PRNG
+            Collections.shuffle(new ArrayList<T>(originalOrder), this.getRandom());
         }
+        return originalOrder;
     }
 
     private Random getRandom() {
