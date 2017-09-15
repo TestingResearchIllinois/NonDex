@@ -62,6 +62,10 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            Logger.getGlobal().log(Level.INFO, "Execution skipped");
+            return;
+        }
         super.execute();
         Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
         MojoExecutionException allExceptions = null;

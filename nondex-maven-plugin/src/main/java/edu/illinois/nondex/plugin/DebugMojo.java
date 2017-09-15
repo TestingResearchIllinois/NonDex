@@ -64,6 +64,10 @@ public class DebugMojo extends AbstractNonDexMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            Logger.getGlobal().log(Level.INFO, "Execution skipped");
+            return;
+        }
         super.execute();
         this.parseExecutions();
         this.parseTests();
