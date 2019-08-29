@@ -70,8 +70,6 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
      * Section III.B in http://mir.cs.illinois.edu/~awshi2/publications/ICST2016.pdf)
      * The options are:
      * FULL: shuffle on each invocation of methods with nondeterministic specs
-     * ID: does not shuffle during invocations on objects with same identity
-     * EQ: does not shuffle during invocations on objects that are equal
      * ONE: only shuffle on the first invocation of an object
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_MODE, defaultValue = ConfigurationDefaults.DEFAULT_MODE_STR)
