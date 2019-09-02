@@ -6,12 +6,9 @@ os:
     - linux
     - osx
 
-jdk:
-    - oraclejdk8
-
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap caskroom/cask; brew install Caskroom/cask/java; fi
-
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ~/bin/install-jdk.sh --target "/Users/travis/openjdk8" --workspace "/Users/travis/.cache/install-jdk" --feature "8" --license "GPL"; fi
 
 env:
     - CMD="mvn verify -B"
