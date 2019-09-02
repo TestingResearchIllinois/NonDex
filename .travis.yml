@@ -7,7 +7,7 @@ os:
     - osx
 
 jdk:
-    - openjdk8
+    - oraclejdk8
 
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap caskroom/cask; brew install Caskroom/cask/java; fi
