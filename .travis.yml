@@ -6,9 +6,11 @@ os:
     - linux
     - osx
 
+jdk:
+    - openjdk8
+
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap caskroom/cask; brew install Caskroom/cask/java; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
 
 
 env:
