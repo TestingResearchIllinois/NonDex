@@ -71,13 +71,11 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap"/>
     <module name="EmptyBlock">
-      <property name="option" value="stmt"/>
+      <property name="option" value="statement"/>
       <property name="tokens" value="LITERAL_WHILE, LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_DO, LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, INSTANCE_INIT, STATIC_INIT, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_CASE, LITERAL_DEFAULT, ARRAY_INIT"/>
     </module>
     <module name="NeedBraces"/>
-    <module name="LeftCurly">
-      <property name="maxLineLength" value="100"/>
-    </module>
+    <module name="LeftCurly"/>
     <module name="RightCurly"/>
     <module name="RightCurly">
       <property name="option" value="alone"/>
