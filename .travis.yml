@@ -1,17 +1,21 @@
+dist: xenial
+osx_image: xcode9.3
+
 language: java
 
 os:
     - linux
     - osx
 
-before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap caskroom/cask; brew install Caskroom/cask/java; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use oraclejdk8; fi
-
+jdk:
+    - openjdk8
 
 env:
     - CMD="mvn verify -B"
     - CMD="cd  nondex-gradle-plugin; ./gradlew check";
 
+matrix:
+    allow_failures:
+        - os: osx
 
 script: eval $CMD
