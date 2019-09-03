@@ -14,6 +14,7 @@ install:
   - cmd: SET M2_HOME=C:\maven\apache-maven-3.2.5\
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
+build: off
 build_script:
   - cmd: DEL nondex-common\checkstyle.xml nondex-instrumentation\checkstyle.xml nondex-maven-plugin\checkstyle.xml nondex-annotations\checkstyle.xml nondex-test\checkstyle.xml
   - cmd: DEL nondex-maven-plugin\src\it\comprehensive\src\test
