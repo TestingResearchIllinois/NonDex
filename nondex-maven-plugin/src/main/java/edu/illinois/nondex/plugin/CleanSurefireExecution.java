@@ -87,6 +87,10 @@ public class CleanSurefireExecution {
     }
 
     public void run() throws MojoExecutionException {
+        Xpp3Dom origNode = null;
+        if (this.surefire.getConfiguration() != null) {
+            origNode = new Xpp3Dom((Xpp3Dom) this.surefire.getConfiguration());
+        }
         try {
             Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
             this.setupArgline(domNode);
@@ -123,6 +127,8 @@ public class CleanSurefireExecution {
         } catch (Throwable tr) {
             Logger.getGlobal().log(Level.SEVERE, "Some exception that is highly unexpected: ", tr);
             throw tr;
+        } finally {
+            this.surefire.setConfiguration(origNode);
         }
     }
 
