@@ -80,6 +80,9 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
         // Only modify test in configuration if not null, because that means is debugging
         Xpp3Dom configElement = (Xpp3Dom)this.surefire.getConfiguration();
         if (configElement != null) {
+            if (configElement.getChild("test") == null) {
+                configElement.addChild(new Xpp3Dom("test"));
+            }
             configElement.getChild("test").setValue(this.configuration.testName);
         }
         String argLineToSet = "" + "-Xbootclasspath/p:" + pathToNondex + File.pathSeparator
