@@ -3338,7 +3338,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     public Annotation[] getAnnotations() {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(annotationData().annotations));
+        return AnnotationParser.toArray(annotationData().annotations);
     }
 
     /**
@@ -3369,7 +3369,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     public Annotation[] getDeclaredAnnotations()  {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(AnnotationParser.toArray(annotationData().declaredAnnotations));
+        return AnnotationParser.toArray(annotationData().declaredAnnotations);
     }
 
     // annotation data that might get invalidated when JVM TI RedefineClasses() is called
