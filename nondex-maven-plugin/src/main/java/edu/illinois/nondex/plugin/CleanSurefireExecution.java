@@ -64,9 +64,11 @@ public class CleanSurefireExecution {
 
     protected String originalArgLine;
 
+    protected boolean resetSurefire;
+
     protected CleanSurefireExecution(Plugin surefire, String originalArgLine, String executionId,
             MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager,
-            String nondexDir) {
+            String nondexDir, boolean resetSurefire) {
         this.executionId = executionId;
         this.surefire = surefire;
         this.originalArgLine = sanitizeAndRemoveEnvironmentVars(originalArgLine);
@@ -74,6 +76,13 @@ public class CleanSurefireExecution {
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
         this.configuration = new Configuration(executionId, nondexDir);
+        this.resetSurefire = resetSurefire;
+    }
+
+    protected CleanSurefireExecution(Plugin surefire, String originalArgLine, String executionId,
+            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager,
+            String nondexDir) {
+        this(surefire, originalArgLine, executionId, mavenProject, mavenSession, pluginManager, nondexDir, false);
     }
 
     public CleanSurefireExecution(Plugin surefire, String originalArgLine, MavenProject mavenProject,
@@ -128,7 +137,9 @@ public class CleanSurefireExecution {
             Logger.getGlobal().log(Level.SEVERE, "Some exception that is highly unexpected: ", tr);
             throw tr;
         } finally {
-            this.surefire.setConfiguration(origNode);
+            if (resetSurefire) {
+                this.surefire.setConfiguration(origNode);
+            }
         }
     }
 

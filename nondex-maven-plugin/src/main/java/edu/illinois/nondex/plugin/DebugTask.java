@@ -216,7 +216,7 @@ public class DebugTask {
     private Configuration failsWithConfig(Configuration config, long start, long end, boolean print) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
                 start, end, print, this.test, this.surefire, this.originalArgLine,
-                this.mavenProject, this.mavenSession, this.pluginManager);
+                this.mavenProject, this.mavenSession, this.pluginManager, true);
         try {
             execution.run();
         } catch (Throwable thr) {
