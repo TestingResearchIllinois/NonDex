@@ -28,10 +28,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.core;
 
-@TestAnnotation1
-@TestAnnotation2
-@TestAnnotation3
-@TestAnnotation4
 public class ClassTestHelper {
 
     public class InnerOne {
@@ -50,10 +46,6 @@ public class ClassTestHelper {
 
     }
 
-    @TestAnnotation1
-    @TestAnnotation2
-    @TestAnnotation3
-    @TestAnnotation4
     public Integer field1;
 
     public Integer field2;
@@ -86,11 +78,7 @@ public class ClassTestHelper {
         field4 = f4;
     }
 
-    @TestAnnotation1
-    @TestAnnotation2
-    @TestAnnotation3
-    @TestAnnotation4
-    public int m1(@TestAnnotation1 @TestAnnotation2 @TestAnnotation3 @TestAnnotation4 Integer param)
+    public int m1(Integer param)
         throws NullPointerException, ArithmeticException, ArrayIndexOutOfBoundsException, ClassCastException, Exception {
         return param;
     }

@@ -41,9 +41,6 @@ public class ClassTest {
 
     @Before
     public void setUp() {
-        // TODO: pick a class with annotations and test:
-        // clazz.getAnnotations();
-        // clazz.getDeclaredAnnotations();
         clazz = ClassTestHelper.class;
     }
 
@@ -80,15 +77,5 @@ public class ClassTest {
     @Test
     public void getDeclaredMethodsTest() {
         assertThat(clazz.getDeclaredMethods(), not(equalTo(clazz.getDeclaredMethods())));
-    }
-
-    @Test
-    public void getAnnotationsTest() {
-        assertThat(clazz.getAnnotations(), not(equalTo(clazz.getAnnotations())));
-    }
-
-    @Test
-    public void getDeclaredAnnotationsTest() {
-        assertThat(clazz.getDeclaredAnnotations(), not(equalTo(clazz.getDeclaredAnnotations())));
     }
 }

@@ -47,11 +47,6 @@ public class MethodTest {
     }
 
     @Test
-    public void getDeclaredAnnotationsTest() {
-        assertThat(myMethod.getDeclaredAnnotations(), not(equalTo(myMethod.getDeclaredAnnotations())));
-    }
-
-    @Test
     public void getExceptionTypesTest() {
         assertThat(myMethod.getExceptionTypes(), not(equalTo(myMethod.getExceptionTypes())));
     }
@@ -59,10 +54,5 @@ public class MethodTest {
     @Test
     public void getGenericExceptionTypesTest() {
         assertThat(myMethod.getGenericExceptionTypes(), not(equalTo(myMethod.getGenericExceptionTypes())));
-    }
-
-    @Test
-    public void getParamaterAnnotationsTest() {
-        assertThat(myMethod.getParameterAnnotations(), not(equalTo(myMethod.getParameterAnnotations())));
     }
 }

@@ -70,57 +70,6 @@ public class MethodShufflingAdder extends ClassVisitor {
                 }
             };
         }
-        if ("getDeclaredAnnotations".equals(name)) {
-            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
-                @Override
-                public void visitInsn(int opcode) {
-                    if (opcode == Opcodes.ARETURN) {
-                        super.visitMethodInsn(Opcodes.INVOKESTATIC,
-                                "edu/illinois/nondex/shuffling/ControlNondeterminism",
-                                "shuffle", "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
-                        super.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/annotation/Annotation;");
-                    }
-                    super.visitInsn(opcode);
-                }
-            };
-        }
-        if ("getParameterAnnotations".equals(name)) {
-            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
-                @Override
-                public void visitInsn(int opcode) {
-                    if (opcode == Opcodes.ARETURN) {
-                        super.visitVarInsn(Opcodes.ASTORE, 1);
-                        super.visitInsn(Opcodes.ICONST_0);
-                        super.visitVarInsn(Opcodes.ISTORE, 2);
-                        Label l0 = new Label();
-                        super.visitLabel(l0);
-                        super.visitFrame(Opcodes.F_APPEND, 2, new Object[]{
-                            "[[Ljava/lang/annotation/Annotation;", Opcodes.INTEGER}, 0, null);
-                        super.visitVarInsn(Opcodes.ILOAD, 2);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitInsn(Opcodes.ARRAYLENGTH);
-                        Label l1 = new Label();
-                        super.visitJumpInsn(Opcodes.IF_ICMPGE, l1);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitVarInsn(Opcodes.ILOAD, 2);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitVarInsn(Opcodes.ILOAD, 2);
-                        super.visitInsn(Opcodes.AALOAD);
-                        super.visitMethodInsn(Opcodes.INVOKESTATIC,
-                                "edu/illinois/nondex/shuffling/ControlNondeterminism",
-                                "shuffle", "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
-                        super.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/annotation/Annotation;");
-                        super.visitInsn(Opcodes.AASTORE);
-                        super.visitIincInsn(2, 1);
-                        super.visitJumpInsn(Opcodes.GOTO, l0);
-                        super.visitLabel(l1);
-                        super.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                    }
-                    super.visitInsn(opcode);
-                }
-            };
-        }
 
         return super.visitMethod(access, name, desc, signature, exceptions);
     }
