@@ -38,7 +38,7 @@ public class HashMapVisitor extends ClassVisitor {
                         mv.visitMethodInsn(INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false);
                         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Thread", "getStackTrace", "()[Ljava/lang/StackTraceElement;", false);
                         mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
-                        mv.visitFieldInsn(PUTFIELD, "Field", "dummy",
+                        mv.visitFieldInsn(PUTFIELD, "java/util/HashMap", "dummy",
                         "Ljava/lang/String;");
                     }
                     super.visitInsn(opcode);
