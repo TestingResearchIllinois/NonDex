@@ -38,6 +38,7 @@ public class HashIteratorShufflerASMDump implements Opcodes {
             mv = cw.visitMethod(ACC_PUBLIC, "<init>",
                     "(Ljava/util/HashMap$HashIterator;Ljava/util/HashMap$HashIterator;)V",
                     "(Ljava/util/HashMap<TK;TV;>.HashIterator;)V", null);
+
             mv.visitCode();
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 1);
