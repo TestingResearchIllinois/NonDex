@@ -11,8 +11,11 @@ import java.io.IOException;
 
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.NEW;
 import static org.objectweb.asm.Opcodes.PUTFIELD;
 
 public class HashMapVisitor extends ClassVisitor {
@@ -34,12 +37,22 @@ public class HashMapVisitor extends ClassVisitor {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {
+
+                        /**
                         visitVarInsn(ALOAD, 0);
                         mv.visitMethodInsn(INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false);
                         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Thread", "getStackTrace", "()[Ljava/lang/StackTraceElement;", false);
                         mv.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "toString", "([Ljava/lang/Object;)Ljava/lang/String;", false);
                         mv.visitFieldInsn(PUTFIELD, "java/util/HashMap", "dummy",
                         "Ljava/lang/String;");
+                        mv.visitTypeInsn(NEW, "edu/illinois/nondex/shuffling/Writter");
+                        mv.visitInsn(Opcodes.DUP);
+                        mv.visitVarInsn(ALOAD, 0);
+                        mv.visitFieldInsn(GETFIELD, "java/util/HashMap", "dummy",
+                                "Ljava/lang/String;");
+                        mv.visitMethodInsn(INVOKESPECIAL, "edu/illinois/nondex/shuffling/Writter", "<init>", "(Ljava/lang/String;)V", false);
+                        mv.visitMethodInsn(INVOKEVIRTUAL, "edu/illinois/nondex/shuffling/Writter", "run", "()V", false);
+                         **/
                     }
                     super.visitInsn(opcode);
                 }

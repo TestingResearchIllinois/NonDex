@@ -40,6 +40,15 @@ public class HashIteratorShufflerASMDump implements Opcodes {
                     "(Ljava/util/HashMap<TK;TV;>.HashIterator;)V", null);
 
             mv.visitCode();
+            {
+                mv.visitTypeInsn(NEW, "edu/illinois/nondex/shuffling/Writter");
+                mv.visitInsn(Opcodes.DUP);
+                mv.visitLdcInsn("const");
+                mv.visitMethodInsn(INVOKESPECIAL, "edu/illinois/nondex/shuffling/Writter", "<init>", "(Ljava/lang/String;)V", false);
+                mv.visitMethodInsn(INVOKEVIRTUAL, "edu/illinois/nondex/shuffling/Writter", "run", "()V", false);
+            }
+
+
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 1);
             mv.visitFieldInsn(PUTFIELD, "java/util/HashMap$HashIterator$HashIteratorShuffler", "this$1",
