@@ -33,6 +33,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+
 public class HashMapShufflingAdder extends ClassVisitor {
 
     private String type;
@@ -43,6 +44,7 @@ public class HashMapShufflingAdder extends ClassVisitor {
     }
 
     public FieldVisitor addShufflerType() {
+
         FieldVisitor fv = super.visitField(0, "shuffler", "Ljava/util/HashMap$HashIterator$HashIteratorShuffler;",
                 "Ljava/util/HashMap<TK;TV;>.HashIterator.HashIteratorShuffler;", null);
         fv.visitEnd();
@@ -89,6 +91,10 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
     @Override
     public void visitEnd() {
+
+        {
+            super.visitField(Opcodes.ACC_PUBLIC, "dummy", "Ljava/lang/String;", null, null).visitEnd();
+        }
         addShufflerType();
         addNextType();
 
@@ -116,6 +122,18 @@ public class HashMapShufflingAdder extends ClassVisitor {
                                 "<init>", "(Ljava/util/HashMap$HashIterator;Ljava/util/HashMap$HashIterator;)V", false);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/HashMap$HashIterator", "shuffler",
                                 "Ljava/util/HashMap$HashIterator$HashIteratorShuffler;");
+
+                        //super.visitVarInsn(Opcodes.ALOAD, 0);
+                        //super.visitVarInsn(Opcodes.ALOAD, 1);
+                        //super.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap", "dummy", "Ljava/lang/String;");
+                        //super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/HashMap$HashIterator", "dummy", "Ljava/lang/String;");
+
+
+                        mv.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+                        mv.visitVarInsn(Opcodes.ALOAD, 1);
+                        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap", "dummy", "Ljava/lang/String;");
+                        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+
                     }
                     super.visitInsn(opcode);
                 }
