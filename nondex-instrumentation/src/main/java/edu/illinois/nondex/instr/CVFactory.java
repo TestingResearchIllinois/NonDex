@@ -57,6 +57,8 @@ public class CVFactory {
             return new PriorityQueueShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.priorityBlockingQueueName)) {
             return new PriorityBlockingQueueShufflingAdder(cv);
+        } else if (clzToInstrument.equals(Instrumenter.hashMapClassName)) {
+            return new HashMapVisitor(cv);
         } else {
             Logger.getGlobal().log(Level.CONFIG, "Trying to construct CV for " + clzToInstrument);
             throw new NoSuchAlgorithmException();

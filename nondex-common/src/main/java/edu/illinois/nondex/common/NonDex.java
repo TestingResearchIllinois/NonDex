@@ -34,8 +34,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class NonDex {
@@ -99,11 +101,14 @@ public class NonDex {
     }
 
     public <T> List<T> getPermutation(List<T> originalOrder) {
+        return getPermutation(originalOrder, "");
+    }
+    public <T> List<T> getPermutation(List<T> originalOrder, String initTraces) {
 
         if (originalOrder == null) {
             throw new IllegalArgumentException("originalOrder is null");
         }
-        if (this.shouldExplore()) {
+        if (this.shouldExplore(initTraces)) {
             Collections.shuffle(originalOrder, this.getRandom());
         } else {
             // shuffle just to advance the PRNG
@@ -128,12 +133,15 @@ public class NonDex {
     }
 
     private boolean shouldExplore() {
+        return shouldExplore("");
+    }
+    private boolean shouldExplore(String initTraces) {
         this.opportunityCount++;
         // When outputting, it should not explore behaviors, since then we output some debug info
         // and that should be ordered
         if (!this.isOutputting && this.shouldExploreForInstance() && this.apiShouldBeExplored()) {
             Logger.getGlobal().log(Level.FINE, "Exploring for current source");
-            printStackTraceIfUniqueDebugPoint();
+            printStackTraceIfUniqueDebugPoint(initTraces);
             this.actualCount++;
             return true;
         }
@@ -160,10 +168,32 @@ public class NonDex {
     }
 
     private void printStackTraceIfUniqueDebugPoint() {
+        printStackTraceIfUniqueDebugPoint("");
+    }
+
+    private void printStackTraceIfUniqueDebugPoint(String initTraces) {
         if (config.shouldPrintStackTrace
                 && this.isDebuggingUniquePoint()) {
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
             StringBuilder stackstring = new StringBuilder();
+            if (initTraces != null) {
+                if(this.config.testName != null) {
+                    String[] splitedTestNames = this.config.testName.split("\\.");
+                    String packageName = splitedTestNames[0] + "." + splitedTestNames[1];
+                    String[] splitedTraces = initTraces.split(", ");
+                    for (String candidate : splitedTraces) { // for each string in trace
+                        if (!candidate.contains(packageName)) {
+                            continue;
+                        } else {
+                            stackstring.append("Init location: ");
+                            stackstring.append(candidate).append(String.format("%n"));
+                            break;
+                        }
+                    }
+                    stackstring.append("The full init traces are").append(String.format("%n"));
+                    stackstring.append(initTraces);
+                }
+            }
             for (StackTraceElement traceElement : traces) {
                 stackstring.append(traceElement.toString() + String.format("%n"));
             }
