@@ -57,6 +57,7 @@ public class Configuration {
     public final long end;
 
     public final boolean shouldPrintStackTrace;
+    public final boolean shouldSelectTests;
 
     public final String nondexDir;
     public final String nondexJarDir;
@@ -79,7 +80,12 @@ public class Configuration {
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String nondexJarDir, String testName, String executionId, Level loggingLevel, boolean printStackTrace) {
+                         String nondexJarDir, String testName, String executionId, Level loggingLevel, boolean printStackTrace) {
+        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, loggingLevel, printStackTrace, false);
+    }
+    public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
+            String nondexJarDir, String testName, String executionId, Level loggingLevel,
+            boolean printStackTrace, boolean selectTest) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
@@ -90,6 +96,7 @@ public class Configuration {
         this.testName = testName;
         this.executionId = executionId;
         this.shouldPrintStackTrace = printStackTrace;
+        this.shouldSelectTests = selectTest;
         this.loggingLevel = loggingLevel;
         this.createExecutionDirIfNeeded();
     }
@@ -114,6 +121,7 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_SELECT_TESTS + "=" + this.shouldSelectTests);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=\"" + this.nondexDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=\"" + this.nondexJarDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
@@ -130,6 +138,7 @@ public class Configuration {
                                        ConfigurationDefaults.PROPERTY_START + "=" + this.start,
                                        ConfigurationDefaults.PROPERTY_END + "=" + this.end,
                                        ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace,
+                                       ConfigurationDefaults.PROPERTY_SELECT_TESTS + "=" + this.shouldSelectTests,
                                        ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir,
                                        ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
                                        ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId,

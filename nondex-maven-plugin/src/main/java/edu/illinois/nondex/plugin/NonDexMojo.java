@@ -76,7 +76,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
-                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
+                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(i), this.selectTest,
                             Pattern.compile(this.filter), this.start, this.end,
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)

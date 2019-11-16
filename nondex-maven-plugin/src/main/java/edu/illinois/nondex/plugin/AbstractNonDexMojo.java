@@ -118,6 +118,15 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     protected boolean rerun;
 
     /**
+     * Set this to "true" to rerun multiple times with only the specified (or
+     * default) seed. The number of reruns is equal to numRuns.
+     */
+    @Parameter(property = ConfigurationDefaults.PROPERTY_SELECT_TESTS,
+            defaultValue = ConfigurationDefaults.DEFAULT_SELECT_TEST_STR)
+    protected boolean selectTest;
+
+
+    /**
      * Unique ID for the current nondex execution.
      */
     @Parameter(property = ConfigurationDefaults.PROPERTY_EXECUTION_ID,

@@ -63,6 +63,9 @@ public class ConfigurationDefaults {
     public static final String PROPERTY_PRINT_STACK = "nondexPrintstack";
     public static final String DEFAULT_PRINT_STACK_STR = "false";
 
+    public static final String PROPERTY_SELECT_TESTS = "nondexSelect";
+    public static final String DEFAULT_SELECT_TEST_STR = "false";
+
     public static final String PROPERTY_EXECUTION_ID = "nondexExecid";
     public static final String NO_EXECUTION_ID = "NoId";
     public static final String PROPERTY_DEFAULT_EXECUTION_ID = ConfigurationDefaults.NO_EXECUTION_ID;
@@ -82,6 +85,7 @@ public class ConfigurationDefaults {
     public static final String INVOCATIONS_FILE = "invocations";
     public static final String DEBUG_FILE = "debug";
     public static final String CONFIGURATION_FILE = "config";
+    public static final String SHUFFLE_TEST_FILE = "shuffles";
 
     public static final int SEED_FACTOR = 0xA1e4;
 

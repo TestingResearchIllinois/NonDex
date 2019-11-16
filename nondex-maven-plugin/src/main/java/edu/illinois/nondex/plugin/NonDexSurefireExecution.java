@@ -62,6 +62,14 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 this.executionId, Logger.getGlobal().getLoggingLevel());
     }
 
+    public NonDexSurefireExecution(Mode mode, int seed, boolean select, Pattern filter, long start, long end, String nondexDir,
+                                   String nondexJarDir, Plugin surefire, String originalArgLine, MavenProject mavenProject,
+                                   MavenSession mavenSession, BuildPluginManager pluginManager) {
+        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir);
+        this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
+                this.executionId, Logger.getGlobal().getLoggingLevel(), false, select);
+    }
+
     public NonDexSurefireExecution(Configuration config, long start, long end, boolean print, String test, Plugin surefire,
             String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
             BuildPluginManager pluginManager) {
