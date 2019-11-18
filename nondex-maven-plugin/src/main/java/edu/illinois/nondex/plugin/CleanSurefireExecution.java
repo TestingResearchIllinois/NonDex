@@ -94,6 +94,7 @@ public class CleanSurefireExecution {
         try {
             Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
             this.setupArgline(domNode);
+            this.setupTestListener(domNode);
             Logger.getGlobal().log(Level.FINE, "Config node passed: " + domNode.toString());
             Logger.getGlobal().log(Level.FINE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
@@ -132,6 +133,18 @@ public class CleanSurefireExecution {
         }
     }
 
+    protected void setupTestListener(Xpp3Dom configNode) {
+
+        Xpp3Dom propertiesNode = new Xpp3Dom("properties");
+        Xpp3Dom propertyNode = new Xpp3Dom("property");
+        Xpp3Dom nameNode = makeNode("name", "listener");
+        Xpp3Dom valueNode = makeNode("value", "edu.illinois.nondex.plugin.TestListener");
+        propertyNode.addChild(nameNode);
+        propertyNode.addChild(valueNode);
+        propertiesNode.addChild(propertyNode);
+        configNode.addChild(propertiesNode);
+
+    }
     protected void setupArgline(Xpp3Dom configNode) {
         // create the NonDex argLine for surefire based on the current configuration
         // this adds things like where to save test reports, what directory NonDex

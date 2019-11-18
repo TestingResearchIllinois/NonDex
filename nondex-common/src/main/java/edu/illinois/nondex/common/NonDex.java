@@ -28,6 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import javax.print.attribute.standard.Severity;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -43,6 +45,8 @@ import java.util.logging.Level;
 public class NonDex {
 
     private static final NonDex globalInstance = new NonDex();
+    public static Set<String> shuffleTests = new LinkedHashSet<>();
+    public static String currTest = "";
 
     private int opportunityCount;
     private int actualCount;
@@ -140,6 +144,10 @@ public class NonDex {
         // When outputting, it should not explore behaviors, since then we output some debug info
         // and that should be ordered
         if (!this.isOutputting && this.shouldExploreForInstance() && this.apiShouldBeExplored()) {
+            if(NonDex.currTest != null && NonDex.currTest != "") {
+                Logger.getGlobal().log(Level.SEVERE, "Recording test:" + NonDex.currTest);
+                NonDex.shuffleTests.add(NonDex.currTest);
+            }
             Logger.getGlobal().log(Level.FINE, "Exploring for current source");
             printStackTraceIfUniqueDebugPoint(initTraces);
             this.actualCount++;

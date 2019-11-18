@@ -29,6 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.shuffling;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -106,6 +107,16 @@ public class ControlNondeterminism {
         @Override
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
+            try {
+                Files.write(nondex.getConfig().getShuffleTestFilePath(), NonDex.shuffleTests.toString().getBytes(),
+                        StandardOpenOption.CREATE_NEW);
+            } catch (FileAlreadyExistsException faee) {
+                // ignore
+            } catch (IOException ioe) {
+                Logger.getGlobal().log(Level.SEVERE,
+                        "IOException when printing shuffled tests in shutdown hook.", ioe);
+                throw new RuntimeException(ioe);
+            }
             try {
                 int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();

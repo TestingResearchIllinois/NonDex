@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.NonDex;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -73,8 +74,24 @@ public class NonDexMojo extends AbstractNonDexMojo {
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
         this.executeSurefireExecution(allExceptions, cleanExec);
+        Logger.getGlobal().log(Level.INFO, "Clean Run Finished!");
+        if(this.selectTest) {
+            NonDexSurefireExecution execution =
+                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(0), this.selectTest,
+                            Pattern.compile(this.filter), this.start, this.end,
+                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
+                            Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
+                                    .toString(),
+                            this.surefire, this.originalArgLine, this.mavenProject,
+                            this.mavenSession, this.pluginManager);
+            this.executions.add(execution);
+            Logger.getGlobal().log(Level.INFO, "Starting selection run");
+            this.executeSurefireExecution(allExceptions, execution);
+            Logger.getGlobal().log(Level.SEVERE, "Finished selecting tests");
+            this.writeCurrentRunInfo(execution);
+        }
 
-        for (int i = 0; i < this.numRuns; i++) {
+        for (int i = 1; i < this.numRuns+1; i++) {
             NonDexSurefireExecution execution =
                     new NonDexSurefireExecution(this.mode, this.computeIthSeed(i), this.selectTest,
                             Pattern.compile(this.filter), this.start, this.end,

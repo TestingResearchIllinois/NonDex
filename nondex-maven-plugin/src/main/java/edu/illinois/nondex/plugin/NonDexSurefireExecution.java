@@ -29,7 +29,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.plugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -37,6 +40,7 @@ import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
+import edu.illinois.nondex.common.NonDex;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.execution.MavenSession;
@@ -66,7 +70,25 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                                    String nondexJarDir, Plugin surefire, String originalArgLine, MavenProject mavenProject,
                                    MavenSession mavenSession, BuildPluginManager pluginManager) {
         this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir);
-        this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
+        String tests = null;
+        if(select) {
+            try {
+                Logger.getGlobal().log(Level.INFO, "Shuffle test file path: " + NonDex.getInstance().getConfig().getShuffleTestFilePath());
+                tests = new String(Files.readAllBytes(Paths.get(nondexDir, ConfigurationDefaults.SHUFFLE_TEST_FILE)));
+                if(tests != null) {
+                    tests = tests.replace("[", "").replace("]", "");
+                    if(tests.length() == 0){
+                        tests = null;
+                    }
+                }
+            } catch (IOException io){
+                //
+                Logger.getGlobal().log(Level.SEVERE, "Cannot open shuffle test files");
+
+            }
+        }
+        Logger.getGlobal().log(Level.SEVERE, "Selection tests are " + tests);
+        this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, tests,
                 this.executionId, Logger.getGlobal().getLoggingLevel(), false, select);
     }
 

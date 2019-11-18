@@ -227,6 +227,9 @@ public class Configuration {
         return Paths.get(this.nondexDir, ConfigurationDefaults.LATEST_RUN_ID);
     }
 
+    public Path getShuffleTestFilePath() {
+        return Paths.get(this.nondexDir, ConfigurationDefaults.SHUFFLE_TEST_FILE);
+    }
     public Path getPathToJar() {
         return Paths.get(this.nondexJarDir, ConfigurationDefaults.INSTRUMENTATION_JAR);
     }

@@ -9,15 +9,25 @@ import org.junit.runner.notification.RunListener;
 public class TestListener extends RunListener{
     public void testRunStarted(Description description) throws java.lang.Exception
     {
-        System.out.println("Number of tests to execute : " + description.testCount());
     }
     public void testStarted(Description description) throws java.lang.Exception
     {
-        System.out.println("Updated Starting execution of test case: "+ description.getMethodName());
+        String testName = description.getClassName() + "." + description.getMethodName();
+        if(testName.contains("[") && testName.contains("]")) {
+            testName = description.getClassName();
+        }
+        NonDex.getInstance().currTest = testName;
+    }
+
+    @Override
+    public void testFinished(Description description) throws Exception {
+        NonDex.getInstance().currTest = null;
     }
 
     @Override
     public void testRunFinished(Result result) throws Exception {
+        NonDex.getInstance().currTest = null;
+
     }
 }
 
