@@ -49,25 +49,24 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 public class NonDexSurefireExecution extends CleanSurefireExecution {
 
     private NonDexSurefireExecution(Plugin surefire, String originalArgLine, MavenProject mavenProject,
-                                    MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir,
-                                    boolean resetSurefire) {
+                                    MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir) {
         super(surefire, originalArgLine, Utils.getFreshExecutionId(),
-                mavenProject, mavenSession, pluginManager, nondexDir, resetSurefire);
+                mavenProject, mavenSession, pluginManager, nondexDir);
     }
 
     public NonDexSurefireExecution(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
             String nondexJarDir, Plugin surefire, String originalArgLine, MavenProject mavenProject,
             MavenSession mavenSession, BuildPluginManager pluginManager) {
-        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir, false);
+        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, nondexDir);
         this.configuration = new Configuration(mode, seed, filter, start, end, nondexDir, nondexJarDir, null,
                 this.executionId, Logger.getGlobal().getLoggingLevel());
     }
 
     public NonDexSurefireExecution(Configuration config, long start, long end, boolean print, String test, Plugin surefire,
             String originalArgLine, MavenProject mavenProject, MavenSession mavenSession,
-            BuildPluginManager pluginManager, boolean resetSurefire) {
+            BuildPluginManager pluginManager) {
 
-        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, config.nondexDir, resetSurefire);
+        this(surefire, originalArgLine, mavenProject, mavenSession, pluginManager, config.nondexDir);
         this.configuration = new Configuration(config.mode, config.seed, config.filter, start,
                 end, config.nondexDir, config.nondexJarDir, test, this.executionId,
                 Logger.getGlobal().getLoggingLevel(), print);
