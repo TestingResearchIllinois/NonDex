@@ -141,6 +141,9 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             Logger.getGlobal().log(Level.INFO, "Creating new argline for Surefire");
             configNode.addChild(this.makeNode("argLine", argLineToSet));
         }
+        if(this.configuration.shouldSelectTests){
+            configNode.addChild(this.makeNode("test", this.configuration.testName));
+        }
     }
 
     @Override
