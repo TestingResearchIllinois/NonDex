@@ -55,6 +55,7 @@ import org.objectweb.asm.util.CheckClassAdapter;
 
 public final class Instrumenter {
     public static final String hashMapName = "java/util/HashMap$HashIterator.class";
+    public static final String hashMapClassName = "java/util/HashMap.class";
     public static final String weakHashMapName = "java/util/WeakHashMap$HashIterator.class";
     public static final String identityHashMapName = "java/util/IdentityHashMap$IdentityHashMapIterator.class";
     public static final String concurrentHashMapName = "java/util/concurrent/ConcurrentHashMap$Traverser.class";
@@ -81,6 +82,7 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/util/PriorityQueue.class");
 
         this.specialClassesToInstrument.add(Instrumenter.hashMapName);
+        this.specialClassesToInstrument.add(Instrumenter.hashMapClassName);
         this.specialClassesToInstrument.add(Instrumenter.weakHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.identityHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.concurrentHashMapName);

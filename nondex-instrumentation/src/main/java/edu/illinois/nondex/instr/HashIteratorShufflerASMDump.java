@@ -35,6 +35,10 @@ public class HashIteratorShufflerASMDump implements Opcodes {
             fv.visitEnd();
         }
         {
+            fv = cw.visitField(Opcodes.ACC_PUBLIC, "initTraces", "Ljava/lang/String;", null, null);
+            fv.visitEnd();
+        }
+        {
             mv = cw.visitMethod(ACC_PUBLIC, "<init>",
                     "(Ljava/util/HashMap$HashIterator;Ljava/util/HashMap$HashIterator;)V",
                     "(Ljava/util/HashMap<TK;TV;>.HashIterator;)V", null);
@@ -76,9 +80,25 @@ public class HashIteratorShufflerASMDump implements Opcodes {
             mv.visitJumpInsn(GOTO, l0);
             mv.visitLabel(l1);
             mv.visitFrame(F_SAME, 0, null, 0, null);
+
+            // this.initTraces= var1.initTraces
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitFieldInsn(Opcodes.GETFIELD,
+                    "java/util/HashMap$HashIterator",
+                    "initTraces", "Ljava/lang/String;");
+            mv.visitFieldInsn(Opcodes.PUTFIELD,
+                    "java/util/HashMap$HashIterator$HashIteratorShuffler",
+                    "initTraces", "Ljava/lang/String;");
             mv.visitVarInsn(ALOAD, 3);
-            mv.visitMethodInsn(INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
-                    "(Ljava/util/List;)Ljava/util/List;", false);
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn(GETFIELD,
+                    "java/util/HashMap$HashIterator$HashIteratorShuffler",
+                    "initTraces", "Ljava/lang/String;");
+            mv.visitMethodInsn(INVOKESTATIC,
+                    "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
+                    "(Ljava/util/List;Ljava/lang/String;)Ljava/util/List;", false);
+
             mv.visitVarInsn(ASTORE, 3);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitFieldInsn(GETFIELD, "java/util/HashMap$HashIterator$HashIteratorShuffler", "hashIter",

@@ -89,6 +89,8 @@ public class HashMapShufflingAdder extends ClassVisitor {
 
     @Override
     public void visitEnd() {
+        super.visitField(Opcodes.ACC_PUBLIC, "initTraces", "Ljava/lang/String;", null, null).visitEnd();
+
         addShufflerType();
         addNextType();
 
@@ -107,6 +109,14 @@ public class HashMapShufflingAdder extends ClassVisitor {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {
+                        // this.initTraces= HashMap.this.initTraces;
+                        super.visitVarInsn(Opcodes.ALOAD, 0);
+                        super.visitVarInsn(Opcodes.ALOAD, 1);
+                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/HashMap",
+                                "initTraces", "Ljava/lang/String;");
+                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/HashMap$HashIterator",
+                                "initTraces", "Ljava/lang/String;");
+
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitTypeInsn(Opcodes.NEW, "java/util/HashMap$HashIterator$HashIteratorShuffler");
                         super.visitInsn(Opcodes.DUP);

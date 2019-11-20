@@ -50,6 +50,8 @@ public class NonDex {
 
     private boolean isOutputting;
 
+    private String currentInitTraces;
+
     public NonDex() {
         this(Configuration.parseArgs());
     }
@@ -164,6 +166,26 @@ public class NonDex {
                 && this.isDebuggingUniquePoint()) {
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
             StringBuilder stackstring = new StringBuilder();
+
+            if (this.currentInitTraces != null) {
+                if (this.config.testName != null) {
+                    String[] splitedTestNames = this.config.testName.split("\\.");
+                    String packageName = splitedTestNames[0] + "." + splitedTestNames[1];
+                    String[] splitedTraces = this.currentInitTraces.split(", ");
+                    for (String candidate : splitedTraces) { // for each string in trace
+                        if (!candidate.contains(packageName)) {
+                            continue;
+                        } else {
+                            stackstring.append("Init location: ");
+                            stackstring.append(candidate).append(String.format("%n"));
+                            break;
+                        }
+                    }
+                    stackstring.append("The full init traces are").append(String.format("%n"));
+                    stackstring.append(this.currentInitTraces);
+                }
+            }
+
             for (StackTraceElement traceElement : traces) {
                 stackstring.append(traceElement.toString() + String.format("%n"));
             }
@@ -207,5 +229,13 @@ public class NonDex {
 
     public int getActualExplorations() {
         return this.actualCount;
+    }
+
+    public String getCurrentInitTraces() {
+        return currentInitTraces;
+    }
+
+    public void setCurrentInitTraces(String currentInitTraces) {
+        this.currentInitTraces = currentInitTraces;
     }
 }
