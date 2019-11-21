@@ -76,7 +76,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
                 Logger.getGlobal().log(Level.INFO, "Shuffle test file path: " + NonDex.getInstance().getConfig().getShuffleTestFilePath());
                 tests = new String(Files.readAllBytes(Paths.get(nondexDir, ConfigurationDefaults.SHUFFLE_TEST_FILE)));
                 if(tests != null) {
-                    tests = tests.replace("[", "").replace("]", "");
+                    tests = tests.replace("[", "").replace("]", "").replace(" ", "");
                     if(tests.length() == 0){
                         tests = null;
                     }

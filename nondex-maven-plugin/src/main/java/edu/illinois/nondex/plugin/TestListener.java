@@ -12,7 +12,7 @@ public class TestListener extends RunListener{
     }
     public void testStarted(Description description) throws java.lang.Exception
     {
-        String testName = description.getClassName() + "." + description.getMethodName();
+        String testName = description.getClassName() + "#" + description.getMethodName();
         if(testName.contains("[") && testName.contains("]")) {
             testName = description.getClassName();
         }
