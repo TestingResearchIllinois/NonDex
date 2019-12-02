@@ -166,12 +166,23 @@ public class NonDex {
                 && this.isDebuggingUniquePoint()) {
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
             StringBuilder stackstring = new StringBuilder();
+            boolean isHashMapRelated = false;
 
-            if (this.currentInitTraces != null) {
+            for (StackTraceElement traceElement : traces) {
+                String traceStr = traceElement.toString();
+                if (!isHashMapRelated && traceStr.contains(
+                        "java.util.HashMap$HashIterator$HashIteratorShuffler.<init>")) {
+                    isHashMapRelated = true;
+                }
+                stackstring.append(traceStr + String.format("%n"));
+            }
+
+            if (isHashMapRelated && this.currentInitTraces != null) {
                 if (this.config.testName != null) {
                     String[] splitedTestNames = this.config.testName.split("\\.");
                     String packageName = splitedTestNames[0] + "." + splitedTestNames[1];
                     String[] splitedTraces = this.currentInitTraces.split(", ");
+                    stackstring.append(String.format("-------------------------------%n"));
                     for (String candidate : splitedTraces) { // for each string in trace
                         if (!candidate.contains(packageName)) {
                             continue;
@@ -186,9 +197,6 @@ public class NonDex {
                 }
             }
 
-            for (StackTraceElement traceElement : traces) {
-                stackstring.append(traceElement.toString() + String.format("%n"));
-            }
             try {
                 // Writing to file invokes NonDex, so this flag is to prevent it from infinitely
                 // trying to write to file,
