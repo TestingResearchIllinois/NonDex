@@ -45,7 +45,6 @@ public class ControlNondeterminism {
     private static JVMShutdownHook jvmShutdownHook = new JVMShutdownHook();
 
     private static NonDex nondex;
-    private static List<Integer> lengths = new LinkedList<>();
 
     static {
         // Add shutdown hook
@@ -61,7 +60,6 @@ public class ControlNondeterminism {
         if (originalOrder.size() < 2) {
             return originalOrder;
         }
-        lengths.add(originalOrder.size());
         return nondex.getPermutation(originalOrder);
     }
 
@@ -72,7 +70,6 @@ public class ControlNondeterminism {
         if (originalOrder.length < 2) {
             return originalOrder;
         }
-        lengths.add(originalOrder.length);
 
         List<T> newOrder = Arrays.asList(originalOrder);
 
@@ -115,9 +112,6 @@ public class ControlNondeterminism {
                 Files.write(nondex.getConfig().getInvocationsPath(),
                         ("SHUFFLES:" + localShufflesCount + String.format("%n")).getBytes(),
                         StandardOpenOption.APPEND);
-                Files.write(nondex.getConfig().getInvocationsPath(),
-                            ("LENGTHS: " + ControlNondeterminism.lengths + String.format("%n")).getBytes(),
-                            StandardOpenOption.APPEND);
             } catch (IOException ioe) {
                 Logger.getGlobal().log(Level.SEVERE,
                         "IOException when printing shuffling counts in shutdown hook.", ioe);
