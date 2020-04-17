@@ -4,7 +4,7 @@
   <parent>
     <groupId>edu.illinois</groupId>
     <artifactId>nondex</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>nondex-maven-plugin</artifactId>
@@ -84,6 +84,8 @@
           <failOnViolation>true</failOnViolation>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <linkXRef>false</linkXRef>
+          <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+          <testSourceDirectories>${project.build.testSourceDirectory}</testSourceDirectories>
         </configuration>
         <dependencies>
           <dependency>
