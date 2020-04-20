@@ -612,7 +612,7 @@ public final class Method extends Executable {
      * @since 1.5
      */
     public Annotation[] getDeclaredAnnotations()  {
-        return edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(super.getDeclaredAnnotations());
+        return super.getDeclaredAnnotations();
     }
 
     /**
@@ -621,11 +621,7 @@ public final class Method extends Executable {
      */
     @Override
     public Annotation[][] getParameterAnnotations() {
-	Annotation[][] anns = sharedGetParameterAnnotations(parameterTypes, parameterAnnotations);
-	for (int i = 0;i<anns.length;i++) {
-	    anns[i] = edu.illinois.nondex.shuffling.ControlNondeterminism.shuffle(anns[i]);
-	}
-        return anns;
+        return sharedGetParameterAnnotations(parameterTypes, parameterAnnotations);
     }
 
     /**

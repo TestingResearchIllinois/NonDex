@@ -50,11 +50,6 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
         apisReturningShufflableArrays.add("java/lang/Class.getDeclaredFields");
         apisReturningShufflableArrays.add("java/lang/Class.getDeclaredMethods");
         apisReturningShufflableArrays.add("java/lang/Class.getDeclaredConstructors");
-        apisReturningShufflableArrays.add("java/lang/Class.getAnnotations");
-        apisReturningShufflableArrays.add("java/lang/Class.getDeclaredAnnotations");
-
-        apisReturningShufflableArrays.add("java/lang/reflect/Field.getAnnotationsByType");
-        apisReturningShufflableArrays.add("java/lang/reflect/Field.getDeclaredAnnotations");
 
         apisReturningShufflableArrays.add("java/io/File.list");
         apisReturningShufflableArrays.add("java/io/File.listFiles");
