@@ -92,7 +92,8 @@ public final class Instrumenter {
     public static final void instrument(String rtPath, String outJar)
             throws NoSuchAlgorithmException, IOException {
         /* TODO: Current status: read from rt.jar and use out.jar to override
-            For JDK9+, the output gotta be a .jmod? (Reference: http://openjdk.java.net/jeps/261#Packaging:-JMOD-files)
+            Verify for JDK9+, can the output gotta still be in .jar format or can be in .jmod?
+            (Reference: http://openjdk.java.net/jeps/261#Packaging:-JMOD-files)
         */
         Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtPath + " into " + outJar);
         new Instrumenter().process(rtPath, outJar);
@@ -174,7 +175,6 @@ public final class Instrumenter {
                     Logger.getGlobal().log(Level.WARNING, "Could not find " + cl + " in rt.jar");
                     Logger.getGlobal().log(Level.WARNING, "Are you running java 8?");
                     Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + cl);
-
                     continue;
                 }
                 clInputStream = rt.getInputStream(entry);
