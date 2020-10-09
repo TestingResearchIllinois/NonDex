@@ -38,10 +38,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import edu.illinois.nondex.common.ConfigurationDefaults;
-import edu.illinois.nondex.common.Logger;
-import edu.illinois.nondex.common.Mode;
-import edu.illinois.nondex.common.Utils;
+import edu.illinois.nondex.common.*;
 import edu.illinois.nondex.instr.Instrumenter;
 
 import org.apache.maven.execution.MavenSession;
@@ -158,11 +155,16 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggingLevel(Level.parse(this.loggingLevel));
-        Path rtJarPath;
-        rtJarPath = Utils.getRtJarLocation();
-        if (rtJarPath == null) {
-            Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
-            throw new MojoExecutionException("Cannot find the rt.jar!");
+
+        String param = ConfigurationDefaults.JDK9_PLUS_PATH;
+        if (Utils.checkJDK8()) {
+            Path rtPath;
+            rtPath = Utils.getRtJarLocation();
+            if (rtPath == null) {
+                Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
+                throw new MojoExecutionException("Cannot find the rt.jar!");
+            }
+            param = rtPath.toString();
         }
 
         try {
@@ -170,11 +172,9 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
                     ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR).toFile();
 
             fileForJar.mkdirs();
-            Instrumenter.instrument(rtJarPath.toString(), Paths.get(fileForJar.getAbsolutePath(),
+            Instrumenter.instrument(param, Paths.get(fileForJar.getAbsolutePath(),
                     ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
-        } catch (IOException exc) {
-            exc.printStackTrace();
-        } catch (NoSuchAlgorithmException exc) {
+        } catch (IOException | NoSuchAlgorithmException exc) {
             exc.printStackTrace();
         }
 

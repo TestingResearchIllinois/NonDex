@@ -31,11 +31,16 @@ package edu.illinois.nondex.common;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.InputStream;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.logging.Level;
 import javax.xml.bind.DatatypeConverter;
 
@@ -84,18 +89,19 @@ public class Utils {
         }
     }
 
+    // TODO: How about JDK older than JDK8
+    public static boolean checkJDK8() {
+        return System.getProperty("java.version").startsWith("1.8");
+    }
+
     public static Path getRtJarLocation() {
-        if (!System.getProperty("java.version").startsWith("1.8.")) {
-            Logger.getGlobal().log(Level.SEVERE, System.getProperty("java.version"));
-            throw new UnsupportedOperationException("NonDex only supports Java 8");
-        }
         String javaHome = System.getProperty("java.home");
         if (javaHome == null) {
             Logger.getGlobal().log(Level.SEVERE, "JAVA_HOME is not set!");
             throw new IllegalStateException("JAVA_HOME is not set!");
         }
 
-
+        // TODO: NonDex is implemented with JDK8 (Run with JDK8+ will fail)
         Path pathToRt = Paths.get(javaHome, "jre", "lib", "rt.jar");
         Logger.getGlobal().log(Level.FINE, pathToRt.toString());
         if (Files.exists(pathToRt)) {
@@ -109,5 +115,23 @@ public class Utils {
         }
 
         return null;
+//        FileSystem fs = FileSystems.getFileSystem(URI.create("jrt:/"));
+//        Path rtClassPath = fs.getPath("modules/java.base");
+//        Logger.getGlobal().log(Level.WARNING, rtClassPath.toString());
+        /* Test jrt module
+        try {
+            InputStream is = Files.newInputStream(fs.getPath("modules/java.base",
+                    "java/lang/Object.class"));
+            Scanner scanner = new Scanner(is, "UTF-8");
+            String text = scanner.useDelimiter("\\A").next();
+            Logger.getGlobal().log(Level.WARNING, text);
+            scanner.close();
+        } catch (Exception e) {
+            Logger.getGlobal().log(Level.WARNING, e.toString());
+        }
+        */
+
+        // Indicate using JDK8+
+//        return Paths.get(ConfigurationDefaults.JDK8_PLUS_PATH);
     }
 }

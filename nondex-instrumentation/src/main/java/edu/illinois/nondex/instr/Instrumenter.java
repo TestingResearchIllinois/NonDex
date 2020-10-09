@@ -28,12 +28,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -45,6 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassReader;
@@ -89,24 +89,41 @@ public final class Instrumenter {
         this.specialClassesToInstrument.add(Instrumenter.priorityBlockingQueueName);
     }
 
-    public static final void instrument(String rtJar, String outJar)
+    public static final void instrument(String rtPath, String outJar)
             throws NoSuchAlgorithmException, IOException {
-        Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtJar + " into " + outJar);
-        new Instrumenter().process(rtJar, outJar);
+        /* TODO: Current status: read from rt.jar and use out.jar to override
+            For JDK9+, the output gotta be a .jmod? (Reference: http://openjdk.java.net/jeps/261#Packaging:-JMOD-files)
+        */
+        Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtPath + " into " + outJar);
+        new Instrumenter().process(rtPath, outJar);
     }
 
-    private void process(String rtJar, String outJar)
+    private void processJDK9Plus() throws IOException {
+        FileSystem fs = FileSystems.getFileSystem(URI.create("jrt:/"));
+        byte[] bytes = Files.readAllBytes(fs.getPath("modules", "java.base",
+                "java/lang/Class.class"));
+        InputStream clInputStream = new ByteArrayInputStream(bytes);
+        Logger.getGlobal().log(Level.WARNING, "********Convert to inputStream Ok*******");
+    }
+
+    private void process(String rtPath, String outJar)
             throws IOException, NoSuchAlgorithmException, FileNotFoundException {
+        // TODO: Simply test jrt FS, to be removed
+        if (rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
+            processJDK9Plus();
+            return;
+        }
+
         ZipFile rt = null;
         try {
-            rt = new ZipFile(rtJar);
+            rt = new ZipFile(rtPath);
         } catch (IOException exc) {
             Logger.getGlobal().log(Level.SEVERE, "Are you sure you provided a valid path to your rt.jar?");
             throw exc;
         }
         final Set<String> classesToCopy = this.filterCached(rt, outJar);
 
-        // If no class needs to be reinsturmented
+        // If no class needs to be re-instrumented
         if (this.standardClassesToInstrument.isEmpty() && this.specialClassesToInstrument.isEmpty()) {
             return;
         }
@@ -227,8 +244,8 @@ public final class Instrumenter {
 
 
     private void instrumentClass(String className,
-                                        Function<ClassVisitor, ClassVisitor> createShuffler,
-                                        ZipFile rt, ZipOutputStream outZip) throws IOException {
+                                 Function<ClassVisitor, ClassVisitor> createShuffler,
+                                 ZipFile rt, ZipOutputStream outZip) throws IOException {
         InputStream classStream = null;
         try {
             classStream = rt.getInputStream(rt.getEntry(className));
