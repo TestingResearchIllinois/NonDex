@@ -33,12 +33,10 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -64,6 +62,8 @@ public final class Instrumenter {
 
     private final Set<String> standardClassesToInstrument = new HashSet<>();
     private final Set<String> specialClassesToInstrument = new HashSet<>();
+
+    private static final String rootPath = "modules/java.base";
 
     private interface Function<T, R> {
         R apply(T param);
@@ -99,17 +99,9 @@ public final class Instrumenter {
         new Instrumenter().process(rtPath, outJar);
     }
 
-    private void processJDK9Plus() throws IOException {
-        FileSystem fs = FileSystems.getFileSystem(URI.create("jrt:/"));
-        byte[] bytes = Files.readAllBytes(fs.getPath("modules", "java.base",
-                "java/lang/Class.class"));
-        InputStream clInputStream = new ByteArrayInputStream(bytes);
-        Logger.getGlobal().log(Level.WARNING, "********Convert to inputStream Ok*******");
-    }
-
     private void process(String rtPath, String outJar)
-            throws IOException, NoSuchAlgorithmException, FileNotFoundException {
-        // TODO: Simply test jrt FS, to be removed
+            throws IOException, NoSuchAlgorithmException {
+        // TODO: To be refactored considering OOP design for JDK9Plus
         if (rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
             processJDK9Plus();
             return;
@@ -165,6 +157,18 @@ public final class Instrumenter {
     }
 
 
+    private void processJDK9Plus() throws IOException, NoSuchAlgorithmException {
+        // FileSystem for jrt -- equivalent for rt.jar (https://openjdk.java.net/jeps/220)
+        FileSystem rtFs = FileSystems.getFileSystem(URI.create("jrt:/"));
+
+        ByteArrayOutputStream outZipBaos = new ByteArrayOutputStream();
+        ZipOutputStream outZip = new ZipOutputStream(outZipBaos);
+
+        instrumentStandardClassesForJDK9Plus(rtFs, outZip);
+        Logger.getGlobal().log(Level.WARNING, "********ProcessJDK9+ OKK!*******");
+    }
+
+
     private void instrumentStandardClasses(ZipFile rt, ZipOutputStream outZip)
             throws IOException, NoSuchAlgorithmException {
         for (String cl : this.standardClassesToInstrument) {
@@ -203,6 +207,35 @@ public final class Instrumenter {
             outZip.putNextEntry(entry);
             outZip.write(arr, 0, arr.length);
             outZip.closeEntry();
+        }
+    }
+
+    private void instrumentStandardClassesForJDK9Plus(FileSystem rtFS, ZipOutputStream outZip) throws IOException, NoSuchAlgorithmException {
+        for (String cls: this.standardClassesToInstrument) {
+            InputStream clInputStream = null;
+
+            Path curClsPath = rtFS.getPath(rootPath, cls);
+            byte[] clsBytes = Files.readAllBytes(curClsPath);
+            clInputStream = new ByteArrayInputStream(clsBytes);
+            this.writeMd5(clInputStream, cls + ".md5", outZip);
+
+            clInputStream = new ByteArrayInputStream(clsBytes);
+
+            ClassReader cr = new ClassReader(clInputStream);
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+            ClassVisitor cv = new ClassVisitorShufflingAdder(cw);
+
+            cr.accept(cv, 0);
+
+            byte[] arr = cw.toByteArray();
+
+            ZipEntry entry = new ZipEntry(cls);
+            outZip.putNextEntry(entry);
+            outZip.write(arr, 0, arr.length);
+            outZip.closeEntry();
+
+            Logger.getGlobal().log(Level.WARNING, "********Process" + cls + "OKK!*******");
         }
     }
 
@@ -357,5 +390,25 @@ public final class Instrumenter {
 
             outZipFile.close();
         }
+    }
+
+    /*
+        Get all entries to the bottom-level class file
+    */
+    private void getAllEntries() {
+//        ArrayList<Path> paths = new ArrayList<>();
+//        Queue<Path> pathQueue = new LinkedList<>();
+//        Files.walk(rootPath).forEach(pathQueue::add);
+//
+//        while (!pathQueue.isEmpty()) {
+//            Path curDir = pathQueue.peek();
+//            Logger.getGlobal().log(Level.WARNING, "******Directory:" + curDir.toString());
+//            if (Files.isDirectory(curDir)) {
+//                Files.walk(curDir).forEach(pathQueue::add);
+//            } else {
+//                paths.add(curDir);
+//            }
+//            pathQueue.poll();
+//        }
     }
 }
