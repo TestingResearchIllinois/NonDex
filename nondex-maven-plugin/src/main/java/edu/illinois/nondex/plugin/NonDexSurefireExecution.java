@@ -84,6 +84,7 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             }
             configElement.getChild("test").setValue(this.configuration.testName);
         }
+        // TODO: re-instrument to fit into JDK9+
         String argLineToSet = "" + "-Xbootclasspath/p:" + pathToNondex + File.pathSeparator
                 + Paths.get(mavenSession.getLocalRepository().getBasedir(),
                         "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,

@@ -37,14 +37,14 @@ import org.objectweb.asm.Opcodes;
 public class ConcurrentHashMapShufflingAdder extends ClassVisitor {
 
     public ConcurrentHashMapShufflingAdder(ClassVisitor ca) {
-        super(Opcodes.ASM5, ca);
+        super(Opcodes.ASM9, ca);
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
         if ("<init>".equals(name)) {
-            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+            return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {

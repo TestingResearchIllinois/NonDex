@@ -103,7 +103,7 @@ public final class Instrumenter {
             throws IOException, NoSuchAlgorithmException {
         // TODO: To be refactored considering OOP design for JDK9Plus
         if (rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
-            processJDK9Plus();
+            processJDK9Plus(outJar);
             return;
         }
 
@@ -157,7 +157,7 @@ public final class Instrumenter {
     }
 
 
-    private void processJDK9Plus() throws IOException, NoSuchAlgorithmException {
+    private void processJDK9Plus(String outJar) throws IOException, NoSuchAlgorithmException {
         // FileSystem for jrt -- equivalent for rt.jar (https://openjdk.java.net/jeps/220)
         FileSystem rtFs = FileSystems.getFileSystem(URI.create("jrt:/"));
 
@@ -165,6 +165,11 @@ public final class Instrumenter {
         ZipOutputStream outZip = new ZipOutputStream(outZipBaos);
 
         instrumentStandardClassesForJDK9Plus(rtFs, outZip);
+        // TODO: omit
+        outZip.close();
+        FileOutputStream fos = new FileOutputStream(outJar);
+        outZipBaos.writeTo(fos);
+        fos.close();
         Logger.getGlobal().log(Level.WARNING, "********ProcessJDK9+ OKK!*******");
     }
 
@@ -235,7 +240,7 @@ public final class Instrumenter {
             outZip.write(arr, 0, arr.length);
             outZip.closeEntry();
 
-            Logger.getGlobal().log(Level.WARNING, "********Process" + cls + "OKK!*******");
+            Logger.getGlobal().log(Level.WARNING, "********Process class" + cls + "OK!*******");
         }
     }
 
@@ -329,6 +334,9 @@ public final class Instrumenter {
         return toCopy;
     }
 
+    /*
+        Get a set of classes to be instrumented if out.jar exists
+    */
     private Set<String> filterCached(ZipFile rt, String oldJar) throws IOException, NoSuchAlgorithmException {
         Set<String> classesToCopy = new HashSet<>();
         if (new File(oldJar).exists()) {

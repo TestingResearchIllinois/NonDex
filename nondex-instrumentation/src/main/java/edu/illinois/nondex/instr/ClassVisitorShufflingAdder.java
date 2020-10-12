@@ -69,7 +69,7 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
     }
 
     public ClassVisitorShufflingAdder(ClassVisitor ca) {
-        super(Opcodes.ASM5, ca);
+        super(Opcodes.ASM9, ca);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
 
         if (apisReturningShufflableArrays.contains(methodId)) {
 
-            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+            return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
 
                 @Override
                 public void visitInsn(int opcode) {
