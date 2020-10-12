@@ -89,7 +89,10 @@ public class Utils {
         }
     }
 
-    // TODO: How about JDK older than JDK8
+    public static boolean checkJDKBefore8() {
+        return System.getProperty("java.version").startsWith("1.");
+    }
+
     public static boolean checkJDK8() {
         return System.getProperty("java.version").startsWith("1.8");
     }

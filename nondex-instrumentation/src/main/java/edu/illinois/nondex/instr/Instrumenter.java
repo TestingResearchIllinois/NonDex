@@ -96,17 +96,16 @@ public final class Instrumenter {
             (Reference: http://openjdk.java.net/jeps/261#Packaging:-JMOD-files)
         */
         Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtPath + " into " + outJar);
+        // TODO: To be refactored considering OOP design for JDK9Plus
+        if (rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
+            new Instrumenter().processJDK9Plus(outJar);
+            return;
+        }
         new Instrumenter().process(rtPath, outJar);
     }
 
     private void process(String rtPath, String outJar)
             throws IOException, NoSuchAlgorithmException {
-        // TODO: To be refactored considering OOP design for JDK9Plus
-        if (rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
-            processJDK9Plus(outJar);
-            return;
-        }
-
         ZipFile rt = null;
         try {
             rt = new ZipFile(rtPath);
@@ -158,14 +157,14 @@ public final class Instrumenter {
 
 
     private void processJDK9Plus(String outJar) throws IOException, NoSuchAlgorithmException {
-        // FileSystem for jrt -- equivalent for rt.jar (https://openjdk.java.net/jeps/220)
+        // FileSystem for jrt -- equivalent to rt.jar (https://openjdk.java.net/jeps/220)
         FileSystem rtFs = FileSystems.getFileSystem(URI.create("jrt:/"));
 
         ByteArrayOutputStream outZipBaos = new ByteArrayOutputStream();
         ZipOutputStream outZip = new ZipOutputStream(outZipBaos);
 
+        // TODO: Re-use the process that writes to output jar
         instrumentStandardClassesForJDK9Plus(rtFs, outZip);
-        // TODO: omit
         outZip.close();
         FileOutputStream fos = new FileOutputStream(outJar);
         outZipBaos.writeTo(fos);

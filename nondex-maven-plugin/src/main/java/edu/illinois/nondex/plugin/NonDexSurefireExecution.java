@@ -84,11 +84,16 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             }
             configElement.getChild("test").setValue(this.configuration.testName);
         }
-        // TODO: re-instrument to fit into JDK9+
-        String argLineToSet = "" + "-Xbootclasspath/p:" + pathToNondex + File.pathSeparator
+
+        String argLineToSetPrefix = "" + "-Xbootclasspath/p:";
+        if (!Utils.checkJDKBefore8()) {
+            argLineToSetPrefix = "" + "--patch-module "+ "java.base=";
+        }
+
+        String argLineToSet = argLineToSetPrefix + pathToNondex + File.pathSeparator
                 + Paths.get(mavenSession.getLocalRepository().getBasedir(),
-                        "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
-                        annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
+                "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
+                annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
                 + " " + this.originalArgLine + " " + this.configuration.toArgLine();
 
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());
