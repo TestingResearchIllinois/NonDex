@@ -29,7 +29,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
 
 public class Logger {
 

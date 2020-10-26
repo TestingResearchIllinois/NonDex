@@ -41,12 +41,13 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
+
 import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.plugin.MojoExecutionException;
