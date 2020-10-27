@@ -88,5 +88,5 @@ public class ConfigurationDefaults {
     public static final String PROPERTY_LOGGING_LEVEL = "nondexLogging";
     public static final String DEFAULT_LOGGING_LEVEL = "CONFIG";
 
-    public static final String JDK9_PLUS_PATH = "JDK8+";
+    public static final String JDK9_PLUS_PATH = "JDK9-plus-path";
 }

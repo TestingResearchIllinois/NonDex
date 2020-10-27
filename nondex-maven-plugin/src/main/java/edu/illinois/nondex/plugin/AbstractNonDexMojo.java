@@ -156,7 +156,7 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggingLevel(Level.parse(this.loggingLevel));
 
-        String param = ConfigurationDefaults.JDK9_PLUS_PATH;
+        String rtPathStr = ConfigurationDefaults.JDK9_PLUS_PATH;
         if (Utils.checkJDK8()) {
             Path rtPath;
             rtPath = Utils.getRtJarLocation();
@@ -164,7 +164,7 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
                 Logger.getGlobal().log(Level.SEVERE, "Cannot find the rt.jar!");
                 throw new MojoExecutionException("Cannot find the rt.jar!");
             }
-            param = rtPath.toString();
+            rtPathStr = rtPath.toString();
         }
 
         try {
@@ -172,7 +172,7 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
                     ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR).toFile();
 
             fileForJar.mkdirs();
-            Instrumenter.instrument(param, Paths.get(fileForJar.getAbsolutePath(),
+            Instrumenter.instrument(rtPathStr, Paths.get(fileForJar.getAbsolutePath(),
                     ConfigurationDefaults.INSTRUMENTATION_JAR).toString());
         } catch (IOException | NoSuchAlgorithmException exc) {
             exc.printStackTrace();

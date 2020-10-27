@@ -60,6 +60,10 @@ public final class Instrumenter {
     public static final String priorityQueueName = "java/util/PriorityQueue$Itr.class";
     public static final String priorityBlockingQueueName = "java/util/concurrent/PriorityBlockingQueue.class";
 
+    public static final String hashMapNodeName = "java/util/HashMap$Node.class";
+    public static final String hashMapEntryName = "java/util/HashMap$Entry.class";
+    public static final String hashMapHashIteratorShufflerName = "java/util/HashMap$HashIterator$HashIteratorShuffler.class";
+
     private final Set<String> standardClassesToInstrument = new HashSet<>();
     private final Set<String> specialClassesToInstrument = new HashSet<>();
 
@@ -94,17 +98,8 @@ public final class Instrumenter {
 
     public static final void instrument(String rtPath, String outJar)
             throws NoSuchAlgorithmException, IOException {
-        /* TODO: Current status: read from rt.jar and use out.jar to override
-            Verify for JDK9+, can the output gotta still be in .jar format or can be in .jmod?
-            (Reference: http://openjdk.java.net/jeps/261#Packaging:-JMOD-files)
-        */
         Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtPath + " into " + outJar);
-        // TODO: To be refactored considering OOP design for JDK9Plus
-        if (rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
-            new Instrumenter().init(null, outJar);
-            return;
-        }
-        new Instrumenter().init(rtPath, outJar);
+        new Instrumenter().initAndProcess(rtPath, outJar);
     }
 
     private InputStream getInputStream(String className)
@@ -133,7 +128,7 @@ public final class Instrumenter {
                 byte[] clsBytes = Files.readAllBytes(curClsPath);
                 return new ByteArrayInputStream(clsBytes);
             } catch (IOException exc) {
-                Logger.getGlobal().log(Level.WARNING, "Cannot find " + className + " are you sure this is a valid rt.jar?");
+                Logger.getGlobal().log(Level.WARNING, "Could not find " + className + " in jrt file system");
                 Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + className);
                 throw exc;
             }
@@ -141,7 +136,7 @@ public final class Instrumenter {
         return null;
     }
 
-    static boolean hasEntry(String className) {
+    static boolean hasClassEntry(String className) {
         if (rtZipFile != null) {
             return rtZipFile.getEntry(className) != null;
         } else {
@@ -150,9 +145,9 @@ public final class Instrumenter {
         }
     }
 
-    private void init(String rtPath, String outJar)
+    private void initAndProcess(String rtPath, String outJar)
             throws IOException, NoSuchAlgorithmException {
-        if (rtPath != null) {
+        if (!rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
             ZipFile rt = null;
             try {
                 rt = new ZipFile(rtPath);
@@ -166,7 +161,6 @@ public final class Instrumenter {
         }
         this.process(outJar);
     }
-
 
     private void process(String outJar)
             throws IOException, NoSuchAlgorithmException {
@@ -183,16 +177,16 @@ public final class Instrumenter {
 
         this.instrumentStandardClasses(outZip);
 
-        if (Instrumenter.hasEntry("java/util/HashMap$Node.class")) {
-            this.addAsmDumpResultToZip(outZip, "java/util/HashMap$HashIterator$HashIteratorShuffler.class",
+        if (Instrumenter.hasClassEntry(hashMapNodeName)) {
+            this.addAsmDumpResultToZip(outZip, hashMapHashIteratorShufflerName,
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
                             return HashIteratorShufflerASMDump.dump("Node");
                         }
                     });
-        } else if (Instrumenter.hasEntry("java/util/HashMap$Entry.class")) {
-            this.addAsmDumpResultToZip(outZip, "java/util/HashMap$HashIterator$HashIteratorShuffler.class",
+        } else if (Instrumenter.hasClassEntry(hashMapEntryName)) {
+            this.addAsmDumpResultToZip(outZip, hashMapHashIteratorShufflerName,
                     new Producer<byte[]>() {
                         @Override
                         public byte[] apply() {
@@ -212,24 +206,6 @@ public final class Instrumenter {
         outZipBaos.writeTo(fos);
         fos.close();
     }
-
-
-//    private void processJDK9Plus(String outJar) throws IOException, NoSuchAlgorithmException {
-//        // FileSystem for jrt -- equivalent to rt.jar (https://openjdk.java.net/jeps/220)
-//        FileSystem rtFs = FileSystems.getFileSystem(URI.create("jrt:/"));
-//
-//        ByteArrayOutputStream outZipBaos = new ByteArrayOutputStream();
-//        ZipOutputStream outZip = new ZipOutputStream(outZipBaos);
-//
-//        // TODO: Re-use the process that writes to output jar
-//        instrumentStandardClassesForJDK9Plus(rtFs, outZip);
-//        outZip.close();
-//        FileOutputStream fos = new FileOutputStream(outJar);
-//        outZipBaos.writeTo(fos);
-//        fos.close();
-//        Logger.getGlobal().log(Level.WARNING, "********ProcessJDK9+ OKK!*******");
-//    }
-
 
     private void instrumentStandardClasses(ZipOutputStream outZip)
             throws IOException, NoSuchAlgorithmException {
@@ -256,35 +232,6 @@ public final class Instrumenter {
         }
     }
 
-//    private void instrumentStandardClassesForJDK9Plus(FileSystem rtFS, ZipOutputStream outZip) throws IOException, NoSuchAlgorithmException {
-//        for (String cls: this.standardClassesToInstrument) {
-//            InputStream clInputStream = null;
-//
-//            Path curClsPath = rtFS.getPath(rootPath, cls);
-//            byte[] clsBytes = Files.readAllBytes(curClsPath);
-//            clInputStream = new ByteArrayInputStream(clsBytes);
-//            this.writeMd5(clInputStream, cls + ".md5", outZip);
-//
-//            clInputStream = new ByteArrayInputStream(clsBytes);
-//
-//            ClassReader cr = new ClassReader(clInputStream);
-//            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-//
-//            ClassVisitor cv = new ClassVisitorShufflingAdder(cw);
-//
-//            cr.accept(cv, 0);
-//
-//            byte[] arr = cw.toByteArray();
-//
-//            ZipEntry entry = new ZipEntry(cls);
-//            outZip.putNextEntry(entry);
-//            outZip.write(arr, 0, arr.length);
-//            outZip.closeEntry();
-//
-//            Logger.getGlobal().log(Level.WARNING, "********Process class" + cls + "OK!*******");
-//        }
-//    }
-
 
     private byte[] readAllBytes(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -308,8 +255,7 @@ public final class Instrumenter {
     private void writeMd5(InputStream isToComputeHashOn, String fileName, ZipOutputStream zip)
             throws IOException, NoSuchAlgorithmException {
         if (isToComputeHashOn == null) {
-            Logger.getGlobal().log(Level.WARNING, "Could not find " + fileName + " in rt.jar");
-            Logger.getGlobal().log(Level.WARNING, "Are you running java 8?");
+            Logger.getGlobal().log(Level.WARNING, "Could not find " + fileName + " inputStream");
             Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + fileName);
             return;
         }

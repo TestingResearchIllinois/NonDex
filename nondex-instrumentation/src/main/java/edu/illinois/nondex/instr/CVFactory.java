@@ -41,9 +41,9 @@ public class CVFactory {
         if (clzToInstrument.equals(Instrumenter.concurrentHashMapName)) {
             return new ConcurrentHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.hashMapName)) {
-            if (Instrumenter.hasEntry("java/util/HashMap$Node.class")) {
+            if (Instrumenter.hasClassEntry(Instrumenter.hashMapNodeName)) {
                 return new HashMapShufflingAdder(cv, "Node");
-            } else if (Instrumenter.hasEntry("java/util/HashMap$Entry.class")) {
+            } else if (Instrumenter.hasClassEntry(Instrumenter.hashMapEntryName)) {
                 return new HashMapShufflingAdder(cv, "Entry");
             }
         } else if (clzToInstrument.equals(Instrumenter.weakHashMapName)) {
