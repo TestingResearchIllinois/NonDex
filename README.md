@@ -35,7 +35,7 @@ Use (Maven):
 
 ### Automatically setting up the pom.xmls for Nondex
 
-Run the following command to automatically setup the pom.xml for Nondex.
+Run the following command to automatically setup the pom.xmls for Nondex.
 
 
 ```shell
