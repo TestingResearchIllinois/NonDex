@@ -33,7 +33,18 @@ Build (Maven):
 Use (Maven):
 ============
 
-To use NonDex, add the plugin to the plugins section under the build section in your pom:
+### Automatically setting up the pom.xmls for Nondex
+
+Run the following command to automatically setup the pom.xml for Nondex.
+
+
+```shell
+./pom-modify/modify-project.sh path_to_maven_project 
+```
+Note: This script also installs idFlakies.
+
+### Manually setting up the pom.xmls for Nondex
+Add the plugin to the plugins section under the build section in all pom files:
 
 ```xml
 <project>
@@ -51,6 +62,12 @@ To use NonDex, add the plugin to the plugins section under the build section in 
   </build>
 </project>
 ```
+
+Before running Nondex, run:
+    
+    mvn install
+    mvn test
+
 
 To find if you have flaky tests, run:
 
