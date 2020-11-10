@@ -28,6 +28,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
+import jdk.internal.misc.VM;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -142,6 +144,9 @@ public class NonDex {
     }
 
     private boolean apiShouldBeExplored() {
+        if (config.filter.toString().equals(ConfigurationDefaults.DEFAULT_FILTER)) {
+            return true;
+        }
         return config.filter.matcher(this.getInvocationElement()).matches();
     }
 

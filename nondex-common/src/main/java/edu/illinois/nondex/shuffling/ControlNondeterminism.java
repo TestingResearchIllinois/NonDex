@@ -39,6 +39,7 @@ import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.NonDex;
+import jdk.internal.misc.VM;
 
 public class ControlNondeterminism {
 
@@ -46,10 +47,11 @@ public class ControlNondeterminism {
 
     private static NonDex nondex;
 
+    public static boolean shutDown = false;
+
     static {
         // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
-        nondex = new NonDex();
     }
 
     public static Configuration getConfiguration() {
@@ -57,9 +59,10 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        if (originalOrder.size() < 2) {
+        if (nondex == null || shutDown || originalOrder.size() < 2) {
             return originalOrder;
         }
+
         return nondex.getPermutation(originalOrder);
     }
 
@@ -67,7 +70,16 @@ public class ControlNondeterminism {
         if (originalOrder == null) {
             return null;
         }
+
         if (originalOrder.length < 2) {
+            return originalOrder;
+        }
+
+        if (VM.isBooted() && nondex == null) {
+            nondex = new NonDex();
+        }
+
+        if (nondex == null || shutDown) {
             return originalOrder;
         }
 
@@ -101,6 +113,7 @@ public class ControlNondeterminism {
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
             try {
+                shutDown = true;
                 int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();
                 Files.write(nondex.getConfig().getConfigPath(),
