@@ -65,7 +65,7 @@ Add the plugin to the plugins section under the build section in all pom files:
 
 Before running Nondex, run:
     
-    mvn install
+    mvn install -DskipTests
     mvn test
 
 
