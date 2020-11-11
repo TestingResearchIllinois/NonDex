@@ -41,10 +41,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Level;
 
+import edu.illinois.nondex.common.Utils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -118,7 +118,6 @@ public final class Instrumenter {
             } catch (IOException exc) {
                 Logger.getGlobal().log(Level.WARNING, "Cannot find " + className + " are you sure this is a valid rt.jar?");
                 Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + className);
-                throw exc;
             }
         }
 
@@ -130,7 +129,6 @@ public final class Instrumenter {
             } catch (IOException exc) {
                 Logger.getGlobal().log(Level.WARNING, "Could not find " + className + " in jrt file system");
                 Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + className);
-                throw exc;
             }
         }
         return null;
@@ -147,7 +145,7 @@ public final class Instrumenter {
 
     private void initAndProcess(String rtPath, String outJar)
             throws IOException, NoSuchAlgorithmException {
-        if (!rtPath.equals(ConfigurationDefaults.JDK9_PLUS_PATH)) {
+        if (Utils.checkJDKBefore8()) {
             ZipFile rt = null;
             try {
                 rt = new ZipFile(rtPath);

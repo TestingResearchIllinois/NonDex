@@ -93,7 +93,7 @@
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <argLine>-Xbootclasspath/p:"${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
+          <argLine>--add-exports java.base/edu.illinois.nondex.common=ALL-UNNAMED --add-exports java.base/edu.illinois.nondex.shuffling=ALL-UNNAMED --patch-module java.base="${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
