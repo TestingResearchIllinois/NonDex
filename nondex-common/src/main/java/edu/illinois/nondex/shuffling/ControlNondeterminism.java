@@ -47,8 +47,6 @@ public class ControlNondeterminism {
 
     private static NonDex nondex;
 
-    public static boolean shutDown = false;
-
     static {
         // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
@@ -59,7 +57,7 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        if (nondex == null || shutDown || originalOrder.size() < 2) {
+        if (nondex == null || originalOrder.size() < 2) {
             return originalOrder;
         }
 
@@ -76,10 +74,12 @@ public class ControlNondeterminism {
         }
 
         if (VM.isBooted() && nondex == null) {
+            // Call getStackTrace here to bypass can't initialize class StackTraceElement$HashedModules exception
+            Thread.currentThread().getStackTrace();
             nondex = new NonDex();
         }
 
-        if (nondex == null || shutDown) {
+        if (nondex == null) {
             return originalOrder;
         }
 
@@ -113,7 +113,6 @@ public class ControlNondeterminism {
         public void run() {
             nondex.getConfig().createNondexDirIfNeeded();
             try {
-                shutDown = true;
                 int localCount = nondex.getPossibleExplorations();
                 int localShufflesCount = nondex.getActualExplorations();
                 Files.write(nondex.getConfig().getConfigPath(),

@@ -144,9 +144,6 @@ public class NonDex {
     }
 
     private boolean apiShouldBeExplored() {
-        if (config.filter.toString().equals(ConfigurationDefaults.DEFAULT_FILTER)) {
-            return true;
-        }
         return config.filter.matcher(this.getInvocationElement()).matches();
     }
 
