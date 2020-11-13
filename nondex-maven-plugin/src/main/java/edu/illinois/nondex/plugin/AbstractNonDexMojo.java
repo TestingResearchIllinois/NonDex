@@ -37,8 +37,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-
-import edu.illinois.nondex.common.*;
+import edu.illinois.nondex.common.ConfigurationDefaults;
+import edu.illinois.nondex.common.Level;
+import edu.illinois.nondex.common.Logger;
+import edu.illinois.nondex.common.Mode;
+import edu.illinois.nondex.common.Utils;
 import edu.illinois.nondex.instr.Instrumenter;
 
 import org.apache.maven.execution.MavenSession;

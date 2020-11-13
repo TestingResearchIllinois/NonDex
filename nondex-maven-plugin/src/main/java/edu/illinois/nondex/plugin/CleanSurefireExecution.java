@@ -32,13 +32,12 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
-import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Level;
+import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.execution.MavenSession;

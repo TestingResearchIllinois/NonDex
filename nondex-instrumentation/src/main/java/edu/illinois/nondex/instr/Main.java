@@ -28,18 +28,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
+import java.util.Objects;
+
 import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Utils;
 
-import java.util.Objects;
-
 public class Main {
     public static void main(String...args) throws Exception {
-        // TODO: Current status: 1 argument -> [/path/to/rt.jar]; 2 arguments: [/path/to/rt.jar] /path/to/output.jar
         if (args.length == 1) {
-            String rtPath = ConfigurationDefaults.JDK9_PLUS_PATH;;
+            String rtPath = ConfigurationDefaults.JDK9_PLUS_PATH;
             if (Utils.checkJDK8()) {
-                rtPath = Objects.requireNonNull(Utils.getRtJarLocation()).toString();
+                rtPath = Utils.getRtJarLocation().toString();
             }
             Instrumenter.instrument(rtPath, args[0]);
         } else if (args.length == 2) {

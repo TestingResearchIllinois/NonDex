@@ -28,7 +28,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.io.*;
+//import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -36,15 +42,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Level;
-
+import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -64,13 +73,13 @@ public final class Instrumenter {
     public static final String hashMapEntryName = "java/util/HashMap$Entry.class";
     public static final String hashMapHashIteratorShufflerName = "java/util/HashMap$HashIterator$HashIteratorShuffler.class";
 
-    private final Set<String> standardClassesToInstrument = new HashSet<>();
-    private final Set<String> specialClassesToInstrument = new HashSet<>();
+    private static final String rootPath = "modules/java.base";
 
     private static FileSystem rtFileSystem = null;
     private static ZipFile rtZipFile = null;
 
-    private static final String rootPath = "modules/java.base";
+    private final Set<String> standardClassesToInstrument = new HashSet<>();
+    private final Set<String> specialClassesToInstrument = new HashSet<>();
 
     private interface Function<T, R> {
         R apply(T param);

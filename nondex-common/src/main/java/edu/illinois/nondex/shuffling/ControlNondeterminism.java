@@ -36,9 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import edu.illinois.nondex.common.Configuration;
-import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Level;
+import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.NonDex;
+
 import jdk.internal.misc.VM;
 
 public class ControlNondeterminism {

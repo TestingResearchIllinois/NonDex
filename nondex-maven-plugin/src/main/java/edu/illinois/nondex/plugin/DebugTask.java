@@ -31,11 +31,10 @@ package edu.illinois.nondex.plugin;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
-import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Level;
+import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.maven.execution.MavenSession;
