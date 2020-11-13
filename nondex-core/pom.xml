@@ -17,10 +17,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
-        <configuration>
-          <additionalJOption>-Xdoclint:none</additionalJOption>
-        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>

@@ -157,10 +157,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
-        <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -188,10 +185,10 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.8.1</version>
           <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
+            <source>${java.specification.version}</source>
+            <target>${java.specification.version}</target>
           </configuration>
         </plugin>
         <plugin>
