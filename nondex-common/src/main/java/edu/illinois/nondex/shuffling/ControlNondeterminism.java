@@ -47,6 +47,8 @@ public class ControlNondeterminism {
 
     private static NonDex nondex;
 
+    private static boolean isCreatingNonDex = false;
+
     static {
         // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
@@ -57,7 +59,18 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
-        if (nondex == null || originalOrder.size() < 2) {
+        if (originalOrder.size() < 2) {
+            return originalOrder;
+        }
+
+        if (VM.isBooted() && nondex == null && !isCreatingNonDex) {
+            isCreatingNonDex = true;
+            // Call getStackTrace here to bypass can't initialize class StackTraceElement$HashedModules exception
+            Thread.currentThread().getStackTrace();
+            nondex = NonDex.getInstance();
+        }
+
+        if (nondex == null) {
             return originalOrder;
         }
 
@@ -73,7 +86,8 @@ public class ControlNondeterminism {
             return originalOrder;
         }
 
-        if (VM.isBooted() && nondex == null) {
+        if (VM.isBooted() && nondex == null && !isCreatingNonDex) {
+            isCreatingNonDex = true;
             // Call getStackTrace here to bypass can't initialize class StackTraceElement$HashedModules exception
             Thread.currentThread().getStackTrace();
             nondex = NonDex.getInstance();
