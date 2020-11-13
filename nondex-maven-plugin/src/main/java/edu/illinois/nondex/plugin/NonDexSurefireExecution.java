@@ -88,7 +88,9 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
         String argLineToSetPrefix = "" + "-Xbootclasspath/p:";
         if (!Utils.checkJDKBefore8()) {
-            argLineToSetPrefix = "" + "--patch-module "+ "java.base=";
+            argLineToSetPrefix = "" + "--add-exports java.base/edu.illinois.nondex.common=ALL-UNNAMED " +
+                    "--add-exports java.base/edu.illinois.nondex.shuffling=ALL-UNNAMED" +
+                    " --patch-module "+ "java.base=";
         }
 
         String argLineToSet = argLineToSetPrefix + pathToNondex + File.pathSeparator

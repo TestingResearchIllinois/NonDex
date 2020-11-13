@@ -76,7 +76,7 @@ public class ControlNondeterminism {
         if (VM.isBooted() && nondex == null) {
             // Call getStackTrace here to bypass can't initialize class StackTraceElement$HashedModules exception
             Thread.currentThread().getStackTrace();
-            nondex = new NonDex();
+            nondex = NonDex.getInstance();
         }
 
         if (nondex == null) {
