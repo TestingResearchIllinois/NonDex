@@ -86,27 +86,6 @@
     </repository>
   </distributionManagement>
 
-  <profiles>
-    <profile>
-      <id>java8</id>
-      <activation>
-        <jdk>(,9)</jdk>
-      </activation>
-      <properties>
-        <ifjava8>*/</ifjava8>
-      </properties>
-    </profile>
-    <profile>
-      <id>java9+</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <properties>
-        <ifjava9above>*/</ifjava9above>
-      </properties>
-    </profile>
-  </profiles>
-
   <build>
     <resources>
       <resource>
