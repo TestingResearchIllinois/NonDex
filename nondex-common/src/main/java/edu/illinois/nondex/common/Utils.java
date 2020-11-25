@@ -98,7 +98,6 @@ public class Utils {
             throw new IllegalStateException("JAVA_HOME is not set!");
         }
 
-        // TODO: NonDex is implemented with JDK8 (Run with JDK8+ will fail)
         Path pathToRt = Paths.get(javaHome, "jre", "lib", "rt.jar");
         Logger.getGlobal().log(Level.FINE, pathToRt.toString());
         if (Files.exists(pathToRt)) {

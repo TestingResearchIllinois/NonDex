@@ -29,18 +29,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.shuffling;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.NonDex;
-
-import jdk.internal.misc.VM;
+import edu.illinois.nondex.common.Utils;
 
 public class ControlNondeterminism {
 
@@ -53,6 +52,7 @@ public class ControlNondeterminism {
     static {
         // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
+        initializeNondex();
     }
 
     public static Configuration getConfiguration() {
@@ -64,12 +64,7 @@ public class ControlNondeterminism {
             return originalOrder;
         }
 
-        if (VM.isBooted() && nondex == null && !isCreatingNonDex) {
-            isCreatingNonDex = true;
-            // Call getStackTrace here to bypass can't initialize class StackTraceElement$HashedModules exception
-            Thread.currentThread().getStackTrace();
-            nondex = NonDex.getInstance();
-        }
+        initializeNondex();
 
         if (nondex == null) {
             return originalOrder;
@@ -87,12 +82,7 @@ public class ControlNondeterminism {
             return originalOrder;
         }
 
-        if (VM.isBooted() && nondex == null && !isCreatingNonDex) {
-            isCreatingNonDex = true;
-            // Call getStackTrace here to bypass can't initialize class StackTraceElement$HashedModules exception
-            Thread.currentThread().getStackTrace();
-            nondex = NonDex.getInstance();
-        }
+        initializeNondex();
 
         if (nondex == null) {
             return originalOrder;
@@ -122,6 +112,31 @@ public class ControlNondeterminism {
 
     }
 
+    private static void initializeNondex() {
+        // Keep as is for Java8
+        if (Utils.checkJDKBefore8()) {
+            if (nondex == null) {
+                nondex = NonDex.getInstance();
+            }
+            return;
+        }
+
+        try {
+            // TODO: For now, we use such ugly check condition -- because JVM will crash if invoke isBooted() upon System.initPhase1
+            if (System.out == null) {
+                return;
+            }
+            Method isBooted = Class.forName("jdk.internal.misc.VM").getDeclaredMethod("isBooted");
+            if ((Boolean)isBooted.invoke(null) && nondex == null && !isCreatingNonDex) {
+                isCreatingNonDex = true;
+                // Call getStackTrace here to bypass exception "can't initialize class StackTraceElement$HashedModules"
+                Thread.currentThread().getStackTrace();
+                nondex = NonDex.getInstance();
+            }
+        } catch (Exception ex) {
+            Logger.getGlobal().log(Level.INFO, "Exception when loading jdk.internal.misc.VM with reflection" + ex.getMessage());
+        }
+    }
 
     private static class JVMShutdownHook extends Thread {
         @Override
