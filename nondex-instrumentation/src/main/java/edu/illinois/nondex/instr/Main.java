@@ -28,15 +28,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-import java.util.Objects;
-
-import edu.illinois.nondex.common.ConfigurationDefaults;
 import edu.illinois.nondex.common.Utils;
 
 public class Main {
     public static void main(String...args) throws Exception {
         if (args.length == 1) {
-            String rtPath = ConfigurationDefaults.JDK9_PLUS_PATH;
+            String rtPath = "";
             if (Utils.checkJDK8()) {
                 rtPath = Utils.getRtJarLocation().toString();
             }

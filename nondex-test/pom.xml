@@ -14,7 +14,7 @@
 
   <profiles>
     <profile>
-      <id>java8-</id>
+      <id>java8Below</id>
       <activation>
         <jdk>(,1.8]</jdk>
       </activation>
@@ -31,7 +31,7 @@
       </build>
     </profile>
     <profile>
-      <id>java9+</id>
+      <id>java9Above</id>
       <activation>
         <jdk>[9,)</jdk>
       </activation>

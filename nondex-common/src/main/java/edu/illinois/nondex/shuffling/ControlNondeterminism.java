@@ -77,7 +77,6 @@ public class ControlNondeterminism {
         if (originalOrder == null) {
             return null;
         }
-
         if (originalOrder.length < 2) {
             return originalOrder;
         }
@@ -122,7 +121,8 @@ public class ControlNondeterminism {
         }
 
         try {
-            // TODO: For now, we use such ugly check condition -- because JVM will crash if invoke isBooted() upon System.initPhase1
+            // TODO: For now, we use such ugly check condition
+            //  because JVM will crash if invoke isBooted() upon System.initPhase1
             if (System.out == null) {
                 return;
             }
@@ -134,7 +134,8 @@ public class ControlNondeterminism {
                 nondex = NonDex.getInstance();
             }
         } catch (Exception ex) {
-            Logger.getGlobal().log(Level.INFO, "Exception when loading jdk.internal.misc.VM with reflection" + ex.getMessage());
+            Logger.getGlobal().log(Level.INFO,
+                    "Exception when loading jdk.internal.misc.VM with reflection" + ex.getMessage());
         }
     }
 

@@ -159,7 +159,7 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         Logger.getGlobal().setLoggingLevel(Level.parse(this.loggingLevel));
 
-        String rtPathStr = ConfigurationDefaults.JDK9_PLUS_PATH;
+        String rtPathStr = "";
         if (Utils.checkJDK8()) {
             Path rtPath;
             rtPath = Utils.getRtJarLocation();

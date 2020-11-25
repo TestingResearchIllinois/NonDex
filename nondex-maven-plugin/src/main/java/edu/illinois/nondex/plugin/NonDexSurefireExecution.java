@@ -94,8 +94,8 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
 
         String argLineToSet = argLineToSetPrefix + pathToNondex + File.pathSeparator
                 + Paths.get(mavenSession.getLocalRepository().getBasedir(),
-                "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
-                annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
+                        "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
+                        annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")
                 + " " + this.originalArgLine + " " + this.configuration.toArgLine();
 
         Logger.getGlobal().log(Level.FINE, "Running surefire with: " + this.configuration.toArgLine());

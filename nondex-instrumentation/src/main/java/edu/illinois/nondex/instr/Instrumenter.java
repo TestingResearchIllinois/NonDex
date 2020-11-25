@@ -28,7 +28,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.instr;
 
-//import java.io.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -105,13 +104,14 @@ public final class Instrumenter {
         this.specialClassesToInstrument.add(Instrumenter.priorityBlockingQueueName);
     }
 
-    public static final void instrument(String rtPath, String outJar)
+    public static final void instrument(String rtJar, String outJar)
             throws NoSuchAlgorithmException, IOException {
-        Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtPath + " into " + outJar);
-        new Instrumenter().initAndProcess(rtPath, outJar);
+        Logger.getGlobal().log(Level.FINE, "Instrumenting " + rtJar + " into " + outJar);
+        // rt.jar path will not be used in Java9+ environment
+        new Instrumenter().initAndProcess(rtJar, outJar);
     }
 
-    private InputStream getInputStream(String className)
+    private InputStream getClassInputStream(String className)
             throws IOException {
         InputStream clInputStream;
         if (rtZipFile != null) {
@@ -121,6 +121,7 @@ public final class Instrumenter {
                     Logger.getGlobal().log(Level.WARNING, "Could not find " + className + " in rt.jar");
                     Logger.getGlobal().log(Level.WARNING, "Are you running java 8?");
                     Logger.getGlobal().log(Level.WARNING, "Continuing without instrumenting: " + className);
+                    return null;
                 }
                 clInputStream = rtZipFile.getInputStream(entry);
                 return clInputStream;
@@ -217,11 +218,13 @@ public final class Instrumenter {
     private void instrumentStandardClasses(ZipOutputStream outZip)
             throws IOException, NoSuchAlgorithmException {
         for (String cl : this.standardClassesToInstrument) {
-            InputStream clInputStream = this.getInputStream(cl);
-
+            InputStream clInputStream = this.getClassInputStream(cl);
+            if (clInputStream == null) {
+                continue;
+            }
             this.writeMd5(clInputStream, cl + ".md5", outZip);
 
-            clInputStream = this.getInputStream(cl);
+            clInputStream = this.getClassInputStream(cl);
 
             ClassReader cr = new ClassReader(clInputStream);
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -278,7 +281,10 @@ public final class Instrumenter {
     private void instrumentClass(String className,
                                  Function<ClassVisitor, ClassVisitor> createShuffler,
                                  ZipOutputStream outZip) throws IOException {
-        InputStream classStream = this.getInputStream(className);
+        InputStream classStream = this.getClassInputStream(className);
+        if (classStream == null) {
+            return;
+        }
         ClassReader cr = new ClassReader(classStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         ClassVisitor cv = createShuffler.apply(cw);
@@ -302,7 +308,7 @@ public final class Instrumenter {
         while (it.hasNext()) {
             String cl = it.next();
 
-            InputStream clInputStream = this.getInputStream(cl);
+            InputStream clInputStream = this.getClassInputStream(cl);
 
             ZipEntry entry = outJarZipFile.getEntry(cl + ".md5");
             if (entry == null) {
@@ -335,7 +341,7 @@ public final class Instrumenter {
 
     private <T extends CVFactory> void instrumentSpecialClass(ZipOutputStream outZip, final String clz)
             throws IOException, NoSuchAlgorithmException {
-        this.writeMd5(this.getInputStream(clz), clz + ".md5", outZip);
+        this.writeMd5(this.getClassInputStream(clz), clz + ".md5", outZip);
         this.instrumentClass(clz,
                 new Function<ClassVisitor, ClassVisitor>() {
                     @Override
