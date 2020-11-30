@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-
 public class NonDex {
 
     private static final NonDex globalInstance = new NonDex();

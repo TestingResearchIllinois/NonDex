@@ -98,6 +98,7 @@ public class Utils {
             throw new IllegalStateException("JAVA_HOME is not set!");
         }
 
+
         Path pathToRt = Paths.get(javaHome, "jre", "lib", "rt.jar");
         Logger.getGlobal().log(Level.FINE, pathToRt.toString());
         if (Files.exists(pathToRt)) {

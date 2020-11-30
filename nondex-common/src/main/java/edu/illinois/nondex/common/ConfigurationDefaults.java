@@ -87,4 +87,5 @@ public class ConfigurationDefaults {
 
     public static final String PROPERTY_LOGGING_LEVEL = "nondexLogging";
     public static final String DEFAULT_LOGGING_LEVEL = "CONFIG";
+
 }
