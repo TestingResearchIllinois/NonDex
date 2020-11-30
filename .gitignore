@@ -39,6 +39,9 @@ buildNumber.properties
 .idea/*
 *.iml
 
+### MAC ###
+.DS_Store
+
 ### Emacs ###
 # -*- mode: gitignore; -*-
 *~

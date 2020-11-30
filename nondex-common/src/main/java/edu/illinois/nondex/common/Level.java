@@ -26,22 +26,34 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package edu.illinois.nondex.instr;
+package edu.illinois.nondex.common;
 
-import edu.illinois.nondex.common.Utils;
+public enum Level {
+    ALL(Integer.MIN_VALUE, "ALL"),
+    FINEST(300, "FINEST"),
+    FINER(400, "FINER"),
+    FINE(500, "FINE"),
+    CONFIG(700, "CONFIG"),
+    INFO(800, "INFO"),
+    WARNING(900, "WARNING"),
+    SEVERE(1000, "SEVERE"),
+    OFF(Integer.MAX_VALUE, "OFF");
 
-public class Main {
-    public static void main(String...args) throws Exception {
-        if (args.length == 1) {
-            String rtPath = "";
-            if (Utils.checkJDK8()) {
-                rtPath = Utils.getRtJarLocation().toString();
-            }
-            Instrumenter.instrument(rtPath, args[0]);
-        } else if (args.length == 2) {
-            Instrumenter.instrument(args[0], args[1]);
-        } else {
-            throw new IllegalArgumentException("Expecting 1 or 2 arguments: [/path/to/rt.jar] /path/to/output.jar");
-        }
+    private final int severity;
+
+    private Level(int severity, String name) {
+        this.severity = severity;
+    }
+
+    public static Level parse(String name) {
+        return Level.valueOf(name);
+    }
+
+    public final String getName() {
+        return name();
+    }
+
+    public final int intValue() {
+        return severity;
     }
 }

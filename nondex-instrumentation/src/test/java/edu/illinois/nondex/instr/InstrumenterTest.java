@@ -40,7 +40,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 
+import edu.illinois.nondex.common.Utils;
+
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,6 +63,7 @@ public class InstrumenterTest {
 
     @Test
     public void emptyZipTest() throws NoSuchAlgorithmException, IOException {
+        Assume.assumeTrue(Utils.checkJDKBefore8());
         Instrumenter.instrument(Paths.get("resources", "empty.jar").toString(),
                                 outJar.toString());
         assertTrue(Files.exists(outJar, LinkOption.NOFOLLOW_LINKS));
@@ -67,6 +71,7 @@ public class InstrumenterTest {
 
     @Test
     public void nonexistantZipTest() throws NoSuchAlgorithmException {
+        Assume.assumeTrue(Utils.checkJDKBefore8());
         try {
             Instrumenter.instrument(Paths.get("resources", "doesnotexist.jar").toString(),
                                     Paths.get("resources", "doesnotexistOut.jar").toString());
