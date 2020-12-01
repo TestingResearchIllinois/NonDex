@@ -37,7 +37,7 @@ import org.objectweb.asm.Opcodes;
 public class PriorityQueueShufflingAdder extends ClassVisitor {
 
     public PriorityQueueShufflingAdder(ClassVisitor ca) {
-        super(Opcodes.ASM5, ca);
+        super(Opcodes.ASM9, ca);
     }
 
     public void addElements() {
@@ -112,7 +112,7 @@ public class PriorityQueueShufflingAdder extends ClassVisitor {
             return super.visitMethod(access, "originalNext", desc, signature, exceptions);
         }
         if ("<init>".equals(name)) {
-            return new MethodVisitor(Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions)) {
+            return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {
