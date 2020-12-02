@@ -29,9 +29,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.instr;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
 import java.util.zip.ZipFile;
 
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassVisitor;

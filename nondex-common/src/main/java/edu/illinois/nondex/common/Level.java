@@ -28,38 +28,32 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package edu.illinois.nondex.common;
 
-import java.io.PrintStream;
+public enum Level {
+    ALL(Integer.MIN_VALUE, "ALL"),
+    FINEST(300, "FINEST"),
+    FINER(400, "FINER"),
+    FINE(500, "FINE"),
+    CONFIG(700, "CONFIG"),
+    INFO(800, "INFO"),
+    WARNING(900, "WARNING"),
+    SEVERE(1000, "SEVERE"),
+    OFF(Integer.MAX_VALUE, "OFF");
 
-public class Logger {
+    private final int severity;
 
-    private static final Logger INSTANCE = new Logger();
-    private PrintStream out = System.out;
-    private Level level = Level.CONFIG;
-
-    public void setLoggingLevel(Level level) {
-        this.level = level;
+    private Level(int severity, String name) {
+        this.severity = severity;
     }
 
-    public Level getLoggingLevel() {
-        return this.level;
+    public static Level parse(String name) {
+        return Level.valueOf(name);
     }
 
-    public static Logger getGlobal() {
-        return Logger.INSTANCE;
+    public final String getName() {
+        return name();
     }
 
-    public void log(Level lev, String msg, Throwable thr) {
-        if (lev.intValue() < this.level.intValue()) {
-            return;
-        }
-        this.out.println(lev.toString() + ": " + msg);
-        this.out.println(thr);
-    }
-
-    public void log(Level lev, String msg) {
-        if (lev.intValue() < this.level.intValue()) {
-            return;
-        }
-        this.out.println(lev.toString() + ": " + msg);
+    public final int intValue() {
+        return severity;
     }
 }
