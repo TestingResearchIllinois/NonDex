@@ -40,11 +40,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassReader;

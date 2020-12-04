@@ -30,11 +30,11 @@ package edu.illinois.nondex.plugin;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Mode;
 import edu.illinois.nondex.common.Utils;
