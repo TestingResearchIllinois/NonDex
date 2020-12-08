@@ -36,7 +36,6 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
-import java.util.logging.Level;
 import javax.xml.bind.DatatypeConverter;
 
 public class Utils {
