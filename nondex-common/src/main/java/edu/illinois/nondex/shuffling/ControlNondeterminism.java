@@ -112,7 +112,12 @@ public class ControlNondeterminism {
     }
 
     private static void initializeNondex() {
-        // Keep as is for Java8
+        // TODO: Temporary solution to prevent JVM crash. It's not safe to invoke isBooted()
+        //  or getProperty before saveAndRemoveProperties in System.initPhase1 is done
+        if (System.out == null) {
+            return;
+        }
+
         if (Utils.checkJDKBefore8()) {
             if (nondex == null) {
                 nondex = NonDex.getInstance();
@@ -121,11 +126,6 @@ public class ControlNondeterminism {
         }
 
         try {
-            // TODO: For now, we use such ugly check condition
-            //  because JVM will crash if invoke isBooted() upon System.initPhase1
-            if (System.out == null) {
-                return;
-            }
             Method isBooted = Class.forName("jdk.internal.misc.VM").getDeclaredMethod("isBooted");
             if ((Boolean)isBooted.invoke(null) && nondex == null && !isCreatingNonDex) {
                 isCreatingNonDex = true;
