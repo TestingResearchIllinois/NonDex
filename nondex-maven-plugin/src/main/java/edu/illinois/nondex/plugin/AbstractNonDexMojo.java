@@ -181,7 +181,9 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
         this.surefire = this.lookupPlugin("org.apache.maven.plugins:maven-surefire-plugin");
 
         if (this.surefire == null) {
-            Logger.getGlobal().log(Level.SEVERE, "Make sure surefire is in your pom.xml");
+            Logger.getGlobal().log(Level.SEVERE, "Surefire is not explicitly declared in your pom.xml;"
+                    + " we will use version 3.0.0-M5, but you may want to change that.");
+            this.surefire = getSureFirePlugin();
         }
 
         Properties localProperties = this.mavenProject.getProperties();
@@ -198,5 +200,13 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
             }
         }
         return null;
+    }
+
+    private Plugin getSureFirePlugin() {
+        Plugin surefire = new Plugin();
+        surefire.setGroupId("org.apache.maven.plugins");
+        surefire.setArtifactId("maven-surefire-plugin");
+        surefire.setVersion("3.0.0-M5");
+        return surefire;
     }
 }
