@@ -33,7 +33,11 @@ import edu.illinois.nondex.common.Utils;
 public class Main {
     public static void main(String...args) throws Exception {
         if (args.length == 1) {
-            Instrumenter.instrument(Utils.getRtJarLocation().toString(), args[0]);
+            String rtPath = "";
+            if (Utils.checkJDK8()) {
+                rtPath = Utils.getRtJarLocation().toString();
+            }
+            Instrumenter.instrument(rtPath, args[0]);
         } else if (args.length == 2) {
             Instrumenter.instrument(args[0], args[1]);
         } else {
