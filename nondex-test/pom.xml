@@ -102,6 +102,44 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>java8Below</id>
+      <activation>
+        <jdk>(,1.8]</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Xbootclasspath/p:"${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java9Above</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>--add-exports java.base/edu.illinois.nondex.common=ALL-UNNAMED --add-exports java.base/edu.illinois.nondex.shuffling=ALL-UNNAMED --patch-module java.base="${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
       <groupId>edu.illinois</groupId>
