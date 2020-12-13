@@ -11,11 +11,21 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <surefire.version>3.0.0-M5</surefire.version>
     <some.existing>-DthroughProperty=3423</some.existing>
   </properties>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>@project.groupId@</groupId>
         <artifactId>@project.artifactId@</artifactId>
@@ -24,7 +34,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
+        <version>${surefire.version}</version>
 	<configuration>
 	  <argLine>${some-nonexistent-argline} -DmyArgumentForTesting=1219 ${some.stuff} ${some.existing} ${An0ther-st.uff}</argLine>
 	</configuration>
