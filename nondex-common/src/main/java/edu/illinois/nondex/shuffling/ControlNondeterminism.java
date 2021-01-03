@@ -57,9 +57,14 @@ public class ControlNondeterminism {
     }
 
     public static <T> List<T> shuffle(List<T> originalOrder) {
+        return shuffle(originalOrder, "");
+    }
+
+    public static <T> List<T> shuffle(List<T> originalOrder, String initTraces) {
         if (originalOrder.size() < 2) {
             return originalOrder;
         }
+        nondex.setCurrentInitTraces(initTraces);
         return nondex.getPermutation(originalOrder);
     }
 

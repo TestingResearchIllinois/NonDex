@@ -49,6 +49,8 @@ public class NonDex {
 
     private boolean isOutputting;
 
+    private String currentInitTraces;
+
     public NonDex() {
         this(Configuration.parseArgs());
     }
@@ -163,9 +165,37 @@ public class NonDex {
                 && this.isDebuggingUniquePoint()) {
             StackTraceElement[] traces = Thread.currentThread().getStackTrace();
             StringBuilder stackstring = new StringBuilder();
+            boolean isHashMapRelated = false;
+
             for (StackTraceElement traceElement : traces) {
-                stackstring.append(traceElement.toString() + String.format("%n"));
+                String traceStr = traceElement.toString();
+                if (!isHashMapRelated && traceStr.contains(
+                        "java.util.HashMap$HashIterator$HashIteratorShuffler.<init>")) {
+                    isHashMapRelated = true;
+                }
+                stackstring.append(traceStr + String.format("%n"));
             }
+
+            if (isHashMapRelated && this.currentInitTraces != null) {
+                if (this.config.testName != null) {
+                    String[] splitedTestNames = this.config.testName.split("\\.");
+                    String packageName = splitedTestNames[0] + "." + splitedTestNames[1];
+                    String[] splitedTraces = this.currentInitTraces.split(", ");
+                    stackstring.append(String.format("-------------------------------%n"));
+                    for (String candidate : splitedTraces) { // for each string in trace
+                        if (!candidate.contains(packageName)) {
+                            continue;
+                        } else {
+                            stackstring.append("Init location: ").append(String.format("%n"));
+                            stackstring.append(candidate).append(String.format("%n"));
+                            break;
+                        }
+                    }
+                    stackstring.append("The full init traces are").append(String.format("%n"));
+                    stackstring.append(this.currentInitTraces);
+                }
+            }
+
             try {
                 // Writing to file invokes NonDex, so this flag is to prevent it from infinitely
                 // trying to write to file,
@@ -206,5 +236,13 @@ public class NonDex {
 
     public int getActualExplorations() {
         return this.actualCount;
+    }
+
+    public String getCurrentInitTraces() {
+        return currentInitTraces;
+    }
+
+    public void setCurrentInitTraces(String currentInitTraces) {
+        this.currentInitTraces = currentInitTraces;
     }
 }
