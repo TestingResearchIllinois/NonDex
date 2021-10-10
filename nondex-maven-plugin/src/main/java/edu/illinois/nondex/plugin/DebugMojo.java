@@ -78,9 +78,9 @@ public class DebugMojo extends AbstractNonDexMojo {
         }
 
         this.getLog().warn("*********");
-        for (String test : testToRepro.keySet()) {
-            this.getLog().warn("REPRO for " + test + ":" + String.format("%n")
-                               + "mvn nondex:nondex " + testToRepro.get(test));
+        for (Map.Entry<String, String> test : testToRepro.entrySet()) {
+            this.getLog().warn("REPRO for " + test.getKey() + ":" + String.format("%n")
+                               + "mvn nondex:nondex " + test.getValue());
         }
     }
 
