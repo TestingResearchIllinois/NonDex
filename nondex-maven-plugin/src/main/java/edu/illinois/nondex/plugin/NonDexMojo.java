@@ -209,7 +209,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
     }
 
     private void printExecutionResults(Set<String> allFailures, CleanSurefireExecution exec) {
-        this.getLog().info("*********");
+        this.getLog().info("*********:)");
         this.getLog().info("mvn nondex:nondex " + exec.getConfiguration().toArgLine());
         Collection<String> failedTests = exec.getConfiguration().getFailedTests();
         if (failedTests.isEmpty()) {
@@ -219,7 +219,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
             allFailures.add(test);
             this.getLog().warn(test);
         }
-        this.getLog().info("*********");
+        this.getLog().info("*********:)");
     }
 
     private void writeCurrentRunInfo(CleanSurefireExecution execution) {

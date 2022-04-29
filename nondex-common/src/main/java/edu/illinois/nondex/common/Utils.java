@@ -56,7 +56,7 @@ public class Utils {
         try {
             props.load(new FileInputStream(path.toFile()));
         } catch (IOException ioe) {
-            Logger.getGlobal().log(Level.CONFIG, "Cannot open properties file!", ioe);
+            Logger.getGlobal().log(Level.CONFIG, "Cannot open properties file!!!!!!!", ioe);
         }
         return props;
     }
