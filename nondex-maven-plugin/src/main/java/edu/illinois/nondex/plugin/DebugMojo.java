@@ -70,7 +70,6 @@ public class DebugMojo extends AbstractNonDexMojo {
         Map<String, String> testToRepro = new HashMap<>();
 
         for (String test : this.testsFailing.keySet()) {
-            this.getLog().warn("***");
             this.runSingleSurefireTest(test);
             DebugTask debugging = new DebugTask(test, this.surefire, this.originalArgLine,
                     this.mavenProject, this.mavenSession, this.pluginManager, this.testsFailing.get(test));
@@ -78,9 +77,8 @@ public class DebugMojo extends AbstractNonDexMojo {
             testToRepro.put(test, repro);
         }
 
-        //this.getLog().warn("*********:)");
+        this.getLog().warn("*********");
         for (Map.Entry<String, String> test : testToRepro.entrySet()) {
-            this.getLog().warn("*");
             this.getLog().warn("REPRO for " + test.getKey() + ":" + String.format("%n")
                                + "mvn nondex:nondex " + test.getValue());
         }
