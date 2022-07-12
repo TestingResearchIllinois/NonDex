@@ -12,7 +12,6 @@ buildscript {
     }
 }
 
-group = "edu.illinois"
 apply plugin: "com.gradle.plugin-publish"
 
 repositories {
