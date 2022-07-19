@@ -29,7 +29,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.instr;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.zip.ZipFile;
 
 import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
@@ -37,14 +36,14 @@ import edu.illinois.nondex.common.Logger;
 import org.objectweb.asm.ClassVisitor;
 
 public class CVFactory {
-    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument, ZipFile rt)
+    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument)
             throws NoSuchAlgorithmException {
         if (clzToInstrument.equals(Instrumenter.concurrentHashMapName)) {
             return new ConcurrentHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.hashMapName)) {
-            if (rt.getEntry("java/util/HashMap$Node.class") != null) {
+            if (Instrumenter.hasClassEntry(Instrumenter.hashMapNodeName)) {
                 return new HashMapShufflingAdder(cv, "Node");
-            } else if (rt.getEntry("java/util/HashMap$Entry.class") != null) {
+            } else if (Instrumenter.hasClassEntry(Instrumenter.hashMapEntryName)) {
                 return new HashMapShufflingAdder(cv, "Entry");
             }
         } else if (clzToInstrument.equals(Instrumenter.weakHashMapName)) {

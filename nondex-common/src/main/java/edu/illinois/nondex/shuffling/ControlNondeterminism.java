@@ -29,16 +29,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.shuffling;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.NonDex;
+import edu.illinois.nondex.common.Utils;
 
 public class ControlNondeterminism {
 
@@ -46,10 +47,12 @@ public class ControlNondeterminism {
 
     private static NonDex nondex;
 
+    private static boolean isCreatingNonDex = false;
+
     static {
         // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(ControlNondeterminism.jvmShutdownHook);
-        nondex = new NonDex();
+        initializeNondex();
     }
 
     public static Configuration getConfiguration() {
@@ -60,6 +63,13 @@ public class ControlNondeterminism {
         if (originalOrder.size() < 2) {
             return originalOrder;
         }
+
+        initializeNondex();
+
+        if (nondex == null) {
+            return originalOrder;
+        }
+
         return nondex.getPermutation(originalOrder);
     }
 
@@ -68,6 +78,12 @@ public class ControlNondeterminism {
             return null;
         }
         if (originalOrder.length < 2) {
+            return originalOrder;
+        }
+
+        initializeNondex();
+
+        if (nondex == null) {
             return originalOrder;
         }
 
@@ -95,6 +111,33 @@ public class ControlNondeterminism {
 
     }
 
+    private static void initializeNondex() {
+        // TODO: Temporary solution to prevent JVM crash. It's not safe to invoke isBooted()
+        //  or getProperty before saveAndRemoveProperties in System.initPhase1 is done
+        if (System.out == null) {
+            return;
+        }
+
+        if (Utils.checkJDKBefore8()) {
+            if (nondex == null) {
+                nondex = NonDex.getInstance();
+            }
+            return;
+        }
+
+        try {
+            Method isBooted = Class.forName("jdk.internal.misc.VM").getDeclaredMethod("isBooted");
+            if ((Boolean)isBooted.invoke(null) && nondex == null && !isCreatingNonDex) {
+                isCreatingNonDex = true;
+                // Call getStackTrace here to bypass exception "can't initialize class StackTraceElement$HashedModules"
+                Thread.currentThread().getStackTrace();
+                nondex = NonDex.getInstance();
+            }
+        } catch (Exception ex) {
+            Logger.getGlobal().log(Level.INFO,
+                    "Exception when loading jdk.internal.misc.VM with reflection" + ex.getMessage());
+        }
+    }
 
     private static class JVMShutdownHook extends Thread {
         @Override

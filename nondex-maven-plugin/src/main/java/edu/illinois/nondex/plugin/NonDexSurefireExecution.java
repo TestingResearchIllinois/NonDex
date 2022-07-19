@@ -84,7 +84,15 @@ public class NonDexSurefireExecution extends CleanSurefireExecution {
             }
             configElement.getChild("test").setValue(this.configuration.testName);
         }
-        String argLineToSet = "" + "-Xbootclasspath/p:" + pathToNondex + File.pathSeparator
+
+        String argLineToSetPrefix = "" + "-Xbootclasspath/p:";
+        if (!Utils.checkJDKBefore8()) {
+            argLineToSetPrefix = "" + "--add-exports java.base/edu.illinois.nondex.common=ALL-UNNAMED "
+                    + "--add-exports java.base/edu.illinois.nondex.shuffling=ALL-UNNAMED "
+                    + " --patch-module " + "java.base=";
+        }
+
+        String argLineToSet = argLineToSetPrefix + pathToNondex + File.pathSeparator
                 + Paths.get(mavenSession.getLocalRepository().getBasedir(),
                         "edu", "illinois", annotationsModuleName, ConfigurationDefaults.VERSION,
                         annotationsModuleName + "-" + ConfigurationDefaults.VERSION + ".jar")

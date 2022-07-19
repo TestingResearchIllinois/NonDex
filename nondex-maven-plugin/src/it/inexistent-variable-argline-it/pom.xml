@@ -17,6 +17,15 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>@project.groupId@</groupId>
         <artifactId>@project.artifactId@</artifactId>
         <version>@project.version@</version>
@@ -24,7 +33,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
+        <version>2.22.2</version>
 	<configuration>
 	  <argLine>${some-nonexistent-argline} -DmyArgumentForTesting=1219 ${some.stuff} ${some.existing} ${An0ther-st.uff}</argLine>
 	</configuration>
