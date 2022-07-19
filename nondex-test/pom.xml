@@ -12,6 +12,43 @@
   <packaging>jar</packaging>
   <name>nondex-test</name>
 
+  <profiles>
+    <profile>
+      <id>java8Below</id>
+      <activation>
+        <jdk>(,1.8]</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Xbootclasspath/p:"${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java9Above</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>--add-exports java.base/edu.illinois.nondex.common=ALL-UNNAMED --add-exports java.base/edu.illinois.nondex.shuffling=ALL-UNNAMED --patch-module java.base="${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>
@@ -55,7 +92,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
+        <version>3.6.0</version>
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
@@ -68,7 +105,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.3</version>
+        <version>3.2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -89,11 +126,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <argLine>-Xbootclasspath/p:"${project.basedir}${file.separator}..${file.separator}nondex-instrumentation${file.separator}resources${file.separator}out.jar${path.separator}${project.build.directory}${file.separator}..${file.separator}..${file.separator}nondex-common${file.separator}target${file.separator}classes${file.separator}"</argLine>
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>

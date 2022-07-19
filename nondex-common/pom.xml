@@ -10,6 +10,7 @@
   <artifactId>nondex-common</artifactId>
   <packaging>jar</packaging>
   <name>nondex-common</name>
+
   
   <build>
     <plugins>
@@ -45,5 +46,35 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>java9+</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <additionalOptions>--add-exports java.base/jdk.internal.misc=ALL-UNNAMED</additionalOptions>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <compilerArgs>
+                <arg>--add-exports</arg>
+                <arg>java.base/jdk.internal.misc=ALL-UNNAMED</arg>
+              </compilerArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   
 </project>
