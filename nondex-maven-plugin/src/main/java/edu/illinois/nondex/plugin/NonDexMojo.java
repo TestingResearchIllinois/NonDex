@@ -37,9 +37,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -59,24 +61,29 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 public class NonDexMojo extends AbstractNonDexMojo {
 
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
+    private Map<Integer, CleanSurefireExecution> executionsWithoutShuffling =
+            new LinkedHashMap<Integer,CleanSurefireExecution>();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
         Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
         MojoExecutionException allExceptions = null;
-        CleanSurefireExecution cleanExec = new CleanSurefireExecution(
-                this.surefire, this.originalArgLine, this.mavenProject,
-                    this.mavenSession, this.pluginManager,
-                    Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
 
         // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
         // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
-        this.executeSurefireExecution(allExceptions, cleanExec);
+        for (int i = 0; i < this.numRunsWithoutShuffling; i++) {
+            CleanSurefireExecution cleanExec = new CleanSurefireExecution(
+                this.surefire, this.originalArgLine, this.mavenProject,
+                    this.mavenSession, this.pluginManager,
+                    Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
+            this.executeSurefireExecution(allExceptions, cleanExec);
+            this.executionsWithoutShuffling.put(i, cleanExec);
+        }
 
-        for (int i = 0; i < this.numRuns; i++) {
+        for (int j = 0; j < this.numRuns; j++) {
             NonDexSurefireExecution execution =
-                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(i),
+                    new NonDexSurefireExecution(this.mode, this.computeIthSeed(j),
                             Pattern.compile(this.filter), this.start, this.end,
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString(),
                             Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR)
@@ -88,12 +95,15 @@ public class NonDexMojo extends AbstractNonDexMojo {
             this.writeCurrentRunInfo(execution);
         }
 
-        this.writeCurrentRunInfo(cleanExec);
-        this.postProcessExecutions(cleanExec);
+        for (Map.Entry<Integer, CleanSurefireExecution> entry : this.executionsWithoutShuffling.entrySet()) {
+            CleanSurefireExecution cleanExec = entry.getValue();
+            this.writeCurrentRunInfo(cleanExec);
+            this.postProcessExecutions(cleanExec);
+        }
 
         Configuration config = this.executions.get(0).getConfiguration();
 
-        this.printSummary(cleanExec, config);
+        this.printSummary(config);
 
         try {
             Files.copy(config.getRunFilePath(), config.getLatestRunFilePath(), StandardCopyOption.REPLACE_EXISTING);
@@ -130,20 +140,51 @@ public class NonDexMojo extends AbstractNonDexMojo {
         return Utils.computeIthSeed(ithSeed, this.rerun, this.seed);
     }
 
-    private void printSummary(CleanSurefireExecution cleanExec, Configuration config) {
+    private void printSummary(Configuration config) {
         Set<String> allFailures = new LinkedHashSet<>();
+        Map<String, Integer> countsOfFailingTestsWithoutShuffling =
+            new LinkedHashMap<String,Integer>();
+        boolean failsWithoutShuffling = false;
         this.getLog().info("NonDex SUMMARY:");
         for (CleanSurefireExecution exec : this.executions) {
             this.printExecutionResults(allFailures, exec);
         }
-
-        if (!cleanExec.getConfiguration().getFailedTests().isEmpty()) {
-            this.getLog().info("Tests are failing without NonDex.");
-            this.printExecutionResults(allFailures, cleanExec);
+        for (Map.Entry<Integer, CleanSurefireExecution> entry : this.executionsWithoutShuffling.entrySet()) {
+            int index = entry.getKey();
+            CleanSurefireExecution exec = entry.getValue();
+            Collection<String> failedTests = exec.getConfiguration().getFailedTests();
+            if (!failedTests.isEmpty()) {
+                failsWithoutShuffling = true;
+                this.getLog().info("In run #" + String.valueOf(index + 1)
+                    + " without NonDex shuffling, following tests failed:");
+                for (String test : failedTests) {
+                    this.getLog().warn(test);
+                    int count = countsOfFailingTestsWithoutShuffling.containsKey(test)
+                        ? countsOfFailingTestsWithoutShuffling.get(test) : 0;
+                    countsOfFailingTestsWithoutShuffling.put(test, count + 1);
+                }
+            } else {
+                this.getLog().info("In run #" + String.valueOf(index + 1)
+                        + " without NonDex shuffling, no tests failed.");
+            }
+            this.getLog().info("------------------");
         }
-        allFailures.removeAll(cleanExec.getConfiguration().getFailedTests());
-
+        if (failsWithoutShuffling) {
+            this.getLog().info("Following tests are failing in clean runs without NonDex shuffling");
+            this.getLog().info("Check if they are always failing, nondeterministic, or non-idempotent");
+            for (Map.Entry<String, Integer> entry : countsOfFailingTestsWithoutShuffling.entrySet()) {
+                this.getLog().info("Test: " + entry.getKey());
+                this.getLog().info("Fails in " + String.valueOf(entry.getValue()) + " out of "
+                    + String.valueOf(this.numRunsWithoutShuffling) + " clean runs.");
+            }
+        } else {
+            this.getLog().info("All tests pass without NonDex shuffling");
+        }
+        this.getLog().info("####################");
         this.getLog().info("Across all seeds:");
+        if (allFailures.isEmpty()) {
+            this.getLog().info("None");
+        }
         for (String test : allFailures) {
             this.getLog().info(test);
         }

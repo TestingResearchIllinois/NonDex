@@ -99,6 +99,13 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     @Parameter(property = ConfigurationDefaults.PROPERTY_END, defaultValue = ConfigurationDefaults.DEFAULT_END_STR)
     protected long end;
 
+    /**
+     * The number of clean test runs without NonDex shuffling.
+     * This feature may find if tests are flaky (NOD / NIO) by themselves.
+     */
+    @Parameter(property = ConfigurationDefaults.PROPERTY_NUM_RUNS_WITHOUT_SHUFFLING,
+            defaultValue = ConfigurationDefaults.DEFAULT_NUM_RUNS_WITHOUT_SHUFFLING_STR)
+    protected int numRunsWithoutShuffling;
 
     /**
      * The number of seeds to use for shuffle. NonDex will obtain other seeds

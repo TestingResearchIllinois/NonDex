@@ -49,6 +49,11 @@ public class ConfigurationDefaults {
     public static final String DEFAULT_NUM_RUNS_STR = "3";
     public static final int DEFAULT_NUM_RUNS = new Integer(ConfigurationDefaults.DEFAULT_NUM_RUNS_STR);
 
+    public static final String PROPERTY_NUM_RUNS_WITHOUT_SHUFFLING = "nondexRunsWithoutShuffling";
+    public static final String DEFAULT_NUM_RUNS_WITHOUT_SHUFFLING_STR = "1";
+    public static final int DEFAULT_NUM_RUNS_WITHOUT_SHUFFLING =
+                        new Integer(ConfigurationDefaults.DEFAULT_NUM_RUNS_WITHOUT_SHUFFLING_STR);
+
     public static final String PROPERTY_FILTER = "nondexFilter";
     public static final String DEFAULT_FILTER = ".*";
 
