@@ -29,24 +29,37 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.instr;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
 
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 
 import org.objectweb.asm.ClassVisitor;
 
 public class CVFactory {
-    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument) throws NoSuchAlgorithmException {
+    public static ClassVisitor construct(ClassVisitor cv, String clzToInstrument)
+            throws NoSuchAlgorithmException {
         if (clzToInstrument.equals(Instrumenter.concurrentHashMapName)) {
             return new ConcurrentHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.hashMapName)) {
-            return new HashMapShufflingAdder(cv);
+            if (Instrumenter.hasClassEntry(Instrumenter.hashMapNodeName)) {
+                return new HashMapShufflingAdder(cv, "Node");
+            } else if (Instrumenter.hasClassEntry(Instrumenter.hashMapEntryName)) {
+                return new HashMapShufflingAdder(cv, "Entry");
+            }
+        } else if (clzToInstrument.equals(Instrumenter.weakHashMapName)) {
+            return new WeakHashMapShufflingAdder(cv);
+        } else if (clzToInstrument.equals(Instrumenter.identityHashMapName)) {
+            return new IdentityHashMapShufflingAdder(cv);
         } else if (clzToInstrument.equals(Instrumenter.methodName)) {
             return new MethodShufflingAdder(cv);
+        } else if (clzToInstrument.equals(Instrumenter.priorityQueueName)) {
+            return new PriorityQueueShufflingAdder(cv);
+        } else if (clzToInstrument.equals(Instrumenter.priorityBlockingQueueName)) {
+            return new PriorityBlockingQueueShufflingAdder(cv);
         } else {
             Logger.getGlobal().log(Level.CONFIG, "Trying to construct CV for " + clzToInstrument);
             throw new NoSuchAlgorithmException();
         }
-
+        return null;
     }
 }

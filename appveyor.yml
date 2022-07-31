@@ -1,0 +1,29 @@
+version: '{build}'
+install:
+  - ps: |
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      if (!(Test-Path -Path "C:\maven" )) {
+        (new-object System.Net.WebClient).DownloadFile(
+          'http://www.us.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.zip',
+          'C:\maven-bin.zip'
+        )
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
+      }
+  - cmd: SET JAVA_HOME=C:\Program Files\Java\jdk1.8.0
+  - cmd: SET PATH=C:\maven\apache-maven-3.2.5\bin;%JAVA_HOME%\bin;%PATH%
+  - cmd: SET M2_HOME=C:\maven\apache-maven-3.2.5\
+  - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
+  - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
+build_script:
+  - cmd: DEL nondex-common\checkstyle.xml nondex-instrumentation\checkstyle.xml nondex-maven-plugin\checkstyle.xml nondex-annotations\checkstyle.xml nondex-test\checkstyle.xml
+  - cmd: DEL nondex-maven-plugin\src\it\comprehensive\src\test
+  - cmd: MKLINK "nondex-common\checkstyle.xml" "checkstyle.xml"
+  - cmd: MKLINK "nondex-instrumentation\checkstyle.xml" "checkstyle.xml"
+  - cmd: MKLINK "nondex-maven-plugin\checkstyle.xml" "checkstyle.xml"
+  - cmd: MKLINK "nondex-annotations\checkstyle.xml" "checkstyle.xml"
+  - cmd: MKLINK "nondex-test\checkstyle.xml" "checkstyle.xml"
+  - cmd: MKLINK "nondex-maven-plugin\src\it\comprehensive\src\test" "nondex-core\src\test\"
+  - mvn -version
+  - mvn clean package --batch-mode -DskipTests
+test_script:
+  - mvn clean verify

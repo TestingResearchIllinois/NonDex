@@ -32,9 +32,11 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
@@ -63,19 +65,21 @@ public class CleanSurefireExecution {
     protected String originalArgLine;
 
     protected CleanSurefireExecution(Plugin surefire, String originalArgLine, String executionId,
-            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
+            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager,
+            String nondexDir) {
         this.executionId = executionId;
         this.surefire = surefire;
-        this.originalArgLine = originalArgLine;
+        this.originalArgLine = sanitizeAndRemoveEnvironmentVars(originalArgLine);
         this.mavenProject = mavenProject;
         this.mavenSession = mavenSession;
         this.pluginManager = pluginManager;
-        this.configuration = new Configuration(executionId);
+        this.configuration = new Configuration(executionId, nondexDir);
     }
 
-    public CleanSurefireExecution(Plugin surefire, String originalArgLine,
-            MavenProject mavenProject, MavenSession mavenSession, BuildPluginManager pluginManager) {
-        this(surefire, originalArgLine, "clean_" + Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager);
+    public CleanSurefireExecution(Plugin surefire, String originalArgLine, MavenProject mavenProject,
+            MavenSession mavenSession, BuildPluginManager pluginManager, String nondexDir) {
+        this(surefire, originalArgLine, "clean_" + Utils.getFreshExecutionId(), mavenProject, mavenSession, pluginManager,
+                nondexDir);
     }
 
     public Configuration getConfiguration() {
@@ -83,11 +87,22 @@ public class CleanSurefireExecution {
     }
 
     public void run() throws MojoExecutionException {
-        this.setupArgline();
+        Xpp3Dom origNode = null;
+        if (this.surefire.getConfiguration() != null) {
+            origNode = new Xpp3Dom((Xpp3Dom) this.surefire.getConfiguration());
+        }
         try {
+            Xpp3Dom domNode = this.applyNonDexConfig((Xpp3Dom) this.surefire.getConfiguration());
+            this.setupArgline(domNode);
+            Logger.getGlobal().log(Level.FINE, "Config node passed: " + domNode.toString());
+            Logger.getGlobal().log(Level.FINE, this.mavenProject + "\n" + this.mavenSession + "\n" + this.pluginManager);
             Logger.getGlobal().log(Level.CONFIG, this.configuration.toString());
+            Logger.getGlobal().log(Level.FINE, "Surefire config: " + this.surefire + "  " + MojoExecutor.goal("test")
+                                   + " " + domNode + " "
+                                   + MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession,
+                                                                       this.pluginManager));
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
-                    this.setReportOutputDirectory((Xpp3Dom) this.surefire.getConfiguration()),
+                    domNode,
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
         } catch (MojoExecutionException mojoException) {
             Logger.getGlobal().log(Level.INFO, "Surefire failed when running tests for " + this.configuration.executionId);
@@ -98,7 +113,8 @@ public class CleanSurefireExecution {
                 Set<String> failingTests = new LinkedHashSet<>();
                 for (ReportTestSuite report : parser.parseXMLReportFiles()) {
                     for (ReportTestCase testCase : report.getTestCases()) {
-                        if (testCase.hasFailure()) {
+                        // Record if failed, but not skipped
+                        if (testCase.hasFailure() && !"skipped".equals(testCase.getFailureType())) {
                             failingTests.add(testCase.getFullClassName() + '#' + testCase.getName());
                         }
                     }
@@ -108,21 +124,51 @@ public class CleanSurefireExecution {
                 throw new MojoExecutionException("Failed to parse mvn reports!");
             }
             throw mojoException;
+        } catch (Throwable tr) {
+            Logger.getGlobal().log(Level.SEVERE, "Some exception that is highly unexpected: ", tr);
+            throw tr;
+        } finally {
+            this.surefire.setConfiguration(origNode);
         }
     }
 
-    protected void setupArgline() {
-        Logger.getGlobal().log(Level.FINE, "Running clean surefire.");
+    protected void setupArgline(Xpp3Dom configNode) {
+        // create the NonDex argLine for surefire based on the current configuration
+        // this adds things like where to save test reports, what directory NonDex
+        // should store results in, what seed and mode should be used.
+        String argLineToSet =  this.configuration.toArgLine();
+        boolean added = false;
+        for (Xpp3Dom config : configNode.getChildren()) {
+            if ("argLine".equals(config.getName())) {
+                Logger.getGlobal().log(Level.INFO, "Adding NonDex argLine to existing argLine specified by the project");
+                String current = sanitizeAndRemoveEnvironmentVars(config.getValue());
+
+                config.setValue(argLineToSet + " " + current);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            Logger.getGlobal().log(Level.INFO, "Creating new argline for Surefire");
+            configNode.addChild(this.makeNode("argLine", argLineToSet));
+        }
+
+        // originalArgLine is the argLine set from Maven, not through the surefire config
+        // if such an argLine exists, we modify that one also
         this.mavenProject.getProperties().setProperty("argLine",
-                this.originalArgLine + " " + this.configuration.toArgLine());
+                this.originalArgLine + " " + argLineToSet);
     }
 
-    private Xpp3Dom setReportOutputDirectory(Xpp3Dom configuration) {
+    protected Xpp3Dom applyNonDexConfig(Xpp3Dom configuration) {
         Xpp3Dom configNode = configuration;
         if (configNode == null) {
             configNode = new Xpp3Dom("configuration");
         }
 
+        return setReportOutputDirectory(configNode);
+    }
+
+    protected Xpp3Dom setReportOutputDirectory(Xpp3Dom configNode) {
         configNode = this.addAttributeToConfig(configNode, "reportsDirectory",
                 this.configuration.getExecutionDir().toString());
         configNode = this.addAttributeToConfig(configNode, "disableXmlReport", "false");
@@ -141,9 +187,23 @@ public class CleanSurefireExecution {
         return configNode;
     }
 
-    private Xpp3Dom makeNode(String nodeName, String value) {
+    protected Xpp3Dom makeNode(String nodeName, String value) {
         Xpp3Dom node = new Xpp3Dom(nodeName);
         node.setValue(value);
         return node;
+    }
+
+    // removes all substring matching the format of a maven property
+    // when this method is invoked Maven should have resolved all properties that are defined
+    // if any property is present it means it couldn't be resolved so this will remove it
+    protected static String sanitizeAndRemoveEnvironmentVars(String toSanitize) {
+        String pattern = "\\$\\{([A-Za-z0-9\\.\\-]+)\\}";
+        Pattern expr = Pattern.compile(pattern);
+        Matcher matcher = expr.matcher(toSanitize);
+        while (matcher.find()) {
+            Pattern subexpr = Pattern.compile(Pattern.quote(matcher.group(0)));
+            toSanitize = subexpr.matcher(toSanitize).replaceAll("");
+        }
+        return toSanitize.trim();
     }
 }

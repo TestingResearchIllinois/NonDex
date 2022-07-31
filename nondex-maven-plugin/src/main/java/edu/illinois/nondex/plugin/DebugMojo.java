@@ -38,16 +38,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -56,7 +55,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 @Mojo(name = "debug", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
-public class DebugMojo extends AbstractNondexMojo {
+public class DebugMojo extends AbstractNonDexMojo {
 
     private List<String> executions = new LinkedList<>();
 
@@ -79,8 +78,9 @@ public class DebugMojo extends AbstractNondexMojo {
         }
 
         this.getLog().warn("*********");
-        for (String test : testToRepro.keySet()) {
-            this.getLog().warn("REPRO for " + test + ": mvn nondex:nondex " + testToRepro.get(test));
+        for (Map.Entry<String, String> test : testToRepro.entrySet()) {
+            this.getLog().warn("REPRO for " + test.getKey() + ":" + String.format("%n")
+                               + "mvn nondex:nondex " + test.getValue());
         }
     }
 

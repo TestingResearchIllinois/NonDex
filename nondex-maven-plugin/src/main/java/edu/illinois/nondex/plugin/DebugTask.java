@@ -30,10 +30,10 @@ package edu.illinois.nondex.plugin;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
@@ -56,8 +56,8 @@ public class DebugTask {
     private List<Configuration> failingConfigurations;
 
     public DebugTask(String test, Plugin surefire, String originalArgLine, MavenProject mavenProject,
-            MavenSession mavenSession, BuildPluginManager pluginManager,
-            List<Configuration> failingConfigurations) {
+                     MavenSession mavenSession, BuildPluginManager pluginManager,
+                     List<Configuration> failingConfigurations) {
         this.test = test;
         this.surefire = surefire;
         this.originalArgLine = originalArgLine;
@@ -79,7 +79,11 @@ public class DebugTask {
         String defaultTest = this.test;                                     // Save the original test wanting to debug
         String testClass = this.test.substring(0, this.test.indexOf('#'));  // Test class parsing
         for (String test : new String[]{defaultTest, testClass, ""}) {
-            this.test = test;
+            if (test.contains("[")) {
+                this.test = test.substring(0, test.indexOf('['));
+            } else {
+                this.test = test;
+            }
             String result = this.tryDebugSeeds();
             if (result != null) {
                 return result;
@@ -133,7 +137,8 @@ public class DebugTask {
                     Utils.computeIthSeed(i, false, newSeed),
                     someFailingConfig.filter, someFailingConfig.start, someFailingConfig.end,
                     someFailingConfig.nondexDir, someFailingConfig.nondexJarDir,
-                    someFailingConfig.testName, someFailingConfig.executionId);
+                    someFailingConfig.testName, someFailingConfig.executionId,
+                    someFailingConfig.loggingLevel);
             retryWOtherSeeds.add(newConfig);
         }
         return retryWOtherSeeds;
@@ -251,8 +256,8 @@ public class DebugTask {
 
     private Configuration failsWithConfig(Configuration config, long start, long end, boolean print) {
         NonDexSurefireExecution execution = new NonDexSurefireExecution(config,
-                    start, end, print, this.test, this.surefire, this.originalArgLine, this.mavenProject,
-                    this.mavenSession, this.pluginManager);
+                start, end, print, this.test, this.surefire, this.originalArgLine,
+                this.mavenProject, this.mavenSession, this.pluginManager);
         try {
             execution.run();
         } catch (Throwable thr) {

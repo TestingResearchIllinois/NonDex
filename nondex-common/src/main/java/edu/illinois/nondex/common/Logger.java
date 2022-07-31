@@ -29,7 +29,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package edu.illinois.nondex.common;
 
 import java.io.PrintStream;
-import java.util.logging.Level;
 
 public class Logger {
 
@@ -37,8 +36,12 @@ public class Logger {
     private PrintStream out = System.out;
     private Level level = Level.CONFIG;
 
-    public void setLoggineLevel(Level level) {
+    public void setLoggingLevel(Level level) {
         this.level = level;
+    }
+
+    public Level getLoggingLevel() {
+        return this.level;
     }
 
     public static Logger getGlobal() {

@@ -34,15 +34,20 @@ import java.nio.file.Paths;
 
 import edu.illinois.nondex.common.ConfigurationDefaults;
 
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Removes NonDex plugin artifacts (i.e. the ".nondex" directories in each
  * module root) as well as the NonDex jar.
  */
 @Mojo(name = "clean", requiresDirectInvocation = true)
-public class CleanMojo extends AbstractNondexMojo {
+public class CleanMojo extends AbstractMojo {
+
+    @Parameter(defaultValue = "${basedir}")
+    protected File baseDir;
 
     public void execute() throws MojoExecutionException {
         Path nondexArtifactsPath = Paths.get(this.baseDir.getAbsolutePath(),

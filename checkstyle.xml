@@ -31,6 +31,10 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     <property name="fileExtensions" value="java"/>
   </module>
 
+  <module name="LineLength">
+    <property name="max" value="125"/>
+    <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+  </module>
 
   <module name="TreeWalker">
     <module name="DeclarationOrder"/>
@@ -41,7 +45,7 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
     <module name="MissingOverride"/>
 
     <module name="Regexp">
-      <property name="format" value="System\.out\.println"/>
+      <property name="format" value="System\.(out|err)\.print"/>
       <property name="illegalPattern" value="true"/>
       <property name="ignoreComments" value="true"/>
     </module>
@@ -63,21 +67,15 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
       <property name="allowByTailComment" value="true"/>
       <property name="allowNonPrintableEscapes" value="true"/>
     </module>
-    <module name="LineLength">
-      <property name="max" value="125"/>
-      <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-    </module>
     <module name="AvoidStarImport"/>
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap"/>
     <module name="EmptyBlock">
-      <property name="option" value="stmt"/>
+      <property name="option" value="statement"/>
       <property name="tokens" value="LITERAL_WHILE, LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_DO, LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, INSTANCE_INIT, STATIC_INIT, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_CASE, LITERAL_DEFAULT, ARRAY_INIT"/>
     </module>
     <module name="NeedBraces"/>
-    <module name="LeftCurly">
-      <property name="maxLineLength" value="100"/>
-    </module>
+    <module name="LeftCurly"/>
     <module name="RightCurly"/>
     <module name="RightCurly">
       <property name="option" value="alone"/>
@@ -212,11 +210,8 @@ Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
       <property name="severity" value="warning"/>
       <property name="scope" value="public"/>
       <property name="allowMissingParamTags" value="true"/>
-      <property name="allowMissingThrowsTags" value="true"/>
       <property name="allowMissingReturnTag" value="true"/>
-      <property name="minLineCount" value="2"/>
       <property name="allowedAnnotations" value="Override, Test"/>
-      <property name="allowThrowsTagsForSubclasses" value="true"/>
     </module>
     <module name="MethodName">
       <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>

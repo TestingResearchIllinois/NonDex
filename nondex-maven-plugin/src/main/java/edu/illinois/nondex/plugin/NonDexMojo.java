@@ -41,11 +41,11 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import edu.illinois.nondex.common.Configuration;
 import edu.illinois.nondex.common.ConfigurationDefaults;
+import edu.illinois.nondex.common.Level;
 import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
@@ -56,19 +56,23 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 @Mojo(name = "nondex", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
-public class NonDexMojo extends AbstractNondexMojo {
+public class NonDexMojo extends AbstractNonDexMojo {
 
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
+        Logger.getGlobal().log(Level.INFO, "The original argline is: " + this.originalArgLine);
         MojoExecutionException allExceptions = null;
         CleanSurefireExecution cleanExec = new CleanSurefireExecution(
                 this.surefire, this.originalArgLine, this.mavenProject,
-                    this.mavenSession, this.pluginManager);
+                    this.mavenSession, this.pluginManager,
+                    Paths.get(this.baseDir.getAbsolutePath(), ConfigurationDefaults.DEFAULT_NONDEX_DIR).toString());
 
-        allExceptions = this.executeSurefireExecution(allExceptions, cleanExec);
+        // If we add clean exceptions to allExceptions then the build fails if anything fails without nondex.
+        // Everything in nondex-test is expected to fail without nondex so we throw away the result here.
+        this.executeSurefireExecution(allExceptions, cleanExec);
 
         for (int i = 0; i < this.numRuns; i++) {
             NonDexSurefireExecution execution =
@@ -144,21 +148,30 @@ public class NonDexMojo extends AbstractNondexMojo {
             this.getLog().info(test);
         }
 
-        generateHtml(allFailures, config);
+        this.generateHtml(allFailures, config);
     }
 
     private void generateHtml(Set<String> allFailures, Configuration config) {
-        String head = "<html>";
-        head += "<head>";
-        head += "<title>Test Results</title>";
-        head += "</head>";
-        String html = head + "<body>" + "<table class=\"table table-striped\">";
+        String head = "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "<title>Test Results</title>"
+                + "<style>"
+                + "table { border-collapse: collapse; width: 100%; }"
+                + "th { height: 50%; }"
+                + "th, td { padding: 10px; text-align: left; }"
+                + "tr:nth-child(even) {background-color:#f2f2f2;}"
+                + ".x { color: red; font-size: 150%;}"
+                + ".✓ { color: green; font-size: 150%;}"
+                + "</style>"
+                + "</head>";
+        String html = head + "<body>" + "<table>";
 
         html += "<thead><tr>";
         html += "<th>Test Name</th>";
         for (int iter = 0; iter < this.executions.size(); iter++) {
             html += "<th>";
-            html += "Run " + (iter + 1);
+            html += "" + this.executions.get(iter).getConfiguration().seed;
             html += "</th>";
         }
         html += "</tr></thead>";
@@ -173,9 +186,9 @@ public class NonDexMojo extends AbstractNondexMojo {
                     }
                 }
                 if (testDidFail) {
-                    html += "<td>Failed</td>";
+                    html += "<td class=\"x\">&#10006;</td>";
                 } else {
-                    html += "<td>Passed</td>";
+                    html += "<td class=\"✓\">&#10004;</td>";
                 }
             }
             html += "</tr>";
@@ -213,8 +226,8 @@ public class NonDexMojo extends AbstractNondexMojo {
         try {
             // TODO(gyori): This is quite ugly, you grabbing here the first from a list to establish a run id.
             Files.write(this.executions.get(0).getConfiguration().getRunFilePath(),
-                    (execution.getConfiguration().executionId + "\n").getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                        (execution.getConfiguration().executionId + String.format("%n")).getBytes(),
+                         StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
             Logger.getGlobal().log(Level.SEVERE, "Cannot write execution id to current run file", ex);
         }

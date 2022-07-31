@@ -42,7 +42,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class Configuration {
@@ -63,21 +62,23 @@ public class Configuration {
 
     public final String testName;
 
+    public final Level loggingLevel;
+
     private Integer invoCount = null;
     private Set<String> failedTests = null;
 
     protected Configuration(Mode mode, int seed, Pattern filter, String executionId) {
         this(mode, seed, filter, 0, Long.MAX_VALUE, ConfigurationDefaults.DEFAULT_NONDEX_DIR,
-                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId);
+                ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR, null, executionId, Level.CONFIG);
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String nondexJarDir, String testName, String executionId) {
-        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, false);
+            String nondexJarDir, String testName, String executionId, Level loggingLevel) {
+        this(mode, seed, filter, start, end, nondexDir, nondexJarDir, testName, executionId, loggingLevel, false);
     }
 
     public Configuration(Mode mode, int seed, Pattern filter, long start, long end, String nondexDir,
-            String nondexJarDir, String testName, String executionId, boolean printStackTrace) {
+            String nondexJarDir, String testName, String executionId, Level loggingLevel, boolean printStackTrace) {
         this.mode = mode;
         this.seed = seed;
         this.filter = filter;
@@ -88,15 +89,16 @@ public class Configuration {
         this.testName = testName;
         this.executionId = executionId;
         this.shouldPrintStackTrace = printStackTrace;
+        this.loggingLevel = loggingLevel;
         this.createExecutionDirIfNeeded();
     }
 
 
-    public Configuration(String executionId) {
+    public Configuration(String executionId, String nondexDir) {
         this(ConfigurationDefaults.DEFAULT_MODE, ConfigurationDefaults.DEFAULT_SEED,
                 Pattern.compile(ConfigurationDefaults.DEFAULT_FILTER), 0, Long.MAX_VALUE,
-                ConfigurationDefaults.DEFAULT_NONDEX_DIR, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
-                null, executionId);
+                nondexDir, ConfigurationDefaults.DEFAULT_NONDEX_JAR_DIR,
+                null, executionId, Logger.getGlobal().getLoggingLevel());
     }
 
     public void createNondexDirIfNeeded() {
@@ -111,25 +113,28 @@ public class Configuration {
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_START + "=" + this.start);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_END + "=" + this.end);
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace);
-        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir);
-        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=\"" + this.nondexDir + "\"");
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=\"" + this.nondexJarDir + "\"");
         sb.append(" -D" + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId);
+        sb.append(" -D" + ConfigurationDefaults.PROPERTY_LOGGING_LEVEL + "=" + this.loggingLevel);
         sb.append(this.testName == null ? "" : " -Dtest=" + this.testName);
         return sb.toString();
     }
 
     @Override
     public String toString() {
-        return ConfigurationDefaults.PROPERTY_FILTER + "=" + this.filter + "\n"
-                + ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode + "\n"
-                + ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed + "\n"
-                + ConfigurationDefaults.PROPERTY_START + "=" + this.start + "\n"
-                + ConfigurationDefaults.PROPERTY_END + "=" + this.end + "\n"
-                + ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace + "\n"
-                + ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir + "\n"
-                + ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir + "\n"
-                + ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId + "\n"
-                + "test=" + (this.testName == null ? "" : this.testName);
+        String[] props = new String[] {ConfigurationDefaults.PROPERTY_FILTER + "=" + this.filter,
+                                       ConfigurationDefaults.PROPERTY_MODE + "=" + this.mode,
+                                       ConfigurationDefaults.PROPERTY_SEED + "=" + this.seed,
+                                       ConfigurationDefaults.PROPERTY_START + "=" + this.start,
+                                       ConfigurationDefaults.PROPERTY_END + "=" + this.end,
+                                       ConfigurationDefaults.PROPERTY_PRINT_STACK + "=" + this.shouldPrintStackTrace,
+                                       ConfigurationDefaults.PROPERTY_NONDEX_DIR + "=" + this.nondexDir,
+                                       ConfigurationDefaults.PROPERTY_NONDEX_JAR_DIR + "=" + this.nondexJarDir,
+                                       ConfigurationDefaults.PROPERTY_EXECUTION_ID + "=" + this.executionId,
+                                       ConfigurationDefaults.PROPERTY_LOGGING_LEVEL + "=" + this.loggingLevel,
+                                       "test=" + (this.testName == null ? "" : this.testName)};
+        return String.join(String.format("%n"), props);
     }
 
     public static Configuration parseArgs() {
@@ -168,12 +173,12 @@ public class Configuration {
 
         final Level level = Level.parse(props.getProperty(
                 ConfigurationDefaults.PROPERTY_LOGGING_LEVEL, ConfigurationDefaults.DEFAULT_LOGGING_LEVEL));
-        Logger.getGlobal().setLoggineLevel(level);
+        Logger.getGlobal().setLoggingLevel(level);
 
         final String testName = props.getProperty("test", null);
 
         return new Configuration(nonDetKind, seed, filter, start, end, nondexDir, nondexJarDir, testName,
-                executionId, shouldPrintStacktrace);
+                executionId, level, shouldPrintStacktrace);
     }
 
     public void createExecutionDirIfNeeded() {
@@ -255,7 +260,7 @@ public class Configuration {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(failed))) {
             for (String test : failedTestsInExecution) {
-                bw.write(test + "\n");
+                bw.write(test + String.format("%n"));
             }
         } catch (FileNotFoundException fne) {
             Logger.getGlobal().log(Level.FINEST, "File Not Found. Probably no test failed in this run.");

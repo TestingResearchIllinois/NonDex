@@ -32,6 +32,10 @@ package edu.illinois.nondex.core;
 @TestAnnotation2
 @TestAnnotation3
 @TestAnnotation4
+@TestAnnotation5
+@TestAnnotation6
+@TestAnnotation7
+@TestAnnotation8
 public class ClassTestHelper {
 
     public class InnerOne {
@@ -54,6 +58,10 @@ public class ClassTestHelper {
     @TestAnnotation2
     @TestAnnotation3
     @TestAnnotation4
+    @TestAnnotation5
+    @TestAnnotation6
+    @TestAnnotation7
+    @TestAnnotation8
     public Integer field1;
 
     public Integer field2;
@@ -90,6 +98,10 @@ public class ClassTestHelper {
     @TestAnnotation2
     @TestAnnotation3
     @TestAnnotation4
+    @TestAnnotation5
+    @TestAnnotation6
+    @TestAnnotation7
+    @TestAnnotation8
     public int m1(@TestAnnotation1 @TestAnnotation2 @TestAnnotation3 @TestAnnotation4 Integer param)
         throws NullPointerException, ArithmeticException, ArrayIndexOutOfBoundsException, ClassCastException, Exception {
         return param;
