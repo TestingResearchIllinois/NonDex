@@ -180,7 +180,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
             this.getLog().info("All tests pass without NonDex shuffling");
         }
         this.getLog().info("####################");
-        this.getLog().info("Across all seeds (Possible implementation-dependent flaky tests):");
+        this.getLog().info("Across all seeds:");
         for (String test : allFailures) {
             this.getLog().info(test);
         }
