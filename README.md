@@ -56,6 +56,10 @@ To find if you have flaky tests, run:
 
     mvn nondex:nondex
 
+Notice that NonDex executes 1 clean run (without shuffling) by default. It reports a test if it passes in the clean run and fails in one of the shuffled runs. In this way, some reported tests may be nondeterministic (e.g. fails by chance without NonDex shuffling) or non-idempotent (e.g. silently changes an external field, and can fail even in a second `mvn test -Dtest=...` run), rather than actually making wrong assumptions on under-determined Java APIs. To avoid this, one can specify the number of clean runs (where `i` is the number of clean runs):
+
+    mvn nondex:nondex -DnondexRunsWithoutShuffling=i
+
 To debug, run:
 
     mvn nondex:debug
