@@ -247,6 +247,11 @@ public class DebugTask {
                     Logger.getGlobal().log(Level.FINE, "Refining did not work. Does not fail with linear on range "
                         + localStart + " : " + localEnd + ".");
                 }
+            } else {
+                // Since start <= end is always true, this branch means start == end, so reached end
+                if (failingConfiguration != null) {
+                    allFailingConfigurations.add(this.reportDebugInfo(failingConfiguration));
+                }
             }
         }
         return allFailingConfigurations;
