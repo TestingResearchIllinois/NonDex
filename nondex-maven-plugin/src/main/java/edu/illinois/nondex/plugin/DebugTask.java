@@ -170,7 +170,7 @@ public class DebugTask {
 
         List<Pair<Pair<Long, Long>, Configuration>> pairs = new LinkedList<Pair<Pair<Long, Long>, Configuration>>();
         pairs.add((Pair<Pair<Long, Long>, Configuration>)Pair.of((Pair<Long, Long>)Pair.of(0L,
-            (long)config.getInvocationCount()), (Configuration)null));
+            (long)config.getInvocationCount()), config));
         
         Configuration failingConfiguration = null;
         while (pairs.size() > 0) {
@@ -219,7 +219,7 @@ public class DebugTask {
 
         List<Pair<Pair<Long, Long>, Configuration>> pairs = new LinkedList<Pair<Pair<Long, Long>, Configuration>>();
         pairs.add((Pair<Pair<Long, Long>, Configuration>)Pair.of((Pair<Long, Long>)Pair.of(start, end),
-            (Configuration)null));
+            config));
         
         Configuration failingConfiguration = null;
         while (pairs.size() > 0) {
