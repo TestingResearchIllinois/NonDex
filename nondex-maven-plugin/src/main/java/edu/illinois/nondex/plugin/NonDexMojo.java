@@ -62,7 +62,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 public class NonDexMojo extends AbstractNonDexMojo {
 
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
-    private ArrayList<CleanSurefireExecution> executionsWithoutShuffling = 
+    private ArrayList<CleanSurefireExecution> executionsWithoutShuffling =
             new ArrayList<CleanSurefireExecution>();
 
     @Override
