@@ -38,7 +38,6 @@ import edu.illinois.nondex.common.Logger;
 import edu.illinois.nondex.common.Utils;
 
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -171,7 +170,7 @@ public class DebugTask {
         List<Pair<Pair<Long, Long>, Configuration>> pairs = new LinkedList<Pair<Pair<Long, Long>, Configuration>>();
         pairs.add((Pair<Pair<Long, Long>, Configuration>)Pair.of((Pair<Long, Long>)Pair.of(0L,
             (long)config.getInvocationCount()), config));
-        
+
         Configuration failingConfiguration = null;
         while (pairs.size() > 0) {
             Pair<Pair<Long, Long>, Configuration> pair = pairs.remove(0);
@@ -220,7 +219,7 @@ public class DebugTask {
         List<Pair<Pair<Long, Long>, Configuration>> pairs = new LinkedList<Pair<Pair<Long, Long>, Configuration>>();
         pairs.add((Pair<Pair<Long, Long>, Configuration>)Pair.of((Pair<Long, Long>)Pair.of(start, end),
             config));
-        
+
         Configuration failingConfiguration = null;
         while (pairs.size() > 0) {
             Pair<Pair<Long, Long>, Configuration> pair = pairs.remove(0);
