@@ -1,6 +1,7 @@
 /*
 The MIT License (MIT)
 Copyright (c) 2015 Alex Gyori
+Copyright (c) 2022 Kaiyao Ke
 Copyright (c) 2015 Owolabi Legunsen
 Copyright (c) 2015 Darko Marinov
 Copyright (c) 2015 August Shi
