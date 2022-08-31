@@ -13,6 +13,12 @@
 
   
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/java/edu/illinois/nondex/common</directory>
+	<filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
