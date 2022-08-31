@@ -177,7 +177,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
                 this.getLog().info("Fails in " + String.valueOf(entry.getValue()) + " out of "
                     + String.valueOf(this.numRunsWithoutShuffling) + " clean runs.");
             }
-        } else {
+        } else if (!failsWithoutShuffling) {
             this.getLog().info("All tests pass without NonDex shuffling");
         }
         this.getLog().info("####################");
