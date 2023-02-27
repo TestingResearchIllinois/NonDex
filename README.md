@@ -45,7 +45,7 @@ To use NonDex, add the plugin to the plugins section under the build section in 
       <plugin>
         <groupId>edu.illinois</groupId>
         <artifactId>nondex-maven-plugin</artifactId>
-        <version>1.1.2</version>
+        <version>2.1.1</version>
       </plugin>
     </plugins>
   </build>
