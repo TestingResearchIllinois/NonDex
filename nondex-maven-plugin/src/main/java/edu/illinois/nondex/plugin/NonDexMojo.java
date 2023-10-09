@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
@@ -65,6 +66,11 @@ public class NonDexMojo extends AbstractNonDexMojo {
     private List<NonDexSurefireExecution> executions = new LinkedList<>();
     private ArrayList<CleanSurefireExecution> executionsWithoutShuffling =
             new ArrayList<CleanSurefireExecution>();
+    private Path runFilePath = null;
+
+    public void setFilePath(Path value) {
+        this.runFilePath = this.runFilePath == null ? value : this.runFilePath;
+    }
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -92,6 +98,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
                                 .toString(),
                             this.surefire, this.originalArgLine, this.mavenProject,
                             this.mavenSession, this.pluginManager);
+            setFilePath(execution.getConfiguration().getRunFilePath());
             this.executions.add(execution);
             allExceptions = this.executeSurefireExecution(allExceptions, execution);
             this.writeCurrentRunInfo(execution);
@@ -262,8 +269,7 @@ public class NonDexMojo extends AbstractNonDexMojo {
 
     private void writeCurrentRunInfo(CleanSurefireExecution execution) {
         try {
-            // TODO(gyori): This is quite ugly, you grabbing here the first from a list to establish a run id.
-            Files.write(this.executions.get(0).getConfiguration().getRunFilePath(),
+            Files.write(this.runFilePath,
                         (execution.getConfiguration().executionId + String.format("%n")).getBytes(),
                          StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
