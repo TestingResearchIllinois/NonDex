@@ -89,7 +89,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>> {
 
         String str = map.toString();
         Assert.assertNotEquals("You are not running FULL nondex", str, map.toString());
-        this.assertEqualstUnordered("The strings are not a permutation of each other", str, map.toString());
+        this.assertEqualsUnordered("The strings are not a permutation of each other", str, map.toString());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>> {
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0, 2, 3, 4, 5, 6, 7, 8, 9}", keySet.toString());
-        this.assertEqualstUnordered("The strings are not a permuation of each other",
+        this.assertEqualsUnordered("The strings are not a permuation of each other",
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", keySet.toString());
 
     }
@@ -119,7 +119,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>> {
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
-        this.assertEqualstUnordered("The strings are not a permutation of each other",
+        this.assertEqualsUnordered("The strings are not a permutation of each other",
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
     }
 
@@ -130,7 +130,7 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>> {
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
-        this.assertEqualstUnordered("The strings are not a permuation of each other",
+        this.assertEqualsUnordered("The strings are not a permuation of each other",
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
 
         String str = values.toString();
@@ -144,8 +144,14 @@ public class HashMapTest extends AbstractCollectionTest<Map<Integer, Integer>> {
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0=0, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", entrySet.toString());
-        this.assertEqualstUnordered("The strings are not a permutation of each other",
+        this.assertEqualsUnordered("The strings are not a permutation of each other",
                 "{0=0, 1=1, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", entrySet.toString());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testAssertEqualsUnorderedFailsWithDuplicates() {
+        this.assertEqualsUnordered("the strings are not a permutation of each other",
+            "{0=0, 0=0, 1=1, 2=2, 3=3}", "{0=0, 1=1, 2=2, 3=3}");
     }
 
     @Test
