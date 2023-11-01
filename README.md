@@ -72,7 +72,12 @@ The NonDex Maven plugin also offers additional options; to see them all, run:
 Use (Gradle):
 ============
 
-To use NonDex in Gradle, add the following content into your build.gradle:
+You can use the following command, to set up the NonDex Gradle plugin in your project:
+```shell
+./gradle-modify/modify-project.sh <path to your project>
+```
+
+If you want to do it manually, add the following content into your build.gradle:
 
 ```groovy
 buildscript {
