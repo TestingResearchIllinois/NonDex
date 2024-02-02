@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+    id 'edu.illinois.nondex'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'edu.illinois:nondex-common:2.1.7'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+}

@@ -1,0 +1,21 @@
+plugins {
+  id 'edu.illinois.nondex'
+}
+
+allprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'edu.illinois.nondex'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation 'junit:junit:4.13.2'
+    }
+    
+    tasks.withType(Test) {
+        jvmArgs += '-DmyArgumentForTesting=1219'
+    }
+}

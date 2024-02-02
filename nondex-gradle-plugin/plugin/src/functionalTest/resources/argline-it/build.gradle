@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+    id 'edu.illinois.nondex'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}
+
+tasks.withType(Test) {
+    jvmArgs += ['-DmyArgumentForTesting=1219', '-DthroughProperty=3423']
+}
