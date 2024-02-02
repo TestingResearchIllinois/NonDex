@@ -38,7 +38,7 @@ Build (Gradle):
     cd nondex-gradle-plugin
     ./gradlew build
 
-Use (Maven - Command Line):
+Use (Maven - Command-line):
 ============
 
 To find if you have flaky tests under NonDex shuffling, run (use the ``-Dtest=...`` filter for individual tests):
@@ -91,7 +91,7 @@ The NonDex Maven plugin also offers additional options; to see them all, run:
 Use (Gradle):
 ============
 
-To use NonDex in Gradle(Groovy), add the following content into your `build.gradle`:
+To use NonDex in Gradle (Groovy), add the following content into your `build.gradle`:
 
 ```groovy
 plugins {
@@ -105,7 +105,7 @@ subprojects {
 }
 ```
 
-To use NonDex in Gradle(Kotlin), add the following content into your `build.gradle.kts`:
+To use NonDex in Gradle (Kotlin), add the following content into your `build.gradle.kts`:
 ```kotlin
 plugins {
   id("edu.illinois.nondexGradle") version "2.1.7"
