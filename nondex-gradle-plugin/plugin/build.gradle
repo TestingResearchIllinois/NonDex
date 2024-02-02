@@ -1,0 +1,60 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id "com.gradle.plugin-publish" version "1.2.1"
+}
+
+group = "edu.illinois"
+version = "2.1.7"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'edu.illinois:nondex-common:' + version
+    implementation 'edu.illinois:nondex-instrumentation:' + version
+}
+
+gradlePlugin {
+    website = 'https://github.com/TestingResearchIllinois/NonDex'
+    vcsUrl = 'https://github.com/TestingResearchIllinois/NonDex'
+    description = 'NonDex plugin for Gradle'
+    plugins {
+        nondexPlugin {
+            id = 'edu.illinois.nondex'
+            displayName = 'Nondex plugin for Gradle'
+            implementationClass = 'edu.illinois.nondex.gradle.plugin.NonDexGradlePlugin'
+            description = 'NonDex Gradle plugin'
+            tags.addAll('non-deterministic', 'test')
+        }
+    }
+}
+
+sourceSets {
+    functionalTest {
+    }
+}
+
+configurations.functionalTestImplementation.extendsFrom(configurations.testImplementation)
+
+// Add a task to run the functional tests
+tasks.register('functionalTest', Test) {
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+    useJUnitPlatform()
+}
+
+gradlePlugin.testSourceSets(sourceSets.functionalTest)
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+compileJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+}

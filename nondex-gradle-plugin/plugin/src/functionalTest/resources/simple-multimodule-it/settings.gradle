@@ -1,0 +1,3 @@
+rootProject.name = 'simple-multimodule-it'
+
+include 'module1', 'module2'

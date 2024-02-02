@@ -1,0 +1,11 @@
+tasks.withType(Test) {
+    filter {
+        excludeTestsMatching 'ExcludedTest.testModuleExclude'
+    }
+}
+
+nondexTest {
+    filter {
+        excludeTestsMatching 'ExcludedTest.testNonDexExclude'
+    }
+}

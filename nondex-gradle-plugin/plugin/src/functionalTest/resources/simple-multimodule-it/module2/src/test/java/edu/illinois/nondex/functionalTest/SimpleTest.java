@@ -1,0 +1,14 @@
+package edu.illinois.nondex.functionalTest;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+public class SimpleTest {
+
+    @Test
+    public void testSimple() {
+        String varValue = System.getProperty("myArgumentForTesting");
+        assertEquals("1219", varValue);
+    }
+}
