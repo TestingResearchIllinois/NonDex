@@ -1,3 +1,5 @@
+# NonDex
+
 [![Build Status](https://travis-ci.org/TestingResearchIllinois/NonDex.svg?branch=master)](https://travis-ci.org/TestingResearchIllinois/NonDex)
 [![Build status](https://ci.appveyor.com/api/projects/status/7cw58oph5346xvm0/branch/master?svg=true)](https://ci.appveyor.com/project/alexgyori/nondex/branch/master)
 [![Issue Count](https://codeclimate.com/github/TestingResearchIllinois/NonDex/badges/issue_count.svg)](https://codeclimate.com/github/TestingResearchIllinois/NonDex)
