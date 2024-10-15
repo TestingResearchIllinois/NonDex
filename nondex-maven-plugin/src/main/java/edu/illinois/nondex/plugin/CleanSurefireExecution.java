@@ -102,6 +102,7 @@ public class CleanSurefireExecution {
                                    + " " + domNode + " "
                                    + MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession,
                                                                        this.pluginManager));
+            cleanArgline(domNode);
             MojoExecutor.executeMojo(this.surefire, MojoExecutor.goal("test"),
                     domNode,
                     MojoExecutor.executionEnvironment(this.mavenProject, this.mavenSession, this.pluginManager));
@@ -206,5 +207,52 @@ public class CleanSurefireExecution {
             toSanitize = subexpr.matcher(toSanitize).replaceAll("");
         }
         return toSanitize.trim();
+    }
+
+    /**
+     * Fixes the handling of JPMS argline configuration in Surefire plugin when running NonDex.
+     * This method addresses two issues:
+     * 1. Multiple `--patch-module java.base` entries in the argline:
+     *    - With JPMS, NonDex argline uses `--patch-module java.base` to incorporate NonDex jars,
+     *      but when the target project also includes `--patch-module java.base` in Surefire argline,
+     *      it results in 2 declaration of patches on the same module, which crashes the JVM.
+     *    - This method merges all occurrences of `--patch-module java.base` into a single entry,
+     *      accumulating the associated paths.
+     * 2. Failure to remove Maven placeholders like `@{argLine}` in the project argline:
+     *    - Maven projects can leave placeholders like `@{argLine}` in the Surefire argline,
+     *      leading to duplication of existing argline by the MojoExecutor.
+     *    - This method ensures that placeholders like `@{argLine}` are removed after merging
+     *      the NonDex-specific argline.
+     * @param domNode the Xpp3Dom node representing the Surefire configuration
+     */
+    protected void cleanArgline(Xpp3Dom domNode) {
+        Xpp3Dom domNodeArgLine = domNode.getChild("argLine");
+        if (domNodeArgLine != null) {
+            String argLineValue = domNodeArgLine.getValue();
+            if (argLineValue.contains("@{argLine}")) {
+                domNodeArgLine.setValue(argLineValue.replace("@{argLine}", ""));
+            }
+            if (argLineValue.indexOf("--patch-module") != argLineValue.lastIndexOf("--patch-module")) {
+                Pattern patchModulePattern = Pattern.compile("--patch-module\\s+java.base=([^\\s]+)");
+                Matcher matcher = patchModulePattern.matcher(argLineValue);
+                Set<String> javaBasePaths = new LinkedHashSet<>();
+                while (matcher.find()) {
+                    String[] paths = matcher.group(1).split(":");
+                    for (String path : paths) {
+                        javaBasePaths.add(path);
+                    }
+                }
+                String cleanedArgLineValue = argLineValue;
+                if (!javaBasePaths.isEmpty()) {
+                    String maskedArgline = argLineValue.replaceAll(
+                        "--patch-module\\s+java.base=([^\\s]+)", "<<<pm>>>");
+                    String mergedPatchModule = "--patch-module java.base="
+                        + String.join(":", javaBasePaths);
+                    cleanedArgLineValue = maskedArgline.replaceFirst("<<<pm>>>", mergedPatchModule)
+                        .replace("<<<pm>>>", "");
+                }
+                domNodeArgLine.setValue(cleanedArgLineValue);
+            }
+        }
     }
 }
