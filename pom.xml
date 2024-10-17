@@ -6,7 +6,7 @@
   <groupId>edu.illinois</groupId>
   <artifactId>nondex</artifactId>
   <packaging>pom</packaging>
-  <version>2.1.7-SNAPSHOT</version>
+  <version>2.1.7</version>
 
   <name>NonDex</name>
   <description>A tool for finding strong assumptions on APIs with non-deterministic specifications.</description>
@@ -23,7 +23,7 @@
     <connection>scm:git:git@github.com:TestingResearchIllinois/NonDex.git</connection>
     <developerConnection>scm:git:git@github.com:TestingResearchIllinois/NonDex.git</developerConnection>
     <url>git@github.com:TestingResearchIllinois/NonDex.git</url>
-    <tag>HEAD</tag>
+    <tag>nondex-2.1.7</tag>
   </scm>
 
   <developers>
