@@ -95,10 +95,10 @@ To use NonDex in Gradle (Groovy), add the following content into your `build.gra
 
 ```groovy
 plugins {
-  id 'edu.illinois.nondexGradle' version '2.1.7'
+  id 'edu.illinois.nondex' version '2.1.7'
 }
 ```
-Apply it to subjects (if any, optional):
+Apply it to subprojects (if any, optional):
 ```
 subprojects {
   apply plugin: 'edu.illinois.nondex'
@@ -108,7 +108,7 @@ subprojects {
 To use NonDex in Gradle (Kotlin), add the following content into your `build.gradle.kts`:
 ```kotlin
 plugins {
-  id("edu.illinois.nondexGradle") version "2.1.7"
+  id("edu.illinois.nondex") version "2.1.7"
 }
 ```
 Apply it to subjects (if any, optional):
@@ -116,6 +116,13 @@ Apply it to subjects (if any, optional):
 subprojects {
   apply(plugin = "edu.illinois.nondex")
 }
+```
+
+Alternatively, if you are on Linux or MacOS, can use the existing script to set up NonDex in gradle build files automatically:
+```
+cd modify-gradle-build
+chmod +x add-nondex.sh
+./add-nondex.sh ${path to the root directory of the project to run NonDex in}
 ```
 
 To find if you have flaky tests, run (use the ``--tests`` filter for individual tests):
