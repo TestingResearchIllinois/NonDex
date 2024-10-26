@@ -121,7 +121,6 @@ subprojects {
 Alternatively, if you are on Linux or MacOS, can use the existing script to set up NonDex in gradle build files automatically:
 ```
 cd modify-gradle-build
-chmod +x add-nondex.sh
 ./add-nondex.sh ${path to the root directory of the project to run NonDex in}
 ```
 
