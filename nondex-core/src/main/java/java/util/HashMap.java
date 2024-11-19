@@ -1517,9 +1517,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     static final class KeySpliterator<K,V>
         extends HashMapSpliterator<K,V>
         implements Spliterator<K> {
+
+        private final KeySpliteratorShuffler<K, V> shuffler;
+
         KeySpliterator(HashMap<K,V> m, int origin, int fence, int est,
                        int expectedModCount) {
             super(m, origin, fence, est, expectedModCount);
+            this.shuffler = new KeySpliteratorShuffler<>(this);
         }
 
         public KeySpliterator<K,V> trySplit() {
@@ -1530,6 +1534,10 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         public void forEachRemaining(Consumer<? super K> action) {
+            shuffler.forEachRemaining(action);
+        }
+
+        public void original_forEachRemaining(Consumer<? super K> action) {
             int i, hi, mc;
             if (action == null)
                 throw new NullPointerException();
