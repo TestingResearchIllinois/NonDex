@@ -73,7 +73,7 @@ public final class Instrumenter {
     public static final String hashMapNodeName = "java/util/HashMap$Node.class";
     public static final String hashMapEntryName = "java/util/HashMap$Entry.class";
     public static final String hashMapHashIteratorShufflerName = "java/util/HashMap$HashIterator$HashIteratorShuffler.class";
-    public static final String hashMapKeySpliteratorShufflerName = "java/util/HashMap$KeySpliterator$KeySpliteratorShuffler.class";
+    public static final String hashMapKeySpliShufflerName = "java/util/HashMap$KeySpliterator$KeySpliteratorShuffler.class";
 
     private static final String rootPath = "modules/java.base";
 
@@ -206,9 +206,8 @@ public final class Instrumenter {
                         }
                     });
         }
-        
         // add SpliteratorShuffler.class
-        this.addAsmDumpResultToZip(outZip, hashMapKeySpliteratorShufflerName, new Producer<byte[]>() {
+        this.addAsmDumpResultToZip(outZip, hashMapKeySpliShufflerName, new Producer<byte[]>() {
             @Override
             public byte[] apply() {
                 return HashKeySpliteratorASMDump.dump();

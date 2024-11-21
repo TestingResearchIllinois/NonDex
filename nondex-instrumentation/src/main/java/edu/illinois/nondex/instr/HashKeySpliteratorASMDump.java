@@ -131,25 +131,8 @@ public class HashKeySpliteratorASMDump implements Opcodes {
             methodVisitor.visitMaxs(2, 2);
             methodVisitor.visitEnd();
         }
-        {
-            methodVisitor = classWriter.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
-            methodVisitor.visitCode();
-            Label label0 = new Label();
-            methodVisitor.visitLabel(label0);
-            methodVisitor.visitLineNumber(7, label0);
-            methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-            methodVisitor.visitLdcInsn("YW=============shuffling ============");
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-            Label label1 = new Label();
-            methodVisitor.visitLabel(label1);
-            methodVisitor.visitLineNumber(8, label1);
-            methodVisitor.visitInsn(RETURN);
-            methodVisitor.visitMaxs(2, 0);
-            methodVisitor.visitEnd();
-        }
         classWriter.visitEnd();
 
         return classWriter.toByteArray();
     }
 }
-
