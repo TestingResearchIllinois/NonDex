@@ -98,7 +98,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0, 2, 3, 4, 5, 6, 7, 8, 9}", keySet.toString());
-        this.assertEqualstUnordered("The strings are not a permutation of each other",
+        this.assertEqualsUnordered("The strings are not a permutation of each other",
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", keySet.toString());
 
     }
@@ -127,7 +127,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
-        this.assertEqualstUnordered("The strings are not a permutation of each other",
+        this.assertEqualsUnordered("The strings are not a permutation of each other",
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", values.toString());
 
         String str = values.toString();
@@ -141,7 +141,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0=0, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", entrySet.toString());
-        this.assertEqualstUnordered("The strings are not a permutation of each other",
+        this.assertEqualsUnordered("The strings are not a permutation of each other",
                 "{0=0, 1=1, 2=2, 3=3, 4=4, 5=5, 6=6, 7=7, 8=8, 9=9}", entrySet.toString());
     }
 
@@ -161,7 +161,7 @@ public class ConcurrentHashMapTest extends AbstractCollectionTest<ConcurrentHash
 
         Assert.assertNotEquals("You are likely running an unchanged JVM",
                 "{0, 2, 3, 4, 5, 6, 7, 8, 9}", enumerated.toString());
-        this.assertEqualstUnordered("The collection does not containt the elements asserted",
+        this.assertEqualsUnordered("The collection does not containt the elements asserted",
                 "{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}", enumerated.toString());
     }
 }
