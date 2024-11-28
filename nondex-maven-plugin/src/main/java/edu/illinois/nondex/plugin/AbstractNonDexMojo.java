@@ -147,6 +147,8 @@ public abstract class AbstractNonDexMojo extends AbstractMojo {
     protected String loggingLevel;
 
     // Generic properties
+    @Parameter(property = "skip", defaultValue = "false")
+    protected  boolean skip;
     @Parameter(property = "project")
     protected MavenProject mavenProject;
     @Parameter(defaultValue = "${project.build.directory}")
