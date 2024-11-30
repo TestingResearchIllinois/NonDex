@@ -102,10 +102,62 @@ public class HashMapKeySplitAdder extends ClassVisitor {
         methodVisitor.visitEnd();
     }
 
+    public void addTryAdvance() {
+        MethodVisitor methodVisitor = super.visitMethod(
+                Opcodes.ACC_PUBLIC,
+                "tryAdvance",
+                "(Ljava/util/function/Consumer;)Z",
+                "(Ljava/util/function/Consumer<-TK;>;)Z",
+                null
+        );
+        methodVisitor.visitCode();
+        Label label0 = new Label();
+        methodVisitor.visitLabel(label0);
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 0);
+        methodVisitor.visitFieldInsn(
+                Opcodes.GETFIELD,
+                "java/util/HashMap$KeySpliterator",
+                "shuffler",
+                "Ljava/util/HashMap$KeySpliterator$KeySpliteratorShuffler;"
+        );
+        methodVisitor.visitVarInsn(Opcodes.ALOAD, 1);
+        methodVisitor.visitMethodInsn(
+                Opcodes.INVOKEVIRTUAL,
+                "java/util/HashMap$KeySpliterator$KeySpliteratorShuffler",
+                "tryAdvance",
+                "(Ljava/util/function/Consumer;)Z",
+                false
+        );
+        methodVisitor.visitInsn(Opcodes.IRETURN);
+        Label label1 = new Label();
+        methodVisitor.visitLabel(label1);
+        methodVisitor.visitLocalVariable(
+                "this",
+                "Ljava/util/HashMap$KeySpliterator;",
+                "Ljava/util/HashMap$KeySpliterator<TK;TV;>;",
+                label0,
+                label1,
+                0
+        );
+        methodVisitor.visitLocalVariable(
+                "action",
+                "Ljava/util/function/Consumer;",
+                "Ljava/util/function/Consumer<-TK;>;",
+                label0,
+                label1,
+                1
+        );
+        methodVisitor.visitMaxs(2, 2);
+        methodVisitor.visitEnd();
+    }
+
     @Override
     public void visitEnd() {
+
         addSplitShufflerField();
         addForEachRemaining();
+        addTryAdvance();
+
         super.visitInnerClass(
                 "java/util/HashMap$KeySpliterator$KeySpliteratorShuffler",
                 "java/util/HashMap$KeySpliterator",
@@ -152,6 +204,9 @@ public class HashMapKeySplitAdder extends ClassVisitor {
         if ("forEachRemaining".equals(name)) {
             // Rename the existing method to original_forEachRemaining
             return super.visitMethod(access, "original_forEachRemaining", desc, signature, exceptions);
+        }
+        if ("tryAdvance".equals(name)) {
+            return super.visitMethod(access, "original_tryAdvance", desc, signature, exceptions);
         }
         return super.visitMethod(access, name, desc, signature, exceptions);
     }

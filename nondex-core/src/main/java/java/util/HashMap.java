@@ -1567,6 +1567,10 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         public boolean tryAdvance(Consumer<? super K> action) {
+            return shuffler.tryAdvance(action);
+        }
+
+        public boolean original_tryAdvance(Consumer<? super K> action) {
             int hi;
             if (action == null)
                 throw new NullPointerException();

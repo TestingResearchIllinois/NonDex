@@ -21,4 +21,14 @@ public class KeySpliteratorShuffler<K, V> {
     public void forEachRemaining(Consumer<? super K> action) {
         iter.forEachRemaining(action);
     }
+
+    public boolean tryAdvance(Consumer<? super K> action) {
+        if (iter.hasNext()) {
+            K nextElement = iter.next();
+            action.accept(nextElement);
+            return true;
+        }
+        return false;
+    }
+
 }
