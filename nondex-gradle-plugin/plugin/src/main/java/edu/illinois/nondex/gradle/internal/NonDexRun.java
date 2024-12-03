@@ -11,8 +11,10 @@ import org.gradle.wrapper.GradleUserHomeLookup;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static edu.illinois.nondex.gradle.constants.NonDexGradlePluginConstants.NONDEX_COMMON_SHA1;
@@ -67,8 +69,43 @@ public class NonDexRun extends CleanRun {
             argline.add("-Dtest=" + configuration.testName);
         }
         argline.addAll(super.setupArgline());
-        return argline;
+        return mergePatchModuleArguments(argline);
     }
+
+    /**
+     * Merges duplicate '--patch-module=java.base' arguments by combining their paths into one argument.
+     * 
+     * This method iterates through the provided list of arguments, identifies any duplicate '--patch-module=java.base'
+     * entries, extracts and merges the paths, and constructs a single '--patch-module=java.base' argument with the 
+     * merged paths. It also returns a new list containing all original arguments, but with the merged '--patch-module=java.base' 
+     * argument if any duplicates were found.
+     *
+     * @param argline The list of arguments to process.
+     * @return A new list of arguments with merged '--patch-module=java.base' arguments and all other arguments unchanged.
+     */
+    private List<String> mergePatchModuleArguments(List<String> argline) {
+        List<String> mergedArgline = new LinkedList<>();
+        Set<String> javaBasePaths = new LinkedHashSet<>();
+
+        for (String arg : argline) {
+            if (arg.startsWith("--patch-module=java.base=")) {
+                // Extract paths from the --patch-module argument and merge them
+                String[] paths = arg.split("=")[2].split(":");
+                for (String path : paths) {
+                    javaBasePaths.add(path);
+                }
+            } else {
+                mergedArgline.add(arg);
+            }
+        }
+
+        if (!javaBasePaths.isEmpty()) {
+            String mergedPatchModule = "--patch-module=java.base=" + String.join(":", javaBasePaths);
+            mergedArgline.add(mergedPatchModule);
+        }
+        return mergedArgline;
+    }
+
 
     private String getPathToNonDexJar() {
         File gradleHomeLocation = GradleUserHomeLookup.gradleUserHome();
