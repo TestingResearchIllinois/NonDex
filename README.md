@@ -22,8 +22,8 @@ The list of supported APIs can be found [here](https://github.com/TestingResearc
 
 Prerequisites:
 ==============
-    - Java 8 ~ 17 (Oracle JDK, OpenJDK).
-    - Maven 3.6+ and Surefire present in the POM.(for the NonDex Maven plugin).
+    - Java 8 ~ 21 (Oracle JDK, OpenJDK).
+    - Maven 3.6+ and Surefire present in the POM (for the NonDex Maven plugin).
     - Gradle 5.0+ (for the NonDex Gradle plugin).
 
 
@@ -43,15 +43,15 @@ Use (Maven - Command-line):
 
 To find if you have flaky tests under NonDex shuffling, run (use the ``-Dtest=...`` filter for individual tests):
 
-    mvn edu.illinois:nondex-maven-plugin:2.1.7:nondex
+    mvn edu.illinois:nondex-maven-plugin:2.2.1:nondex
 
 To debug, run:
 
-    mvn edu.illinois:nondex-maven-plugin:2.1.7:debug
+    mvn edu.illinois:nondex-maven-plugin:2.2.1:debug
     
 The NonDex Maven plugin also offers additional options; to see them all, run:
 
-    mvn edu.illinois:nondex-maven-plugin:2.1.7:help
+    mvn edu.illinois:nondex-maven-plugin:2.2.1:help
 
  
 Use (Maven - Add Plugin):
@@ -68,7 +68,7 @@ Add the NonDex plugin to the plugins section under the build section in your `po
       <plugin>
         <groupId>edu.illinois</groupId>
         <artifactId>nondex-maven-plugin</artifactId>
-        <version>2.1.7</version>
+        <version>2.2.1</version>
       </plugin>
     </plugins>
   </build>
@@ -95,7 +95,7 @@ To use NonDex in Gradle (Groovy), add the following content into your `build.gra
 
 ```groovy
 plugins {
-  id 'edu.illinois.nondex' version '2.1.7'
+  id 'edu.illinois.nondex' version '2.2.1'
 }
 ```
 Apply it to subprojects (if any, optional):
@@ -108,7 +108,7 @@ subprojects {
 To use NonDex in Gradle (Kotlin), add the following content into your `build.gradle.kts`:
 ```kotlin
 plugins {
-  id("edu.illinois.nondex") version "2.1.7"
+  id("edu.illinois.nondex") version "2.2.1"
 }
 ```
 Apply it to subjects (if any, optional):
@@ -118,7 +118,21 @@ subprojects {
 }
 ```
 
-Alternatively, if you are on Linux or MacOS, can use the existing script to set up NonDex in gradle build files automatically:
+To enable JUnit for NonDex, change
+```
+test {
+  useJUnitPlatform()
+}
+```
+to 
+```
+tasks.withType(Test) {
+  useJUnitPlatform()
+}
+```
+if presented in build file.
+
+Alternatively, if you are on Linux or MacOS, you can use the existing script to set up NonDex in Gradle build files automatically:
 ```
 cd modify-gradle-build
 ./add-nondex.sh ${path to the root directory of the project to run NonDex in}
@@ -145,18 +159,20 @@ After installing, if your application uses the same Java version as you use to b
     root=<path to NonDex root>
     instrumentedjar=${root}/nondex-instrumentation/resources/out.jar
     # Use the instrumented jar to run your application
-    commonjar=${root}/nondex-common/target/nondex-common-2.1.7.jar
+    commonjar=${root}/nondex-common/target/nondex-common-2.2.1.jar
     java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
 
 Optionally, in case your application needs a different Java version than the one you use to build NonDex, after installing, run:
 
     root=<path to NonDex root>
-    instrumentingjar=${root}/nondex-instrumentation/target/nondex-instrumentation-2.1.7.jar
+    instrumentingjar=${root}/nondex-instrumentation/target/nondex-instrumentation-2.2.1.jar
     instrumentedjar=${root}/<unique name of the output jar, such as out.jar>
     java -jar ${instrumentingjar} <path to rt.jar> ${instrumentedjar}
     # Use the instrumented jar to run your application
-    commonjar=${root}/nondex-common/target/nondex-common-2.1.7.jar
+    commonjar=${root}/nondex-common/target/nondex-common-2.2.1.jar
     java -Xbootclasspath/p:${instrumentedjar}:${commonjar} <application>
+
+Notice that the setup above works for Java 8. If you're using Java 9 or higher, you need to replace `-Xbootclasspath/p:` by `--add-exports java.base/edu.illinois.nondex.common=ALL-UNNAMED --add-exports java.base/edu.illinois.nondex.shuffling=ALL-UNNAMED --patch-module java.base=`.
 
 Output:
 =======
