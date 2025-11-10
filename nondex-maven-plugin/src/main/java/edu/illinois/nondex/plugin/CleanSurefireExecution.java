@@ -207,8 +207,6 @@ public class CleanSurefireExecution {
             Pattern subexpr = Pattern.compile(Pattern.quote(matcher.group(0)));
             toSanitize = subexpr.matcher(toSanitize).replaceAll("");
         }
-        // Remove -Xverify:all as the Nondex plugin fails with this
-        toSanitize = toSanitize.replaceAll("-Xverify:all\\s*", "");
         return toSanitize.trim();
     }
 
