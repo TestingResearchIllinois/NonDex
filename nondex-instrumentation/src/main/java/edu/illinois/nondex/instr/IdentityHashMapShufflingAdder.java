@@ -181,89 +181,42 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         if ("nextIndex".equals(name)) {
             return super.visitMethod(access, "originalNextIndex", desc, signature, exceptions);
         }
-        if ("<init>".equals(name)) {
+        if ("<init>".equals(name) && "(Ljava/util/IdentityHashMap;)V".equals(desc)) {
             return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "this$0", "Ljava/util/IdentityHashMap;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "this$0", "Ljava/util/IdentityHashMap;");
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "size", "I");
-                        Label l0 = new Label();
-                        super.visitJumpInsn(Opcodes.IFEQ, l0);
-                        super.visitInsn(Opcodes.ICONST_0);
-                        Label l1 = new Label();
-                        super.visitJumpInsn(Opcodes.GOTO, l1);
-                        super.visitLabel(l0);
-                        super.visitFrame(Opcodes.F_FULL, 2,
-                                new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                    "java/util/IdentityHashMap" },
-                                1, new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator" });
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "this$0", "Ljava/util/IdentityHashMap;");
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "table",
-                                "[Ljava/lang/Object;");
-                        super.visitInsn(Opcodes.ARRAYLENGTH);
-                        super.visitLabel(l1);
-                        super.visitFrame(Opcodes.F_FULL, 2,
-                                new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                    "java/util/IdentityHashMap" },
-                                2,
-                                new Object[] { "java/util/IdentityHashMap$IdentityHashMapIterator", Opcodes.INTEGER });
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "index", "I");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "this$0", "Ljava/util/IdentityHashMap;");
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "modCount", "I");
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "expectedModCount", "I");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitInsn(Opcodes.ICONST_M1);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "lastReturnedIndex", "I");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "this$0", "Ljava/util/IdentityHashMap;");
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "table",
-                                "[Ljava/lang/Object;");
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
-                                "traversalTable", "[Ljava/lang/Object;");
+                        // Initialize order field with new ArrayList
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
                         super.visitInsn(Opcodes.DUP);
                         super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
                                 "order", "Ljava/util/List;");
+
+                        // Initialize keys field with new ArrayList
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
                         super.visitInsn(Opcodes.DUP);
                         super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
                                 "keys", "Ljava/util/List;");
+
+                        // Initialize idx to 0
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitInsn(Opcodes.ICONST_0);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
                                 "idx", "I");
-                        Label l2 = new Label();
-                        super.visitLabel(l2);
+
+                        // Populate the order list by calling originalHasNext/originalNextIndex
+                        Label loopStart = new Label();
+                        super.visitLabel(loopStart);
                         super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
                                 "java/util/IdentityHashMap$IdentityHashMapIterator", "originalHasNext", "()Z", false);
-                        Label l3 = new Label();
-                        super.visitJumpInsn(Opcodes.IFEQ, l3);
+                        Label loopEnd = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, loopEnd);
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
                                 "order", "Ljava/util/List;");
@@ -275,9 +228,12 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z",
                                 true);
                         super.visitInsn(Opcodes.POP);
-                        super.visitJumpInsn(Opcodes.GOTO, l2);
-                        super.visitLabel(l3);
+                        super.visitJumpInsn(Opcodes.GOTO, loopStart);
+
+                        super.visitLabel(loopEnd);
                         super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+
+                        // Shuffle the order list
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
@@ -287,19 +243,22 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
                                 "(Ljava/util/List;)Ljava/util/List;", false);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
                                 "order", "Ljava/util/List;");
+
+                        // Populate keys list from shuffled order
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator",
                                 "order", "Ljava/util/List;");
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "iterator",
                                 "()Ljava/util/Iterator;", true);
                         super.visitVarInsn(Opcodes.ASTORE, 2);
-                        Label l4 = new Label();
-                        super.visitLabel(l4);
+
+                        Label iterStart = new Label();
+                        super.visitLabel(iterStart);
                         super.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/util/Iterator" }, 0, null);
                         super.visitVarInsn(Opcodes.ALOAD, 2);
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
-                        Label l5 = new Label();
-                        super.visitJumpInsn(Opcodes.IFEQ, l5);
+                        Label iterEnd = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, iterEnd);
                         super.visitVarInsn(Opcodes.ALOAD, 2);
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next",
                                 "()Ljava/lang/Object;", true);
@@ -319,8 +278,8 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z",
                                 true);
                         super.visitInsn(Opcodes.POP);
-                        super.visitJumpInsn(Opcodes.GOTO, l4);
-                        super.visitLabel(l5);
+                        super.visitJumpInsn(Opcodes.GOTO, iterStart);
+                        super.visitLabel(iterEnd);
                         super.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
                     }
                     super.visitInsn(opcode);

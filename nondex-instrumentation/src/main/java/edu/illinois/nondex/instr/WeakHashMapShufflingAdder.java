@@ -117,72 +117,21 @@ public class WeakHashMapShufflingAdder extends ClassVisitor {
                 @Override
                 public void visitInsn(int opcode) {
                     if (opcode == Opcodes.RETURN) {
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "this$0",
-                                "Ljava/util/WeakHashMap;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitInsn(Opcodes.ACONST_NULL);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "entry",
-                                "Ljava/util/WeakHashMap$Entry;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitInsn(Opcodes.ACONST_NULL);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "lastReturned",
-                                "Ljava/util/WeakHashMap$Entry;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/WeakHashMap$HashIterator", "this$0",
-                                "Ljava/util/WeakHashMap;");
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/WeakHashMap", "modCount", "I");
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "expectedModCount",
-                                "I");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitInsn(Opcodes.ACONST_NULL);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "nextKey",
-                                "Ljava/lang/Object;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitInsn(Opcodes.ACONST_NULL);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "currentKey",
-                                "Ljava/lang/Object;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitInsn(Opcodes.ACONST_NULL);
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "iter",
-                                "Ljava/util/Iterator;");
-                        super.visitVarInsn(Opcodes.ALOAD, 0);
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/WeakHashMap", "isEmpty", "()Z", false);
-                        Label l0 = new Label();
-                        super.visitJumpInsn(Opcodes.IFEQ, l0);
-                        super.visitInsn(Opcodes.ICONST_0);
-                        Label l1 = new Label();
-                        super.visitJumpInsn(Opcodes.GOTO, l1);
-                        super.visitLabel(l0);
-                        super.visitFrame(Opcodes.F_FULL, 2,
-                                new Object[] { "java/util/WeakHashMap$HashIterator", "java/util/WeakHashMap" }, 1,
-                                new Object[] { "java/util/WeakHashMap$HashIterator" });
-                        super.visitVarInsn(Opcodes.ALOAD, 1);
-                        super.visitFieldInsn(Opcodes.GETFIELD, "java/util/WeakHashMap", "table",
-                                "[Ljava/util/WeakHashMap$Entry;");
-                        super.visitInsn(Opcodes.ARRAYLENGTH);
-                        super.visitLabel(l1);
-                        super.visitFrame(Opcodes.F_FULL, 2,
-                                new Object[] { "java/util/WeakHashMap$HashIterator", "java/util/WeakHashMap" }, 2,
-                                new Object[] { "java/util/WeakHashMap$HashIterator", Opcodes.INTEGER });
-                        super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "index", "I");
+                        // Create ArrayList to collect entries
                         super.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList");
                         super.visitInsn(Opcodes.DUP);
                         super.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
                         super.visitVarInsn(Opcodes.ASTORE, 2);
-                        Label l2 = new Label();
-                        super.visitLabel(l2);
+
+                        // Populate list with entries using originalHasNext/originalNextEntry
+                        Label loopStart = new Label();
+                        super.visitLabel(loopStart);
                         super.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/util/List" }, 0, null);
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/WeakHashMap$HashIterator",
                                 "originalHasNext", "()Z", false);
-                        Label l3 = new Label();
-                        super.visitJumpInsn(Opcodes.IFEQ, l3);
+                        Label loopEnd = new Label();
+                        super.visitJumpInsn(Opcodes.IFEQ, loopEnd);
                         super.visitVarInsn(Opcodes.ALOAD, 2);
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/WeakHashMap$HashIterator",
@@ -190,20 +139,27 @@ public class WeakHashMapShufflingAdder extends ClassVisitor {
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z",
                                 true);
                         super.visitInsn(Opcodes.POP);
-                        super.visitJumpInsn(Opcodes.GOTO, l2);
-                        super.visitLabel(l3);
+                        super.visitJumpInsn(Opcodes.GOTO, loopStart);
+
+                        super.visitLabel(loopEnd);
                         super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+
+                        // Shuffle the list
                         super.visitVarInsn(Opcodes.ALOAD, 2);
                         super.visitMethodInsn(Opcodes.INVOKESTATIC,
                                 "edu/illinois/nondex/shuffling/ControlNondeterminism", "shuffle",
                                 "(Ljava/util/List;)Ljava/util/List;", false);
                         super.visitVarInsn(Opcodes.ASTORE, 2);
+
+                        // Set iter field to the shuffled list's iterator
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitVarInsn(Opcodes.ALOAD, 2);
                         super.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/List", "iterator",
                                 "()Ljava/util/Iterator;", true);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "iter",
                                 "Ljava/util/Iterator;");
+
+                        // Reset lastReturned to null
                         super.visitVarInsn(Opcodes.ALOAD, 0);
                         super.visitInsn(Opcodes.ACONST_NULL);
                         super.visitFieldInsn(Opcodes.PUTFIELD, "java/util/WeakHashMap$HashIterator", "lastReturned",

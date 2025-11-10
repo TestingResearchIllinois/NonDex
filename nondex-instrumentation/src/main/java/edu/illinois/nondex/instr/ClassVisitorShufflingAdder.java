@@ -34,6 +34,7 @@ import java.util.HashSet;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 
 public class ClassVisitorShufflingAdder extends ClassVisitor {
@@ -98,14 +99,23 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
                         this.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism",
                                 "extendZoneStrings", "([[Ljava/lang/String;)[[Ljava/lang/String;", false);
                     } else if (opcode == Opcodes.ARETURN) {
-                        shuffleJustReturnedArray();
+                        shuffleJustReturnedArray(desc);
                     }
                     super.visitInsn(opcode);
                 }
 
-                private void shuffleJustReturnedArray() {
+                private void shuffleJustReturnedArray(String methodDescriptor) {
+                    // Call the shuffle method which returns Object[]
                     this.visitMethodInsn(Opcodes.INVOKESTATIC, "edu/illinois/nondex/shuffling/ControlNondeterminism",
                             "shuffle", "([Ljava/lang/Object;)[Ljava/lang/Object;", false);
+
+                    // Extract the return type from the method descriptor
+                    Type returnType = Type.getReturnType(methodDescriptor);
+                    String returnTypeInternalName = returnType.getInternalName();
+
+                    // Add CHECKCAST instruction to convert Object[] to the specific array type
+                    // For File.listRoots() this converts [Ljava/lang/Object; to [Ljava/io/File;
+                    this.visitTypeInsn(Opcodes.CHECKCAST, returnTypeInternalName);
                 }
             };
         } else {
