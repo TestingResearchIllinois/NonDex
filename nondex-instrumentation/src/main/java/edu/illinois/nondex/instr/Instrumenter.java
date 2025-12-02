@@ -94,6 +94,8 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/lang/reflect/Field.class");
         this.standardClassesToInstrument.add("java/io/File.class");
         this.standardClassesToInstrument.add("java/text/BreakIterator.class");
+        this.standardClassesToInstrument.add("java/text/Collator.class");
+        this.standardClassesToInstrument.add("java/text/DateFormat.class");
         this.standardClassesToInstrument.add("java/text/DateFormatSymbols.class");
         this.standardClassesToInstrument.add("java/util/PriorityQueue.class");
 

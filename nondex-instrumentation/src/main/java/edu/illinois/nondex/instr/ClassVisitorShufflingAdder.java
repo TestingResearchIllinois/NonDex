@@ -62,6 +62,8 @@ public class ClassVisitorShufflingAdder extends ClassVisitor {
         apisReturningShufflableArrays.add("java/io/File.listRoots");
 
         apisReturningShufflableArrays.add("java/text/BreakIterator.getAvailableLocales");
+        apisReturningShufflableArrays.add("java/text/Collator.getAvailableLocales");
+        apisReturningShufflableArrays.add("java/text/DateFormat.getAvailableLocales");
 
         apisReturningShufflableArrays.add("java/text/DateFormatSymbols.getZoneStrings");
 
