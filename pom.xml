@@ -6,7 +6,7 @@
   <groupId>edu.illinois</groupId>
   <artifactId>nondex</artifactId>
   <packaging>pom</packaging>
-  <version>${revision}</version>
+  <version>2.2.5-SNAPSHOT</version>
 
   <name>NonDex</name>
   <description>A tool for finding strong assumptions on APIs with non-deterministic specifications.</description>
@@ -77,7 +77,6 @@
   </prerequisites>
 
   <properties>
-    <revision>2.2.5-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -93,32 +92,7 @@
   </distributionManagement>
 
   <build>
-      <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.7.3</version>
-        <configuration>
-          <updatePomFile>true</updatePomFile>
-          <flattenMode>resolveCiFriendliesOnly</flattenMode>
-        </configuration>
-        <executions>
-          <execution>
-            <id>flatten</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>flatten</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>flatten.clean</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
