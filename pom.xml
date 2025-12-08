@@ -6,7 +6,7 @@
   <groupId>edu.illinois</groupId>
   <artifactId>nondex</artifactId>
   <packaging>pom</packaging>
-  <version>2.2.1</version>
+  <version>2.2.5-SNAPSHOT</version>
 
   <name>NonDex</name>
   <description>A tool for finding strong assumptions on APIs with non-deterministic specifications.</description>
