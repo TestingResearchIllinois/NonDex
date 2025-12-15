@@ -163,6 +163,264 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         mv.visitEnd();
     }
 
+    public void addRemove() {
+        MethodVisitor mv = super.visitMethod(Opcodes.ACC_PUBLIC, "remove", "()V", null, null);
+        mv.visitCode();
+
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "lastReturnedIndex",
+                "I");
+        mv.visitInsn(Opcodes.ICONST_M1);
+        Label l0 = new Label();
+        mv.visitJumpInsn(Opcodes.IF_ICMPNE, l0);
+        mv.visitTypeInsn(Opcodes.NEW, "java/lang/IllegalStateException");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/IllegalStateException", "<init>", "()V", false);
+        mv.visitInsn(Opcodes.ATHROW);
+        mv.visitLabel(l0);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "this$0",
+                "Ljava/util/IdentityHashMap;");
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "modCount", "I");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "expectedModCount",
+                "I");
+        Label l1 = new Label();
+        mv.visitJumpInsn(Opcodes.IF_ICMPEQ, l1);
+        mv.visitTypeInsn(Opcodes.NEW, "java/util/ConcurrentModificationException");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/ConcurrentModificationException", "<init>", "()V", false);
+        mv.visitInsn(Opcodes.ATHROW);
+
+        // Update modCount and expectedModCount
+        mv.visitLabel(l1);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "this$0",
+                "Ljava/util/IdentityHashMap;");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "modCount", "I");
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitInsn(Opcodes.DUP_X1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap", "modCount", "I");
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "expectedModCount",
+                "I");
+
+        // Initialize deletedSlot with lastReturnedIndex
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "lastReturnedIndex",
+                "I");
+        mv.visitVarInsn(Opcodes.ISTORE, 1);  // deletedSlot in local var 1
+
+        // Reset lastReturnedIndex
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ICONST_M1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "lastReturnedIndex",
+                "I");
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ILOAD, 1);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "index",
+                "I");
+
+        // Reset indexValid
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitInsn(Opcodes.ICONST_0);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "indexValid",
+                "Z");
+
+        // Initialize tab as reference to traversalTable
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "traversalTable",
+                "[Ljava/lang/Object;");
+        mv.visitVarInsn(Opcodes.ASTORE, 2);  // tab in local var 2
+
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitInsn(Opcodes.ARRAYLENGTH);
+        mv.visitVarInsn(Opcodes.ISTORE, 3);  // len in local var 3
+        mv.visitVarInsn(Opcodes.ILOAD, 1);
+        mv.visitVarInsn(Opcodes.ISTORE, 4);  // d in local var 4
+
+        // Get key to be removed
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitInsn(Opcodes.AALOAD);
+        mv.visitVarInsn(Opcodes.ASTORE, 5);  // key in local var 5
+
+        // Remove key and value
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitInsn(Opcodes.AASTORE);
+
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitInsn(Opcodes.AASTORE);
+
+        // Decrement the size
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap$IdentityHashMapIterator", "this$0",
+                "Ljava/util/IdentityHashMap;");
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitFieldInsn(Opcodes.GETFIELD, "java/util/IdentityHashMap", "size", "I");
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.ISUB);
+        mv.visitFieldInsn(Opcodes.PUTFIELD, "java/util/IdentityHashMap", "size", "I");
+
+        // Inlined nextKeyIndex()
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitInsn(Opcodes.ICONST_2);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitVarInsn(Opcodes.ILOAD, 3);
+
+        Label elseLabel = new Label();
+        Label endLabel = new Label();
+        mv.visitJumpInsn(Opcodes.IF_ICMPGE, elseLabel);
+        mv.visitJumpInsn(Opcodes.GOTO, endLabel);
+        mv.visitLabel(elseLabel);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { Opcodes.INTEGER });
+        mv.visitInsn(Opcodes.POP);
+        mv.visitInsn(Opcodes.ICONST_0);
+        mv.visitLabel(endLabel);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { Opcodes.INTEGER });
+        mv.visitVarInsn(Opcodes.ISTORE, 6);  // i in local var 6
+
+        Label loopStart = new Label();
+        Label loopEnd = new Label();
+        Label loopContinue = new Label();
+
+        mv.visitLabel(loopStart);
+        mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { Opcodes.INTEGER }, 0, null);
+
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitInsn(Opcodes.AALOAD);
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitVarInsn(Opcodes.ASTORE, 7);  // item in local var 7
+
+        // Check if item==null
+        mv.visitJumpInsn(Opcodes.IFNULL, loopEnd);
+
+        // Compute hash by inlining hash(item, len): ((h << 1) - (h << 8)) & (length - 1)
+        mv.visitVarInsn(Opcodes.ALOAD, 7);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I", false);
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.ISHL); // h << 1
+        mv.visitInsn(Opcodes.SWAP);
+        mv.visitIntInsn(Opcodes.BIPUSH, 8);
+        mv.visitInsn(Opcodes.ISHL);
+        mv.visitInsn(Opcodes.ISUB);
+        mv.visitVarInsn(Opcodes.ILOAD, 3);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.ISUB);
+        mv.visitInsn(Opcodes.IAND);
+        mv.visitVarInsn(Opcodes.ISTORE, 8);  // r in local var 8
+
+        // Complex conditional: if ((i < r && (r <= d || d <= i)) || (r <= d && d <= i))
+        Label conditionFalse = new Label();
+        Label conditionTrue = new Label();
+
+        // Check cond1: (i < r && (r <= d || d <= i))
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitVarInsn(Opcodes.ILOAD, 8);
+        Label cond1False = new Label();
+        mv.visitJumpInsn(Opcodes.IF_ICMPGE, cond1False);
+        mv.visitVarInsn(Opcodes.ILOAD, 8);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitJumpInsn(Opcodes.IF_ICMPLE, conditionTrue);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitJumpInsn(Opcodes.IF_ICMPLE, conditionTrue);
+
+        // cond1 is false, check cond2
+        mv.visitLabel(cond1False);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+
+        mv.visitVarInsn(Opcodes.ILOAD, 8);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitJumpInsn(Opcodes.IF_ICMPGT, conditionFalse);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitJumpInsn(Opcodes.IF_ICMPGT, conditionFalse);
+
+        // Condition is true, shift the values
+        mv.visitLabel(conditionTrue);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+
+        // Update t[d] to item
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitVarInsn(Opcodes.ALOAD, 7);
+        mv.visitInsn(Opcodes.AASTORE);
+
+        // Shift tab[i + 1] into tab[d + 1]
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 4);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitInsn(Opcodes.AALOAD);
+        mv.visitInsn(Opcodes.AASTORE);
+
+        // Clear tab[i] to null;
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitInsn(Opcodes.AASTORE);
+
+        // Clear tab[i + 1] to null
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitInsn(Opcodes.ICONST_1);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitInsn(Opcodes.ACONST_NULL);
+        mv.visitInsn(Opcodes.AASTORE);
+
+        // Set d to i
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitVarInsn(Opcodes.ISTORE, 4);
+
+        // Update i = nextKeyIndex(i, len), inlined
+        mv.visitVarInsn(Opcodes.ILOAD, 6);
+        mv.visitInsn(Opcodes.ICONST_2);
+        mv.visitInsn(Opcodes.IADD);
+        mv.visitInsn(Opcodes.DUP);
+        mv.visitVarInsn(Opcodes.ILOAD, 3);
+
+        Label elseLabel2 = new Label();
+        Label endLabel2 = new Label();
+        mv.visitJumpInsn(Opcodes.IF_ICMPGE, elseLabel2);
+        mv.visitJumpInsn(Opcodes.GOTO, endLabel2);
+        mv.visitLabel(elseLabel2);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { Opcodes.INTEGER });
+        mv.visitInsn(Opcodes.POP);
+        mv.visitInsn(Opcodes.ICONST_0);
+        mv.visitLabel(endLabel2);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { Opcodes.INTEGER });
+        mv.visitVarInsn(Opcodes.ISTORE, 6);
+
+        mv.visitJumpInsn(Opcodes.GOTO, loopStart);
+        mv.visitLabel(loopEnd);
+        mv.visitFrame(Opcodes.F_CHOP, 1, null, 0, null);
+
+        mv.visitLabel(conditionFalse);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+
+        mv.visitInsn(Opcodes.RETURN);
+        mv.visitMaxs(4, 6);
+        mv.visitEnd();
+    }
+
     @Override
     public void visitEnd() {
         addOrder();
@@ -170,6 +428,7 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         addIdx();
         addNextIndex();
         addHasNext();
+        addRemove();
         super.visitEnd();
     }
 
@@ -180,6 +439,9 @@ public class IdentityHashMapShufflingAdder extends ClassVisitor {
         }
         if ("nextIndex".equals(name)) {
             return super.visitMethod(access, "originalNextIndex", desc, signature, exceptions);
+        }
+        if ("remove".equals(name)) {
+            return super.visitMethod(access, "originalRemove", desc, signature, exceptions);
         }
         if ("<init>".equals(name) && "(Ljava/util/IdentityHashMap;)V".equals(desc)) {
             return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
