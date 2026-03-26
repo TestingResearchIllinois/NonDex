@@ -62,6 +62,7 @@ import org.objectweb.asm.util.CheckClassAdapter;
 
 public final class Instrumenter {
     public static final String hashMapName = "java/util/HashMap$HashIterator.class";
+    public static final String keySpliteratorName = "java/util/HashMap$KeySpliterator.class";
     public static final String weakHashMapName = "java/util/WeakHashMap$HashIterator.class";
     public static final String identityHashMapName = "java/util/IdentityHashMap$IdentityHashMapIterator.class";
     public static final String concurrentHashMapName = "java/util/concurrent/ConcurrentHashMap$Traverser.class";
@@ -72,6 +73,7 @@ public final class Instrumenter {
     public static final String hashMapNodeName = "java/util/HashMap$Node.class";
     public static final String hashMapEntryName = "java/util/HashMap$Entry.class";
     public static final String hashMapHashIteratorShufflerName = "java/util/HashMap$HashIterator$HashIteratorShuffler.class";
+    public static final String hashMapKeySpliShufflerName = "java/util/HashMap$KeySpliterator$KeySpliteratorShuffler.class";
 
     private static final String rootPath = "modules/java.base";
 
@@ -100,6 +102,7 @@ public final class Instrumenter {
         this.standardClassesToInstrument.add("java/util/PriorityQueue.class");
 
         this.specialClassesToInstrument.add(Instrumenter.hashMapName);
+        this.specialClassesToInstrument.add(Instrumenter.keySpliteratorName);
         this.specialClassesToInstrument.add(Instrumenter.weakHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.identityHashMapName);
         this.specialClassesToInstrument.add(Instrumenter.concurrentHashMapName);
@@ -206,6 +209,13 @@ public final class Instrumenter {
                         }
                     });
         }
+        // add SpliteratorShuffler.class
+        this.addAsmDumpResultToZip(outZip, hashMapKeySpliShufflerName, new Producer<byte[]>() {
+            @Override
+            public byte[] apply() {
+                return HashKeySpliteratorASMDump.dump();
+            }
+        });
 
         for (String clz : this.specialClassesToInstrument) {
             this.instrumentSpecialClass(outZip, clz);
