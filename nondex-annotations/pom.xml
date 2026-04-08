@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>nondex-annotations</artifactId>
+  <name>NonDex Annotations</name>
 
   <build>
     <plugins>
